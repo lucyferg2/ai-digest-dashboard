@@ -48,6 +48,7 @@
         
         .article h3 {
             transition: color 0.2s;
+            cursor: pointer;
         }
         
         .article:hover h3 {
@@ -291,6 +292,13 @@
                 }
             }
             
+            // Close modal with Escape key
+            document.addEventListener('keydown', function(event) {
+                if (event.key === 'Escape' && modal.style.display === "block") {
+                    modal.style.display = "none";
+                }
+            });
+            
             // Chart elements
             const sourcesChart = document.getElementById('sources-chart').getContext('2d');
             const areasChart = document.getElementById('areas-chart').getContext('2d');
@@ -496,6 +504,11 @@
                     
                     // Add event listener to view details button
                     articleElement.querySelector('.view-details').addEventListener('click', function() {
+                        showArticleDetails(article);
+                    });
+                    
+                    // Add event listener to article title for viewing details
+                    articleElement.querySelector('h3').addEventListener('click', function() {
                         showArticleDetails(article);
                     });
                     
