@@ -228,6 +228,12 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Create and update sources chart
     function createSourcesChart() {
+
+        // Destroy existing chart if it exists
+        if (sourcesChartInstance) {
+            sourcesChartInstance.destroy();
+        }
+        
         // Prepare data
         const sourceData = prepareSourcesData();
         
@@ -292,6 +298,10 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Create and update areas chart
     function createAreasChart() {
+            if (datesChartInstance) {
+            datesChartInstance.destroy();
+        }
+            
         // Prepare data
         const areaData = prepareAreasData();
         
