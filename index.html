@@ -241,8 +241,8 @@
                 </div>
             </div>
             
-            <!-- Grid layout for articles -->
-            <div id="articles-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <!-- Grid layout for articles - changed to 2 columns instead of 3 -->
+            <div id="articles-container" class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="text-center py-6 text-gray-500 col-span-full">
                     Loading articles...
                 </div>
@@ -471,14 +471,14 @@
                 
                 filteredArticles.forEach((article, index) => {
                     const articleElement = document.createElement('div');
-                    articleElement.className = 'border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow article bg-white';
+                    articleElement.className = 'border border-gray-200 rounded-lg p-5 hover:shadow-md transition-shadow article bg-white';
                     articleElement.dataset.articleIndex = index;
                     
                     articleElement.innerHTML = `
                         <h3 class="text-lg font-medium text-brand-red mb-2 line-clamp-2">
                             ${article.title}
                         </h3>
-                        <div class="flex flex-wrap gap-1 mb-2">
+                        <div class="flex flex-wrap gap-1 mb-3">
                             <span class="px-2 py-0.5 text-xs rounded-full bg-brand-light-orange text-brand-dark-red">
                                 ${article.therapyArea}
                             </span>
@@ -486,10 +486,11 @@
                                 ${article.term}
                             </span>
                         </div>
-                        <div class="text-sm text-gray-500 mb-2">${article.date} · ${article.journal}</div>
-                        <p class="text-gray-600 text-sm summary-text mb-3">${article.summary}</p>
-                        <div class="mt-auto pt-2">
-                            <button class="text-brand-red hover:underline text-sm view-details">View Details</button>
+                        <div class="text-sm text-gray-500 mb-3">${article.date} · ${article.journal}</div>
+                        <p class="text-gray-600 text-sm summary-text mb-4">${article.summary}</p>
+                        <div class="mt-auto pt-2 flex justify-between items-center">
+                            <button class="bg-brand-orange hover:bg-brand-red text-white py-1 px-3 rounded-md text-sm transition-colors view-details">View Details</button>
+                            <a href="${article.link}" target="_blank" rel="noopener noreferrer" class="text-brand-red hover:underline text-sm">Read Original</a>
                         </div>
                     `;
                     
