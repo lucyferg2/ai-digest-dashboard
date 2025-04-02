@@ -466,7 +466,7 @@
                     `;
                 }
                 
-                // Add summary statistics
+                // Add article distribution if available
                 if (keyHighlights.therapy_area_distribution) {
                     const totalArticles = keyHighlights.total_articles || 
                         Object.values(keyHighlights.therapy_area_distribution).reduce((a, b) => a + b, 0);
@@ -483,8 +483,12 @@
                                     </div>
                                 `).join('')}
                             </div>
+                        </div>
                     `;
-                });
+                }
+                
+                keyHighlightsContainer.innerHTML = highlightsHTML;
+            }
             
             // Initialize filter dropdowns
             function initializeFilters() {
