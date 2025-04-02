@@ -87,10 +87,11 @@
     <header class="relative overflow-hidden bg-white shadow mb-6 py-6">
         <div class="wave-shape"></div>
         <div class="container mx-auto relative z-10">
-            <div class="flex justify-center items-center mb-4">
+            <div class="flex justify-center items-center mb-2">
                 <img src="logo.png" alt="Company Logo" class="h-16">
             </div>
-            <h1 class="text-3xl font-bold text-center text-white">AI Digest Interactive Dashboard</h1>
+            <h1 class="text-3xl font-bold text-center text-white mb-2">AI Digest Interactive Dashboard</h1>
+            <h2 class="text-xl text-center text-white opacity-90 mb-2">Monthly AI Research & Updates</h2>
             <p class="text-center text-white opacity-90" id="dashboard-date">Loading...</p>
         </div>
     </header>
@@ -157,7 +158,7 @@
             </div>
             
             <div class="bg-white rounded-lg shadow p-4 border-t-4 border-brand-orange">
-                <h2 class="text-lg font-semibold mb-4 text-brand-red">Articles by Topic Area</h2>
+                <h2 class="text-lg font-semibold mb-4 text-brand-red">Articles by Therapy Area</h2>
                 <div class="chart-container">
                     <canvas id="areas-chart"></canvas>
                 </div>
@@ -216,18 +217,24 @@
             let areasChartInstance = null;
             let datesChartInstance = null;
             
-            // Brand colors for charts
-            const brandColors = [
-                '#f8a352', // orange
-                '#e67b44', // darker orange
-                '#d3533a', // light red
-                '#d94236', // red
-                '#b5332e', // dark red
-                '#ffc680', // light orange
-                '#ffb366', // medium light orange
-                '#c23b30', // medium red
-                '#a12d28', // very dark red
-                '#ff9d4d'  // medium orange
+            // Multicolored chart palettes
+            const multiColorPalette = [
+                '#f8a352', // brand orange
+                '#4BC0C0', // teal
+                '#36A2EB', // blue
+                '#9966FF', // purple
+                '#d94236', // brand red
+                '#FF9F40', // light orange
+                '#FFCD56', // yellow
+                '#7ED6DF', // light blue
+                '#E84393', // pink
+                '#6C5CE7', // indigo
+                '#00b894', // mint
+                '#ffeaa7', // cream
+                '#fab1a0', // peach
+                '#a29bfe', // light purple
+                '#fd79a8', // light pink
+                '#fdcb6e'  // light yellow
             ];
             
             // Data
@@ -235,7 +242,7 @@
             let filteredArticles = [];
             
             // Fetch data - Replace this URL with your JSON file path
-            fetch('/data/latest_dashboard_data.json')
+            fetch('latest_dashboard_data.json')
                 .then(response => response.json())
                 .then(data => {
                     // Update dashboard date
@@ -457,6 +464,11 @@
                 // Prepare data
                 const sourceData = prepareSourcesData();
                 
+                // Generate background colors for each bar
+                const backgroundColors = sourceData.labels.map((_, index) => 
+                    multiColorPalette[index % multiColorPalette.length]
+                );
+                
                 // Create chart
                 sourcesChartInstance = new Chart(sourcesChart, {
                     type: 'bar',
@@ -465,8 +477,8 @@
                         datasets: [{
                             label: 'Number of Articles',
                             data: sourceData.data,
-                            backgroundColor: brandColors,
-                            borderColor: brandColors.map(color => color), // Use same colors for borders
+                            backgroundColor: backgroundColors,
+                            borderColor: backgroundColors.map(color => color), // Use same colors for borders
                             borderWidth: 1
                         }]
                     },
@@ -524,6 +536,11 @@
                 // Prepare data
                 const areaData = prepareAreasData();
                 
+                // Generate background colors for each slice
+                const backgroundColors = areaData.labels.map((_, index) => 
+                    multiColorPalette[index % multiColorPalette.length]
+                );
+                
                 // Create chart
                 areasChartInstance = new Chart(areasChart, {
                     type: 'pie',
@@ -531,8 +548,8 @@
                         labels: areaData.labels,
                         datasets: [{
                             data: areaData.data,
-                            backgroundColor: brandColors,
-                            borderColor: brandColors.map(color => color),
+                            backgroundColor: backgroundColors,
+                            borderColor: backgroundColors.map(color => color),
                             borderWidth: 1
                         }]
                     },
@@ -588,7 +605,11 @@
                             backgroundColor: 'rgba(248, 163, 82, 0.2)',
                             borderColor: '#d94236',
                             borderWidth: 2,
-                            tension: 0.1
+                            tension: 0.1,
+                            pointBackgroundColor: '#d94236',
+                            pointBorderColor: '#fff',
+                            pointRadius: 5,
+                            pointHoverRadius: 7
                         }]
                     },
                     options: {
