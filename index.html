@@ -34,6 +34,18 @@
             color: transparent;
         }
         
+        .article {
+            transition: all 0.2s ease;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .article:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        
         .article h3 {
             transition: color 0.2s;
         }
@@ -81,6 +93,53 @@
         
         ::-webkit-scrollbar-thumb:hover {
             background: linear-gradient(to bottom, #d94236, #b5332e);
+        }
+        
+        /* Truncate text with ellipsis */
+        .summary-text {
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 100;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+        }
+        
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            border-radius: 8px;
+            width: 80%;
+            max-width: 800px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
         }
     </style>
 </head>
@@ -182,8 +241,9 @@
                 </div>
             </div>
             
-            <div id="articles-container" class="space-y-4">
-                <div class="text-center py-6 text-gray-500">
+            <!-- Grid layout for articles -->
+            <div id="articles-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div class="text-center py-6 text-gray-500 col-span-full">
                     Loading articles...
                 </div>
             </div>
@@ -193,6 +253,14 @@
             <p>This dashboard is updated monthly with the latest AI research and news.</p>
             <p class="mt-1">For feedback, please contact <a href="mailto:lucy.ferguson@syneoshealth.com" class="text-brand-red hover:underline">lucy.ferguson@syneoshealth.com</a></p>
         </footer>
+    </div>
+    
+    <!-- Modal for article details -->
+    <div id="article-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div id="modal-content"></div>
+        </div>
     </div>
 
     <script>
@@ -207,6 +275,21 @@
             const articlesContainer = document.getElementById('articles-container');
             const articleCount = document.getElementById('article-count');
             const showingCount = document.getElementById('showing-count');
+            const modal = document.getElementById('article-modal');
+            const modalContent = document.getElementById('modal-content');
+            const closeBtn = document.getElementsByClassName('close')[0];
+            
+            // Close modal when clicking the × button
+            closeBtn.onclick = function() {
+                modal.style.display = "none";
+            }
+            
+            // Close modal when clicking outside of it
+            window.onclick = function(event) {
+                if (event.target == modal) {
+                    modal.style.display = "none";
+                }
+            }
             
             // Chart elements
             const sourcesChart = document.getElementById('sources-chart').getContext('2d');
@@ -270,7 +353,7 @@
                 .catch(error => {
                     console.error('Error loading data:', error);
                     articlesContainer.innerHTML = `
-                        <div class="text-center py-6 text-red-500">
+                        <div class="text-center py-6 text-red-500 col-span-full">
                             Error loading data. Please try again later.
                         </div>
                     `;
@@ -373,11 +456,11 @@
                 updateCharts();
             }
             
-            // Render articles
+            // Render articles in a grid layout
             function renderArticles() {
                 if (filteredArticles.length === 0) {
                     articlesContainer.innerHTML = `
-                        <div class="text-center py-6 text-gray-500">
+                        <div class="text-center py-6 text-gray-500 col-span-full">
                             No articles found matching your filters. Try adjusting your search criteria.
                         </div>
                     `;
@@ -386,58 +469,88 @@
                 
                 articlesContainer.innerHTML = '';
                 
-                filteredArticles.forEach(article => {
+                filteredArticles.forEach((article, index) => {
                     const articleElement = document.createElement('div');
-                    articleElement.className = 'border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow article';
-                    
-                    // Format takeaways as list items
-                    const takeawaysList = article.takeaways.map(takeaway => 
-                        `<li>${takeaway.startsWith('-') ? takeaway.substring(1).trim() : takeaway}</li>`
-                    ).join('');
+                    articleElement.className = 'border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow article bg-white';
+                    articleElement.dataset.articleIndex = index;
                     
                     articleElement.innerHTML = `
-                        <div class="flex justify-between items-start">
-                            <div>
-                                <h3 class="text-lg font-medium text-brand-red">
-                                    <a href="${article.link}" target="_blank" rel="noopener noreferrer" class="hover:underline">
-                                        ${article.title}
-                                    </a>
-                                </h3>
-                                <div class="flex flex-wrap gap-2 mt-1">
-                                    <span class="px-2 py-1 text-xs rounded-full bg-brand-light-orange text-brand-dark-red">
-                                        ${article.therapyArea}
-                                    </span>
-                                    <span class="px-2 py-1 text-xs rounded-full bg-green-100 text-brand-dark-red">
-                                        ${article.term}
-                                    </span>
-                                    <span class="px-2 py-1 text-xs rounded-full bg-blue-100 text-brand-dark-red">
-                                        ${article.journal}
-                                    </span>
-                                </div>
-                            </div>
-                            <span class="text-sm text-gray-500">${article.date}</span>
+                        <h3 class="text-lg font-medium text-brand-red mb-2 line-clamp-2">
+                            ${article.title}
+                        </h3>
+                        <div class="flex flex-wrap gap-1 mb-2">
+                            <span class="px-2 py-0.5 text-xs rounded-full bg-brand-light-orange text-brand-dark-red">
+                                ${article.therapyArea}
+                            </span>
+                            <span class="px-2 py-0.5 text-xs rounded-full bg-green-100 text-brand-dark-red">
+                                ${article.term}
+                            </span>
                         </div>
-                        
-                        <div class="mt-3">
-                            <div class="mb-2">
-                                <span class="font-medium text-gray-700">Summary:</span> ${article.summary}
-                            </div>
-                            <div>
-                                <span class="font-medium text-gray-700">Key Takeaways:</span>
-                                <ul class="list-disc pl-5 mt-1">
-                                    ${takeawaysList}
-                                </ul>
-                            </div>
-                            <div class="mt-2">
-                                <a href="${article.link}" target="_blank" rel="noopener noreferrer" class="text-brand-red hover:underline text-sm">
-                                    Read original article
-                                </a>
-                            </div>
+                        <div class="text-sm text-gray-500 mb-2">${article.date} · ${article.journal}</div>
+                        <p class="text-gray-600 text-sm summary-text mb-3">${article.summary}</p>
+                        <div class="mt-auto pt-2">
+                            <button class="text-brand-red hover:underline text-sm view-details">View Details</button>
                         </div>
                     `;
                     
+                    // Add event listener to view details button
+                    articleElement.querySelector('.view-details').addEventListener('click', function() {
+                        showArticleDetails(article);
+                    });
+                    
                     articlesContainer.appendChild(articleElement);
                 });
+            }
+            
+            // Show article details in modal
+            function showArticleDetails(article) {
+                // Format takeaways as list items
+                const takeawaysList = article.takeaways.map(takeaway => 
+                    `<li class="mb-1">${takeaway.startsWith('-') ? takeaway.substring(1).trim() : takeaway}</li>`
+                ).join('');
+                
+                modalContent.innerHTML = `
+                    <h2 class="text-xl font-bold text-brand-dark-red mb-4">${article.title}</h2>
+                    
+                    <div class="flex flex-wrap gap-2 mb-3">
+                        <span class="px-2 py-1 text-xs rounded-full bg-brand-light-orange text-brand-dark-red">
+                            ${article.therapyArea}
+                        </span>
+                        <span class="px-2 py-1 text-xs rounded-full bg-green-100 text-brand-dark-red">
+                            ${article.term}
+                        </span>
+                        <span class="px-2 py-1 text-xs rounded-full bg-blue-100 text-brand-dark-red">
+                            ${article.journal}
+                        </span>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <p><strong>Date:</strong> ${article.date}</p>
+                        <p><strong>Source:</strong> ${article.journal}</p>
+                        ${article.authors ? `<p><strong>Authors:</strong> ${article.authors}</p>` : ''}
+                    </div>
+                    
+                    <div class="mb-4">
+                        <h3 class="font-semibold text-lg mb-2">Summary</h3>
+                        <p>${article.summary}</p>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <h3 class="font-semibold text-lg mb-2">Key Takeaways</h3>
+                        <ul class="list-disc pl-5">
+                            ${takeawaysList}
+                        </ul>
+                    </div>
+                    
+                    <div class="mt-6 text-center">
+                        <a href="${article.link}" target="_blank" rel="noopener noreferrer" 
+                           class="inline-block px-6 py-2 bg-brand-orange text-white rounded hover:bg-brand-red transition-colors">
+                            Read Original Article
+                        </a>
+                    </div>
+                `;
+                
+                modal.style.display = "block";
             }
             
             // Initialize charts
