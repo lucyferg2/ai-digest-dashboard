@@ -155,10 +155,12 @@
         .highlights-header {
             padding: 1rem;
             border-bottom: 1px solid #e5e7eb;
+            cursor: pointer;
         }
         
         .highlights-content {
             padding: 1.5rem;
+            display: none; /* Initially hidden */
         }
         
         .highlights-section {
@@ -167,6 +169,78 @@
         
         .highlights-section:last-child {
             margin-bottom: 0;
+        }
+        
+        /* Filter buttons */
+        .filter-btn {
+            display: block;
+            width: 100%;
+            text-align: left;
+            padding: 0.5rem 1rem;
+            border-radius: 0.25rem;
+            transition: all 0.2s;
+            margin-bottom: 0.25rem;
+        }
+        
+        .filter-btn:hover {
+            background-color: #f3f4f6;
+        }
+        
+        .filter-btn.active {
+            background-color: #f8a352;
+            color: white;
+        }
+        
+        .sidebar-heading {
+            font-weight: 600;
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: #4b5563;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        @media (max-width: 768px) {
+            .filter-sidebar {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                z-index: 50;
+                background-color: white;
+                padding: 1rem;
+                overflow-y: auto;
+            }
+            
+            .filter-sidebar.active {
+                display: block;
+            }
+            
+            .close-sidebar {
+                display: block;
+                position: absolute;
+                top: 1rem;
+                right: 1rem;
+                font-size: 1.5rem;
+                cursor: pointer;
+            }
+            
+            .show-filters-mobile {
+                display: block;
+            }
+        }
+        
+        @media (min-width: 769px) {
+            .show-filters-mobile {
+                display: none;
+            }
+            
+            .close-sidebar {
+                display: none;
+            }
         }
     </style>
 </head>
@@ -184,10 +258,13 @@
     </header>
 
     <div class="container mx-auto px-4">
-        <!-- Key Highlights Section -->
+        <!-- Collapsible Key Highlights Section -->
         <div class="highlights-card mb-6">
-            <div class="highlights-header">
+            <div class="highlights-header flex justify-between items-center" id="highlights-toggle">
                 <h2 class="text-xl font-semibold text-brand-red">Key Highlights This Month</h2>
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 transform transition-transform duration-200" id="highlights-chevron" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                </svg>
             </div>
             <div class="highlights-content" id="key-highlights">
                 <div class="text-center py-6 text-gray-500">
@@ -196,10 +273,17 @@
             </div>
         </div>
 
-        <!-- Filters Section -->
-        <div class="bg-white rounded-lg shadow p-4 mb-6 border-t-4 border-brand-orange">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div>
+        <!-- Mobile filter toggle button -->
+        <button class="show-filters-mobile mb-4 bg-brand-orange text-white py-2 px-4 rounded shadow w-full md:hidden">
+            Show Filters
+        </button>
+
+        <div class="flex flex-col md:flex-row gap-6">
+            <!-- Filter Sidebar -->
+            <div class="filter-sidebar bg-white rounded-lg shadow p-4 md:w-64 mb-6 border-t-4 border-brand-orange">
+                <span class="close-sidebar">&times;</span>
+                
+                <div class="mb-4">
                     <label class="block text-sm font-medium text-gray-700 mb-1">Search Articles</label>
                     <div class="relative">
                         <input 
@@ -214,27 +298,7 @@
                     </div>
                 </div>
                 
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Topic Area</label>
-                    <select 
-                        id="therapy-area-select" 
-                        class="w-full p-2 border border-gray-300 rounded-md focus:ring-brand-orange focus:border-brand-orange"
-                    >
-                        <option value="All">All Areas</option>
-                    </select>
-                </div>
-                
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Source</label>
-                    <select 
-                        id="term-select" 
-                        class="w-full p-2 border border-gray-300 rounded-md focus:ring-brand-orange focus:border-brand-orange"
-                    >
-                        <option value="All">All Sources</option>
-                    </select>
-                </div>
-                
-                <div>
+                <div class="mb-4">
                     <label class="block text-sm font-medium text-gray-700 mb-1">Sort By Date</label>
                     <select 
                         id="sort-select" 
@@ -244,46 +308,61 @@
                         <option value="oldest">Oldest First</option>
                     </select>
                 </div>
+                
+                <h3 class="sidebar-heading">Topic Areas</h3>
+                <div id="therapy-area-buttons">
+                    <!-- Topic area buttons will be dynamically added here -->
+                    <button class="filter-btn active" data-value="All">All Areas</button>
+                </div>
+                
+                <h3 class="sidebar-heading">Sources</h3>
+                <div id="term-buttons">
+                    <!-- Source term buttons will be dynamically added here -->
+                    <button class="filter-btn active" data-value="All">All Sources</button>
+                </div>
             </div>
-        </div>
 
-        <!-- Dashboard Stats -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-            <div class="bg-white rounded-lg shadow p-4 border-t-4 border-brand-orange">
-                <h2 class="text-lg font-semibold mb-4 text-brand-red">Articles by Source</h2>
-                <div class="chart-container">
-                    <canvas id="sources-chart"></canvas>
+            <!-- Main Content -->
+            <div class="flex-1">
+                <!-- Dashboard Stats -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                    <div class="bg-white rounded-lg shadow p-4 border-t-4 border-brand-orange">
+                        <h2 class="text-lg font-semibold mb-4 text-brand-red">Articles by Source</h2>
+                        <div class="chart-container">
+                            <canvas id="sources-chart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-lg shadow p-4 border-t-4 border-brand-orange">
+                        <h2 class="text-lg font-semibold mb-4 text-brand-red">Articles by Topic Area</h2>
+                        <div class="chart-container">
+                            <canvas id="areas-chart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-lg shadow p-4 border-t-4 border-brand-orange">
+                        <h2 class="text-lg font-semibold mb-4 text-brand-red">Publication Date Trend</h2>
+                        <div class="chart-container">
+                            <canvas id="dates-chart"></canvas>
+                        </div>
+                    </div>
                 </div>
-            </div>
-            
-            <div class="bg-white rounded-lg shadow p-4 border-t-4 border-brand-orange">
-                <h2 class="text-lg font-semibold mb-4 text-brand-red">Articles by Topic Area</h2>
-                <div class="chart-container">
-                    <canvas id="areas-chart"></canvas>
-                </div>
-            </div>
-            
-            <div class="bg-white rounded-lg shadow p-4 border-t-4 border-brand-orange">
-                <h2 class="text-lg font-semibold mb-4 text-brand-red">Publication Date Trend</h2>
-                <div class="chart-container">
-                    <canvas id="dates-chart"></canvas>
-                </div>
-            </div>
-        </div>
 
-        <!-- Articles List -->
-        <div class="bg-white rounded-lg shadow p-4 mb-6 border-t-4 border-brand-orange">
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="text-xl font-semibold text-brand-red">Articles <span id="article-count">(0)</span></h2>
-                <div class="text-sm text-gray-500" id="showing-count">
-                    Showing 0 of 0 articles
-                </div>
-            </div>
-            
-            <!-- Grid layout for articles - changed to 2 columns instead of 3 -->
-            <div id="articles-container" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="text-center py-6 text-gray-500 col-span-full">
-                    Loading articles...
+                <!-- Articles List -->
+                <div class="bg-white rounded-lg shadow p-4 mb-6 border-t-4 border-brand-orange">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-xl font-semibold text-brand-red">Articles <span id="article-count">(0)</span></h2>
+                        <div class="text-sm text-gray-500" id="showing-count">
+                            Showing 0 of 0 articles
+                        </div>
+                    </div>
+                    
+                    <!-- Grid layout for articles - changed to 2 columns -->
+                    <div id="articles-container" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="text-center py-6 text-gray-500 col-span-full">
+                            Loading articles...
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -308,8 +387,6 @@
             // DOM elements
             const dashboardDate = document.getElementById('dashboard-date');
             const searchInput = document.getElementById('search-input');
-            const therapyAreaSelect = document.getElementById('therapy-area-select');
-            const termSelect = document.getElementById('term-select');
             const sortSelect = document.getElementById('sort-select');
             const articlesContainer = document.getElementById('articles-container');
             const articleCount = document.getElementById('article-count');
@@ -318,6 +395,34 @@
             const modal = document.getElementById('article-modal');
             const modalContent = document.getElementById('modal-content');
             const closeBtn = document.getElementsByClassName('close')[0];
+            const therapyAreaButtons = document.getElementById('therapy-area-buttons');
+            const termButtons = document.getElementById('term-buttons');
+            const highlightsToggle = document.getElementById('highlights-toggle');
+            const highlightsChevron = document.getElementById('highlights-chevron');
+            const showFiltersMobile = document.querySelector('.show-filters-mobile');
+            const filterSidebar = document.querySelector('.filter-sidebar');
+            const closeSidebar = document.querySelector('.close-sidebar');
+            
+            // Toggle highlights section
+            highlightsToggle.addEventListener('click', function() {
+                const highlightsContent = document.getElementById('key-highlights');
+                if (highlightsContent.style.display === 'block') {
+                    highlightsContent.style.display = 'none';
+                    highlightsChevron.classList.remove('rotate-180');
+                } else {
+                    highlightsContent.style.display = 'block';
+                    highlightsChevron.classList.add('rotate-180');
+                }
+            });
+            
+            // Mobile filters toggle
+            showFiltersMobile.addEventListener('click', function() {
+                filterSidebar.classList.add('active');
+            });
+            
+            closeSidebar.addEventListener('click', function() {
+                filterSidebar.classList.remove('active');
+            });
             
             // Close modal when clicking the × button
             closeBtn.onclick = function() {
@@ -368,10 +473,12 @@
                 '#fdcb6e'  // light yellow
             ];
             
-            // Data
+            // State variables
             let allArticles = [];
             let filteredArticles = [];
             let keyHighlights = null;
+            let selectedTherapyArea = 'All';
+            let selectedTerm = 'All';
             
             // Fetch data - Replace this URL with your JSON file path
             fetch('/data/latest_dashboard_data.json')
@@ -401,8 +508,11 @@
                         `;
                     }
                     
-                    // Initialize filters
-                    initializeFilters();
+                    // Initialize filter buttons
+                    initializeFilterButtons();
+                    
+                    // Set up event listeners
+                    setupEventListeners();
                     
                     // Apply initial filters
                     applyFilters();
@@ -490,62 +600,137 @@
                 keyHighlightsContainer.innerHTML = highlightsHTML;
             }
             
-            // Initialize filter dropdowns
-            function initializeFilters() {
+            // Initialize filter buttons
+            function initializeFilterButtons() {
+                // Clear existing buttons except "All"
+                therapyAreaButtons.innerHTML = '<button class="filter-btn active" data-value="All">All Areas</button>';
+                termButtons.innerHTML = '<button class="filter-btn active" data-value="All">All Sources</button>';
+                
                 // Get unique therapy areas
-                const therapyAreas = ['All', ...new Set(allArticles.map(article => article.therapyArea))];
+                const therapyAreas = [...new Set(allArticles.map(article => article.therapyArea))];
                 
-                // Populate therapy area dropdown
-                therapyAreaSelect.innerHTML = '';
+                // Create therapy area buttons
                 therapyAreas.forEach(area => {
-                    const option = document.createElement('option');
-                    option.value = area;
-                    option.textContent = area;
-                    therapyAreaSelect.appendChild(option);
+                    const button = document.createElement('button');
+                    button.className = 'filter-btn';
+                    button.textContent = area;
+                    button.dataset.value = area;
+                    therapyAreaButtons.appendChild(button);
                 });
                 
-                // Set up event listeners
-                searchInput.addEventListener('input', applyFilters);
-                therapyAreaSelect.addEventListener('change', function() {
-                    populateTermsDropdown();
-                    applyFilters();
-                });
-                termSelect.addEventListener('change', applyFilters);
-                sortSelect.addEventListener('change', applyFilters);
+                // Get all terms
+                const allTerms = [...new Set(allArticles.map(article => article.term))];
                 
-                // Initialize terms dropdown
-                populateTermsDropdown();
+                // Create term buttons
+                allTerms.forEach(term => {
+                    const button = document.createElement('button');
+                    button.className = 'filter-btn';
+                    button.textContent = term;
+                    button.dataset.value = term;
+                    termButtons.appendChild(button);
+                });
             }
             
-            // Populate terms dropdown based on selected therapy area
-            function populateTermsDropdown() {
-                const selectedTherapyArea = therapyAreaSelect.value;
-                
+            // Update term buttons based on selected therapy area
+            function updateTermButtons() {
                 // Get terms for the selected therapy area
-                let terms;
+                let availableTerms;
                 if (selectedTherapyArea === 'All') {
-                    terms = ['All', ...new Set(allArticles.map(article => article.term))];
+                    availableTerms = ['All', ...new Set(allArticles.map(article => article.term))];
                 } else {
-                    terms = ['All', ...new Set(allArticles
+                    availableTerms = ['All', ...new Set(allArticles
                         .filter(article => article.therapyArea === selectedTherapyArea)
                         .map(article => article.term))];
                 }
                 
-                // Populate terms dropdown
-                termSelect.innerHTML = '';
-                terms.forEach(term => {
-                    const option = document.createElement('option');
-                    option.value = term;
-                    option.textContent = term;
-                    termSelect.appendChild(option);
+                // Update button styles to show which terms are available
+                const termBtns = termButtons.querySelectorAll('.filter-btn');
+                termBtns.forEach(btn => {
+                    if (btn.dataset.value === 'All' || availableTerms.includes(btn.dataset.value)) {
+                        btn.classList.remove('opacity-50', 'cursor-not-allowed');
+                        btn.disabled = false;
+                    } else {
+                        btn.classList.add('opacity-50', 'cursor-not-allowed');
+                        btn.disabled = true;
+                    }
+                    
+                    // Update active state
+                    if (btn.dataset.value === selectedTerm) {
+                        btn.classList.add('active');
+                    } else {
+                        btn.classList.remove('active');
+                    }
+                });
+            }
+            
+            // Setup event listeners
+            function setupEventListeners() {
+                // Search input
+                searchInput.addEventListener('input', applyFilters);
+                
+                // Sort select
+                sortSelect.addEventListener('change', applyFilters);
+                
+                // Topic area buttons
+                therapyAreaButtons.addEventListener('click', function(e) {
+                    if (e.target.classList.contains('filter-btn')) {
+                        // Remove active class from all buttons
+                        therapyAreaButtons.querySelectorAll('.filter-btn').forEach(btn => {
+                            btn.classList.remove('active');
+                        });
+                        
+                        // Add active class to clicked button
+                        e.target.classList.add('active');
+                        
+                        // Update selected therapy area
+                        selectedTherapyArea = e.target.dataset.value;
+                        
+                        // If changing therapy area, reset term to All
+                        selectedTerm = 'All';
+                        termButtons.querySelectorAll('.filter-btn').forEach(btn => {
+                            btn.classList.remove('active');
+                            if (btn.dataset.value === 'All') {
+                                btn.classList.add('active');
+                            }
+                        });
+                        
+                        // Update term buttons
+                        updateTermButtons();
+                        
+                        // Apply filters
+                        applyFilters();
+                        
+                        // Close mobile sidebar if open
+                        filterSidebar.classList.remove('active');
+                    }
+                });
+                
+                // Source term buttons
+                termButtons.addEventListener('click', function(e) {
+                    if (e.target.classList.contains('filter-btn') && !e.target.disabled) {
+                        // Remove active class from all buttons
+                        termButtons.querySelectorAll('.filter-btn').forEach(btn => {
+                            btn.classList.remove('active');
+                        });
+                        
+                        // Add active class to clicked button
+                        e.target.classList.add('active');
+                        
+                        // Update selected term
+                        selectedTerm = e.target.dataset.value;
+                        
+                        // Apply filters
+                        applyFilters();
+                        
+                        // Close mobile sidebar if open
+                        filterSidebar.classList.remove('active');
+                    }
                 });
             }
             
             // Apply filters
             function applyFilters() {
                 const searchTerm = searchInput.value.toLowerCase();
-                const selectedTherapyArea = therapyAreaSelect.value;
-                const selectedTerm = termSelect.value;
                 const sortOrder = sortSelect.value;
                 
                 // Filter articles
