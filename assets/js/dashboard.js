@@ -87,7 +87,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let selectedTerm = 'All';
     
     // Fetch data - Replace this URL with your JSON file path
-    fetch('latest_dashboard_data.json')
+    fetch('data/latest_dashboard_data.json')
         .then(response => response.json())
         .then(data => {
             // Update dashboard date with tech styling
