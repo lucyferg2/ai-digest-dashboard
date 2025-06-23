@@ -11,194 +11,182 @@
             theme: {
                 extend: {
                     colors: {
-                        'brand-orange': '#f8a352',
-                        'brand-red': '#d94236',
-                        'brand-dark-red': '#b5332e',
-                        'brand-light-orange': '#ffc680',
+                        'tech-blue': '#3b82f6',
+                        'tech-purple': '#8b5cf6',
+                        'tech-indigo': '#6366f1',
+                        'dark-bg': '#0f172a',
+                        'card-bg': '#1e293b',
+                        'accent-blue': '#2563eb',
+                        'accent-purple': '#7c3aed',
+                        'neutral-800': '#262626',
+                        'neutral-850': '#1f1f1f',
+                        'neutral-900': '#171717',
+                        'neutral-950': '#0a0a0a'
+                    },
+                    fontFamily: {
+                        'mono': ['JetBrains Mono', 'Fira Code', 'Monaco', 'Consolas', 'monospace'],
+                        'sans': ['Inter', 'system-ui', 'sans-serif']
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'glow': 'glow 2s ease-in-out infinite alternate',
+                        'scan': 'scan 2s linear infinite'
+                    },
+                    keyframes: {
+                        glow: {
+                            '0%': { boxShadow: '0 0 5px rgba(59, 130, 246, 0.5)' },
+                            '100%': { boxShadow: '0 0 20px rgba(59, 130, 246, 0.8)' }
+                        },
+                        scan: {
+                            '0%': { transform: 'translateY(-100%)' },
+                            '100%': { transform: 'translateY(100vh)' }
+                        }
                     }
                 }
             }
         }
     </script>
     <style>
-        /* Company branding styles */
-        .brand-gradient {
-            background: linear-gradient(135deg, #f8a352 0%, #d94236 100%);
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            font-family: 'Inter', system-ui, sans-serif;
         }
         
-        .brand-gradient-text {
-            background: linear-gradient(135deg, #f8a352 0%, #d94236 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            color: transparent;
+        .glass-card {
+            background: rgba(30, 41, 59, 0.8);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
         }
         
-        .article {
-            transition: all 0.2s ease;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
+        .neon-border {
+            border: 1px solid rgba(59, 130, 246, 0.5);
+            box-shadow: 
+                0 0 5px rgba(59, 130, 246, 0.3),
+                inset 0 0 5px rgba(59, 130, 246, 0.1);
         }
         
-        .article:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        .tech-grid {
+            background-image: 
+                linear-gradient(rgba(59, 130, 246, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(59, 130, 246, 0.1) 1px, transparent 1px);
+            background-size: 20px 20px;
         }
         
-        .article h3 {
-            transition: color 0.2s;
-            cursor: pointer;
+        .article-card {
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
         }
         
-        .article:hover h3 {
-            color: #d94236;
+        .article-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #3b82f6, transparent);
+            transition: left 0.5s ease;
         }
         
-        /* Chart containers with fixed height */
+        .article-card:hover::before {
+            left: 100%;
+        }
+        
+        .article-card:hover {
+            transform: translateY(-2px);
+            border-color: rgba(59, 130, 246, 0.6);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+        }
+        
+        .filter-input {
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            color: #e2e8f0;
+        }
+        
+        .filter-input:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 10px rgba(59, 130, 246, 0.3);
+            outline: none;
+        }
+        
         .chart-container {
-            height: 250px;
+            height: 280px;
             position: relative;
         }
         
-        /* Improve readability */
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        .scan-line {
+            position: absolute;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #3b82f6, transparent);
+            animation: scan 3s linear infinite;
+            top: 0;
+            opacity: 0.7;
         }
         
-        /* Header wave shape */
-        .wave-shape {
+        .highlight-card {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+        
+        .pulse-dot {
+            width: 8px;
+            height: 8px;
+            background: #10b981;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        
+        .tech-button {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.2) 0%, rgba(139, 92, 246, 0.2) 100%);
+            border: 1px solid rgba(59, 130, 246, 0.5);
+            color: #3b82f6;
+            transition: all 0.3s ease;
+        }
+        
+        .tech-button:hover {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.4) 0%, rgba(139, 92, 246, 0.4) 100%);
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
+        }
+        
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 4px 12px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 6px;
+            font-size: 0.75rem;
+            color: #10b981;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        
+        .metric-card {
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.9) 0%, rgba(15, 23, 42, 0.9) 100%);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .metric-card::after {
+            content: '';
             position: absolute;
             top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: white;
-            border-top: 4px solid #f8a352;
-            z-index: -1;
+            right: 0;
+            width: 60px;
+            height: 60px;
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.1) 0%, transparent 70%);
         }
         
-        /* Custom branded scrollbar */
-        ::-webkit-scrollbar {
-            width: 10px;
-        }
-        
-        ::-webkit-scrollbar-track {
-            background: #f1f1f1;
-        }
-        
-        ::-webkit-scrollbar-thumb {
-            background: linear-gradient(to bottom, #f8a352, #d94236);
-            border-radius: 5px;
-        }
-        
-        ::-webkit-scrollbar-thumb:hover {
-            background: linear-gradient(to bottom, #d94236, #b5332e);
-        }
-        
-        /* Truncate text with ellipsis */
-        .summary-text {
-            display: -webkit-box;
-            -webkit-line-clamp: 3;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-        
-        /* Modal styles */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 100;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0,0,0,0.4);
-        }
-        
-        .modal-content {
-            background-color: #fefefe;
-            margin: 5% auto;
-            padding: 20px;
-            border: 1px solid #888;
-            border-radius: 8px;
-            width: 80%;
-            max-width: 800px;
-            max-height: 80vh;
-            overflow-y: auto;
-        }
-        
-        .close {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-        }
-        
-        .close:hover,
-        .close:focus {
-            color: black;
-            text-decoration: none;
-            cursor: pointer;
-        }
-        
-        /* Key Highlights section */
-        .highlights-card {
-            background-color: #fff;
-            border-radius: 0.5rem;
-            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
-            overflow: hidden;
-            border-top: 4px solid #f8a352;
-        }
-        
-        .highlights-header {
-            padding: 1rem;
-            border-bottom: 1px solid #e5e7eb;
-            cursor: pointer;
-        }
-        
-        .highlights-content {
-            padding: 1.5rem;
-            display: none; /* Initially hidden */
-        }
-        
-        .highlights-section {
-            margin-bottom: 1.5rem;
-        }
-        
-        .highlights-section:last-child {
-            margin-bottom: 0;
-        }
-        
-        /* Filter buttons */
-        .filter-btn {
+        /* Mobile sidebar styles */
+        .filter-sidebar {
             display: block;
-            width: 100%;
-            text-align: left;
-            padding: 0.5rem 1rem;
-            border-radius: 0.25rem;
-            transition: all 0.2s;
-            margin-bottom: 0.25rem;
-        }
-        
-        .filter-btn:hover {
-            background-color: #f3f4f6;
-        }
-        
-        .filter-btn.active {
-            background-color: #f8a352;
-            color: white;
-        }
-        
-        .sidebar-heading {
-            font-weight: 600;
-            margin-top: 1.5rem;
-            margin-bottom: 0.5rem;
-            color: #4b5563;
-            font-size: 0.875rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
         }
         
         @media (max-width: 768px) {
@@ -210,7 +198,7 @@
                 width: 100%;
                 height: 100%;
                 z-index: 50;
-                background-color: white;
+                background-color: rgba(15, 23, 42, 0.95);
                 padding: 1rem;
                 overflow-y: auto;
             }
@@ -226,6 +214,7 @@
                 right: 1rem;
                 font-size: 1.5rem;
                 cursor: pointer;
+                color: #3b82f6;
             }
             
             .show-filters-mobile {
@@ -242,55 +231,131 @@
                 display: none;
             }
         }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: rgba(30, 41, 59, 0.5);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            border-radius: 3px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #2563eb, #7c3aed);
+        }
+        
+        /* Filter button styles */
+        .filter-btn {
+            display: block;
+            width: 100%;
+            text-align: left;
+            padding: 0.5rem 1rem;
+            border-radius: 0.25rem;
+            transition: all 0.2s;
+            margin-bottom: 0.25rem;
+            background: transparent;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            color: #e2e8f0;
+        }
+        
+        .filter-btn:hover {
+            background-color: rgba(59, 130, 246, 0.1);
+            border-color: rgba(59, 130, 246, 0.4);
+        }
+        
+        .filter-btn.active {
+            background-color: rgba(59, 130, 246, 0.3);
+            border-color: rgba(59, 130, 246, 0.6);
+            color: #3b82f6;
+        }
+        
+        .sidebar-heading {
+            font-weight: 600;
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: #9ca3af;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-family: 'JetBrains Mono', monospace;
+        }
     </style>
 </head>
-<body class="bg-gray-50 min-h-screen">
-    <header class="relative overflow-hidden bg-white shadow mb-6 py-6">
-        <div class="wave-shape"></div>
-        <div class="container mx-auto relative z-10">
-            <div class="flex justify-center items-center mb-2">
-                <img src="logo.png" alt="Company Logo" class="h-16">
+<body class="min-h-screen text-gray-100 tech-grid">
+    <!-- Header -->
+    <header class="relative overflow-hidden">
+        <div class="glass-card border-b-0 rounded-none">
+            <div class="scan-line"></div>
+            <div class="container mx-auto px-6 py-8 relative z-10">
+                <div class="flex flex-col items-center space-y-4">
+                    <!-- Logo placeholder with tech styling -->
+                    <div class="w-16 h-16 bg-gradient-to-br from-tech-blue to-tech-purple rounded-lg flex items-center justify-center shadow-lg">
+                        <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                        </svg>
+                    </div>
+                    
+                    <div class="text-center">
+                        <h1 class="text-4xl font-bold bg-gradient-to-r from-blue-400 to-white bg-clip-text text-transparent font-mono">
+                            AI DIGEST
+                        </h1>
+                        <div class="flex items-center justify-center gap-2 mt-2">
+                            <div class="pulse-dot"></div>
+                            <span class="text-lg text-gray-300 font-light">Interactive Intelligence Dashboard</span>
+                        </div>
+                        <div class="status-indicator mt-3">
+                            <div class="pulse-dot"></div>
+                            <span id="dashboard-date">Loading system data...</span>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <h1 class="text-3xl font-bold text-center text-brand-dark-red mb-2">AI Digest Interactive Dashboard</h1>
-            <h2 class="text-xl text-center text-brand-red mb-2">Monthly AI Research & Updates</h2>
-            <p class="text-center text-brand-orange" id="dashboard-date">Loading...</p>
         </div>
     </header>
 
-    <div class="container mx-auto px-4">
-        <!-- Collapsible Key Highlights Section -->
-        <div class="highlights-card mb-6">
-            <div class="highlights-header flex justify-between items-center" id="highlights-toggle">
-                <h2 class="text-xl font-semibold text-brand-red">Key Highlights This Month</h2>
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 transform transition-transform duration-200" id="highlights-chevron" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                </svg>
+    <div class="container mx-auto px-6 py-8">
+        <!-- Key Highlights Section -->
+        <div class="highlight-card rounded-xl p-6 mb-8">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-xl font-semibold text-blue-400 font-mono">SYSTEM.HIGHLIGHTS</h2>
+                <div class="flex items-center gap-2 text-green-400">
+                    <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                    <span class="text-sm font-mono">ACTIVE</span>
+                </div>
             </div>
-            <div class="highlights-content" id="key-highlights">
-                <div class="text-center py-6 text-gray-500">
-                    Loading key highlights...
+            <div id="key-highlights" class="space-y-4 text-gray-300">
+                <div class="text-center py-6 text-gray-500 font-mono">
+                    Initializing neural network analysis...
                 </div>
             </div>
         </div>
 
         <!-- Mobile filter toggle button -->
-        <button class="show-filters-mobile mb-4 bg-brand-orange text-white py-2 px-4 rounded shadow w-full md:hidden">
-            Show Filters
+        <button class="show-filters-mobile mb-4 tech-button py-2 px-4 rounded shadow w-full md:hidden font-mono">
+            OPEN FILTERS
         </button>
 
         <div class="flex flex-col md:flex-row gap-6">
             <!-- Filter Sidebar -->
-            <div class="filter-sidebar bg-white rounded-lg shadow p-4 md:w-64 mb-6 border-t-4 border-brand-orange">
+            <div class="filter-sidebar glass-card rounded-lg p-4 md:w-64 mb-6">
                 <span class="close-sidebar">&times;</span>
                 
+                <h3 class="text-lg font-semibold text-blue-400 mb-4 font-mono">CONTROL.PANEL</h3>
+                
                 <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Search Articles</label>
+                    <label class="block text-sm font-medium text-gray-400 mb-2 font-mono">SEARCH</label>
                     <div class="relative">
                         <input 
                             type="text" 
                             id="search-input" 
-                            placeholder="Search by title or keyword..." 
-                            class="w-full p-2 pl-8 border border-gray-300 rounded-md focus:ring-brand-orange focus:border-brand-orange"
+                            placeholder="Query neural networks..." 
+                            class="filter-input w-full p-2 pl-8 rounded-md font-mono text-sm"
                         >
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 absolute left-2 top-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -299,17 +364,17 @@
                 </div>
                 
                 <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Sort By Date</label>
+                    <label class="block text-sm font-medium text-gray-400 mb-2 font-mono">TEMPORAL</label>
                     <select 
                         id="sort-select" 
-                        class="w-full p-2 border border-gray-300 rounded-md focus:ring-brand-orange focus:border-brand-orange"
+                        class="filter-input w-full p-2 rounded-md font-mono text-sm"
                     >
-                        <option value="newest">Newest First</option>
-                        <option value="oldest">Oldest First</option>
+                        <option value="newest">Latest First</option>
+                        <option value="oldest">Historical First</option>
                     </select>
                 </div>
                 
-                <h3 class="sidebar-heading">Topic Areas</h3>
+                <h3 class="sidebar-heading">Domain Areas</h3>
                 <div id="therapy-area-buttons">
                     <!-- Topic area buttons will be dynamically added here -->
                     <button class="filter-btn active" data-value="All">All Areas</button>
@@ -324,58 +389,68 @@
 
             <!-- Main Content -->
             <div class="flex-1">
-                <!-- Dashboard Stats -->
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-                    <div class="bg-white rounded-lg shadow p-4 border-t-4 border-brand-orange">
-                        <h2 class="text-lg font-semibold mb-4 text-brand-red">Articles by Source</h2>
+                <!-- Analytics Grid -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+                    <div class="metric-card rounded-xl p-6">
+                        <h3 class="text-lg font-semibold text-blue-400 mb-4 font-mono">SOURCE.DISTRIBUTION</h3>
                         <div class="chart-container">
                             <canvas id="sources-chart"></canvas>
                         </div>
                     </div>
                     
-                    <div class="bg-white rounded-lg shadow p-4 border-t-4 border-brand-orange">
-                        <h2 class="text-lg font-semibold mb-4 text-brand-red">Articles by Topic Area</h2>
+                    <div class="metric-card rounded-xl p-6">
+                        <h3 class="text-lg font-semibold text-blue-400 mb-4 font-mono">DOMAIN.ANALYSIS</h3>
                         <div class="chart-container">
                             <canvas id="areas-chart"></canvas>
                         </div>
                     </div>
                     
-                    <div class="bg-white rounded-lg shadow p-4 border-t-4 border-brand-orange">
-                        <h2 class="text-lg font-semibold mb-4 text-brand-red">Publication Date Trend</h2>
+                    <div class="metric-card rounded-xl p-6">
+                        <h3 class="text-lg font-semibold text-blue-400 mb-4 font-mono">TEMPORAL.FLOW</h3>
                         <div class="chart-container">
                             <canvas id="dates-chart"></canvas>
                         </div>
                     </div>
                 </div>
 
-                <!-- Articles List -->
-                <div class="bg-white rounded-lg shadow p-4 mb-6 border-t-4 border-brand-orange">
-                    <div class="flex justify-between items-center mb-4">
-                        <h2 class="text-xl font-semibold text-brand-red">Articles <span id="article-count">(0)</span></h2>
-                        <div class="text-sm text-gray-500" id="showing-count">
-                            Showing 0 of 0 articles
+                <!-- Data Stream -->
+                <div class="glass-card rounded-xl p-6">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-xl font-semibold text-blue-400 font-mono">DATA.STREAM</h2>
+                        <div class="flex items-center gap-4">
+                            <span class="text-sm text-gray-400 font-mono" id="showing-count">Processing...</span>
+                            <span class="text-lg font-bold text-green-400 font-mono" id="article-count">[0]</span>
                         </div>
                     </div>
                     
-                    <!-- Grid layout for articles - changed to 2 columns -->
-                    <div id="articles-container" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div class="text-center py-6 text-gray-500 col-span-full">
-                            Loading articles...
+                    <div id="articles-container" class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div class="text-center py-8 text-gray-500 col-span-full font-mono">
+                            Initializing data stream...
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        
-        <footer class="text-center text-gray-600 text-sm mt-6 mb-8 p-6 bg-white rounded-lg shadow border-t-4 border-brand-orange">
-            <p>This dashboard is updated monthly with the latest AI research and news.</p>
-            <p class="mt-1">For feedback, please contact <a href="mailto:lucy.ferguson@syneoshealth.com" class="text-brand-red hover:underline">lucy.ferguson@syneoshealth.com</a></p>
+
+        <!-- Footer -->
+        <footer class="mt-12 text-center">
+            <div class="glass-card rounded-xl p-6">
+                <div class="flex items-center justify-center gap-2 mb-2">
+                    <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                    <span class="text-sm text-gray-400 font-mono">SYSTEM.STATUS: OPERATIONAL</span>
+                </div>
+                <p class="text-gray-500 text-sm">Neural network updated monthly • Contact: 
+                    <a href="mailto:lucy.ferguson@syneoshealth.com" class="text-blue-400 hover:text-blue-300 transition-colors">
+                        lucy.ferguson@syneoshealth.com
+                    </a>
+                </p>
+            </div>
         </footer>
     </div>
-    
+
     <!-- Modal for article details -->
     <div id="article-modal" class="modal">
-        <div class="modal-content">
+        <div class="modal-content glass-card">
             <span class="close">&times;</span>
             <div id="modal-content"></div>
         </div>
@@ -397,36 +472,26 @@
             const closeBtn = document.getElementsByClassName('close')[0];
             const therapyAreaButtons = document.getElementById('therapy-area-buttons');
             const termButtons = document.getElementById('term-buttons');
-            const highlightsToggle = document.getElementById('highlights-toggle');
-            const highlightsChevron = document.getElementById('highlights-chevron');
             const showFiltersMobile = document.querySelector('.show-filters-mobile');
             const filterSidebar = document.querySelector('.filter-sidebar');
             const closeSidebar = document.querySelector('.close-sidebar');
             
-            // Toggle highlights section
-            highlightsToggle.addEventListener('click', function() {
-                const highlightsContent = document.getElementById('key-highlights');
-                if (highlightsContent.style.display === 'block') {
-                    highlightsContent.style.display = 'none';
-                    highlightsChevron.classList.remove('rotate-180');
-                } else {
-                    highlightsContent.style.display = 'block';
-                    highlightsChevron.classList.add('rotate-180');
-                }
-            });
-            
             // Mobile filters toggle
-            showFiltersMobile.addEventListener('click', function() {
-                filterSidebar.classList.add('active');
-            });
-            
-            closeSidebar.addEventListener('click', function() {
-                filterSidebar.classList.remove('active');
-            });
+            if (showFiltersMobile && filterSidebar && closeSidebar) {
+                showFiltersMobile.addEventListener('click', function() {
+                    filterSidebar.classList.add('active');
+                });
+                
+                closeSidebar.addEventListener('click', function() {
+                    filterSidebar.classList.remove('active');
+                });
+            }
             
             // Close modal when clicking the × button
-            closeBtn.onclick = function() {
-                modal.style.display = "none";
+            if (closeBtn) {
+                closeBtn.onclick = function() {
+                    modal.style.display = "none";
+                }
             }
             
             // Close modal when clicking outside of it
@@ -455,22 +520,22 @@
             
             // Multicolored chart palettes
             const multiColorPalette = [
-                '#f8a352', // brand orange
-                '#4BC0C0', // teal
-                '#36A2EB', // blue
-                '#9966FF', // purple
-                '#d94236', // brand red
-                '#FF9F40', // light orange
-                '#FFCD56', // yellow
-                '#7ED6DF', // light blue
-                '#E84393', // pink
-                '#6C5CE7', // indigo
-                '#00b894', // mint
-                '#ffeaa7', // cream
-                '#fab1a0', // peach
-                '#a29bfe', // light purple
-                '#fd79a8', // light pink
-                '#fdcb6e'  // light yellow
+                '#3b82f6', // tech blue
+                '#8b5cf6', // tech purple
+                '#10b981', // emerald
+                '#f59e0b', // amber
+                '#ef4444', // red
+                '#06b6d4', // cyan
+                '#84cc16', // lime
+                '#f97316', // orange
+                '#8b5cf6', // violet
+                '#6366f1', // indigo
+                '#14b8a6', // teal
+                '#eab308', // yellow
+                '#f43f5e', // rose
+                '#a855f7', // purple
+                '#0ea5e9', // sky
+                '#22c55e'  // green
             ];
             
             // State variables
@@ -481,16 +546,12 @@
             let selectedTerm = 'All';
             
             // Fetch data - Replace this URL with your JSON file path
-            fetch('/data/latest_dashboard_data.json')
+            fetch('latest_dashboard_data.json')
                 .then(response => response.json())
                 .then(data => {
                     // Update dashboard date
                     const generatedAt = new Date(data.metadata.generatedAt);
-                    dashboardDate.textContent = `Last Updated: ${generatedAt.toLocaleDateString('en-US', { 
-                        year: 'numeric', 
-                        month: 'long', 
-                        day: 'numeric' 
-                    })}`;
+                    dashboardDate.textContent = `LAST_SYNC: ${generatedAt.toISOString().split('T')[0].replace(/-/g, '.')}_${generatedAt.toTimeString().split(' ')[0].replace(/:/g, ':')}`;
                     
                     // Store articles
                     allArticles = data.articles;
@@ -502,8 +563,8 @@
                         renderKeyHighlights();
                     } else {
                         keyHighlightsContainer.innerHTML = `
-                            <div class="text-center py-4 text-gray-500">
-                                No key highlights available for this period.
+                            <div class="text-center py-4 text-gray-500 font-mono">
+                                No neural patterns detected for this period.
                             </div>
                         `;
                     }
@@ -523,13 +584,13 @@
                 .catch(error => {
                     console.error('Error loading data:', error);
                     articlesContainer.innerHTML = `
-                        <div class="text-center py-6 text-red-500 col-span-full">
-                            Error loading data. Please try again later.
+                        <div class="text-center py-6 text-red-500 col-span-full font-mono">
+                            ERROR: Neural network connection failed. Please retry.
                         </div>
                     `;
                     keyHighlightsContainer.innerHTML = `
-                        <div class="text-center py-4 text-red-500">
-                            Error loading key highlights.
+                        <div class="text-center py-4 text-red-500 font-mono">
+                            ERROR: Failed to load system highlights.
                         </div>
                     `;
                 });
@@ -542,22 +603,24 @@
                 
                 // Add summary
                 highlightsHTML += `
-                    <div class="highlights-section">
-                        <h3 class="text-lg font-medium text-brand-dark-red mb-2">Monthly Summary</h3>
-                        <p class="text-gray-700">${keyHighlights.summary}</p>
+                    <div class="mb-6">
+                        <h3 class="text-lg font-medium text-blue-400 mb-3 font-mono">NETWORK.SUMMARY</h3>
+                        <p class="text-gray-300 leading-relaxed">${keyHighlights.summary}</p>
                     </div>
                 `;
                 
                 // Add key trends if available
                 if (keyHighlights.trends && keyHighlights.trends.length > 0) {
                     highlightsHTML += `
-                        <div class="highlights-section">
-                            <h3 class="text-lg font-medium text-brand-dark-red mb-2">Key Trends</h3>
-                            <ul class="list-disc pl-5">
+                        <div class="mb-6">
+                            <h3 class="text-lg font-medium text-blue-400 mb-3 font-mono">TREND.ANALYSIS</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                                 ${keyHighlights.trends.map(trend => 
-                                    `<li class="text-gray-700 mb-1">${trend.startsWith('-') ? trend.substring(1).trim() : trend}</li>`
+                                    `<div class="p-3 rounded-lg bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-blue-500/20">
+                                        <span class="text-gray-300 text-sm">${trend.startsWith('-') ? trend.substring(1).trim() : trend}</span>
+                                    </div>`
                                 ).join('')}
-                            </ul>
+                            </div>
                         </div>
                     `;
                 }
@@ -565,13 +628,15 @@
                 // Add emerging technologies if available
                 if (keyHighlights.technologies && keyHighlights.technologies.length > 0) {
                     highlightsHTML += `
-                        <div class="highlights-section">
-                            <h3 class="text-lg font-medium text-brand-dark-red mb-2">Emerging Technologies</h3>
-                            <ul class="list-disc pl-5">
+                        <div class="mb-6">
+                            <h3 class="text-lg font-medium text-blue-400 mb-3 font-mono">EMERGING.TECH</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                                 ${keyHighlights.technologies.map(tech => 
-                                    `<li class="text-gray-700 mb-1">${tech.startsWith('-') ? tech.substring(1).trim() : tech}</li>`
+                                    `<div class="p-3 rounded-lg bg-gradient-to-r from-purple-500/10 to-green-500/10 border border-purple-500/20">
+                                        <span class="text-gray-300 text-sm">${tech.startsWith('-') ? tech.substring(1).trim() : tech}</span>
+                                    </div>`
                                 ).join('')}
-                            </ul>
+                            </div>
                         </div>
                     `;
                 }
@@ -582,16 +647,18 @@
                         Object.values(keyHighlights.therapy_area_distribution).reduce((a, b) => a + b, 0);
                         
                     highlightsHTML += `
-                        <div class="highlights-section">
-                            <h3 class="text-lg font-medium text-brand-dark-red mb-2">Article Distribution</h3>
-                            <p class="text-gray-700 mb-2">Total articles analyzed: <strong>${totalArticles}</strong></p>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-3">
-                                ${Object.entries(keyHighlights.therapy_area_distribution).map(([area, count]) => `
-                                    <div class="flex justify-between items-center bg-gray-50 p-2 rounded">
-                                        <span class="text-gray-700">${area}</span>
-                                        <span class="px-2 py-1 bg-brand-light-orange text-brand-dark-red rounded-full text-xs font-medium">${count} articles</span>
-                                    </div>
-                                `).join('')}
+                        <div class="mb-4">
+                            <h3 class="text-lg font-medium text-blue-400 mb-3 font-mono">DATA.METRICS</h3>
+                            <div class="p-4 rounded-lg bg-gradient-to-r from-green-500/10 to-blue-500/10 border border-green-500/20">
+                                <p class="text-gray-300 mb-3 font-mono">TOTAL_ARTICLES: <span class="text-green-400 font-bold">${totalArticles}</span></p>
+                                <div class="grid grid-cols-2 md:grid-cols-3 gap-2">
+                                    ${Object.entries(keyHighlights.therapy_area_distribution).map(([area, count]) => `
+                                        <div class="flex justify-between items-center bg-slate-700/30 p-2 rounded text-xs">
+                                            <span class="text-gray-400 font-mono">${area}</span>
+                                            <span class="px-2 py-1 bg-blue-500/20 text-blue-400 rounded font-mono">${count}</span>
+                                        </div>
+                                    `).join('')}
+                                </div>
                             </div>
                         </div>
                     `;
@@ -701,7 +768,9 @@
                         applyFilters();
                         
                         // Close mobile sidebar if open
-                        filterSidebar.classList.remove('active');
+                        if (filterSidebar) {
+                            filterSidebar.classList.remove('active');
+                        }
                     }
                 });
                 
@@ -723,7 +792,9 @@
                         applyFilters();
                         
                         // Close mobile sidebar if open
-                        filterSidebar.classList.remove('active');
+                        if (filterSidebar) {
+                            filterSidebar.classList.remove('active');
+                        }
                     }
                 });
             }
@@ -762,8 +833,8 @@
                 });
                 
                 // Update article count
-                articleCount.textContent = `(${filteredArticles.length})`;
-                showingCount.textContent = `Showing ${filteredArticles.length} of ${allArticles.length} articles`;
+                articleCount.textContent = `[${filteredArticles.length}]`;
+                showingCount.textContent = `DISPLAYING ${filteredArticles.length} OF ${allArticles.length} RECORDS`;
                 
                 // Render articles
                 renderArticles();
@@ -776,8 +847,8 @@
             function renderArticles() {
                 if (filteredArticles.length === 0) {
                     articlesContainer.innerHTML = `
-                        <div class="text-center py-6 text-gray-500 col-span-full">
-                            No articles found matching your filters. Try adjusting your search criteria.
+                        <div class="text-center py-6 text-gray-500 col-span-full font-mono">
+                            NO RECORDS MATCH CURRENT FILTERS. ADJUST PARAMETERS.
                         </div>
                     `;
                     return;
@@ -787,37 +858,56 @@
                 
                 filteredArticles.forEach((article, index) => {
                     const articleElement = document.createElement('div');
-                    articleElement.className = 'border border-gray-200 rounded-lg p-5 hover:shadow-md transition-shadow article bg-white';
+                    articleElement.className = 'article-card rounded-lg p-5 transition-all duration-300';
                     articleElement.dataset.articleIndex = index;
                     
+                    // Format takeaways as list items
+                    const takeawaysList = article.takeaways.map(takeaway => 
+                        `<li class="mb-1 text-sm text-gray-300">${takeaway.startsWith('-') ? takeaway.substring(1).trim() : takeaway}</li>`
+                    ).join('');
+                    
                     articleElement.innerHTML = `
-                        <h3 class="text-lg font-medium text-brand-red mb-2 line-clamp-2">
-                            ${article.title}
-                        </h3>
-                        <div class="flex flex-wrap gap-1 mb-3">
-                            <span class="px-2 py-0.5 text-xs rounded-full bg-brand-light-orange text-brand-dark-red">
-                                ${article.therapyArea}
-                            </span>
-                            <span class="px-2 py-0.5 text-xs rounded-full bg-green-100 text-brand-dark-red">
-                                ${article.term}
-                            </span>
+                        <div class="mb-3">
+                            <h3 class="text-lg font-medium text-white mb-2 line-clamp-2 cursor-pointer hover:text-blue-400 transition-colors view-details">
+                                ${article.title}
+                            </h3>
+                            <div class="flex flex-wrap gap-2 mb-3">
+                                <span class="px-2 py-1 text-xs rounded bg-blue-500/20 text-blue-400 font-mono">
+                                    ${article.therapyArea}
+                                </span>
+                                <span class="px-2 py-1 text-xs rounded bg-purple-500/20 text-purple-400 font-mono">
+                                    ${article.term}
+                                </span>
+                            </div>
+                            <div class="text-sm text-gray-400 mb-3 font-mono">${article.date} • ${article.journal}</div>
                         </div>
-                        <div class="text-sm text-gray-500 mb-3">${article.date} · ${article.journal}</div>
-                        <p class="text-gray-600 text-sm summary-text mb-4">${article.summary}</p>
-                        <div class="mt-auto pt-2 flex justify-between items-center">
-                            <button class="bg-brand-orange hover:bg-brand-red text-white py-1 px-3 rounded-md text-sm transition-colors view-details">View Details</button>
-                            <a href="${article.link}" target="_blank" rel="noopener noreferrer" class="text-brand-red hover:underline text-sm">Read Original</a>
+                        
+                        <div class="mb-4">
+                            <p class="text-gray-300 text-sm mb-3 leading-relaxed">${article.summary}</p>
+                            <div class="text-sm">
+                                <span class="text-blue-400 font-medium font-mono">KEY_INSIGHTS:</span>
+                                <ul class="list-disc pl-5 mt-2">
+                                    ${takeawaysList}
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="flex justify-between items-center pt-3 border-t border-gray-600">
+                            <button class="tech-button py-1 px-3 rounded-md text-sm transition-colors view-details font-mono">
+                                VIEW_DETAILS
+                            </button>
+                            <a href="${article.link}" target="_blank" rel="noopener noreferrer" class="text-blue-400 hover:text-blue-300 text-sm font-mono transition-colors">
+                                READ_ORIGINAL →
+                            </a>
                         </div>
                     `;
                     
-                    // Add event listener to view details button
-                    articleElement.querySelector('.view-details').addEventListener('click', function() {
-                        showArticleDetails(article);
-                    });
-                    
-                    // Add event listener to article title for viewing details
-                    articleElement.querySelector('h3').addEventListener('click', function() {
-                        showArticleDetails(article);
+                    // Add event listeners to view details buttons and title
+                    const viewDetailsElements = articleElement.querySelectorAll('.view-details');
+                    viewDetailsElements.forEach(element => {
+                        element.addEventListener('click', function() {
+                            showArticleDetails(article);
+                        });
                     });
                     
                     articlesContainer.appendChild(articleElement);
@@ -832,42 +922,46 @@
                 ).join('');
                 
                 modalContent.innerHTML = `
-                    <h2 class="text-xl font-bold text-brand-dark-red mb-4">${article.title}</h2>
+                    <h2 class="text-xl font-bold text-blue-400 mb-4 font-mono">NEURAL_RECORD_${article.id.toString().padStart(3, '0')}</h2>
                     
-                    <div class="flex flex-wrap gap-2 mb-3">
-                        <span class="px-2 py-1 text-xs rounded-full bg-brand-light-orange text-brand-dark-red">
+                    <div class="mb-4">
+                        <h3 class="text-lg font-semibold text-white mb-2">${article.title}</h3>
+                    </div>
+                    
+                    <div class="flex flex-wrap gap-2 mb-4">
+                        <span class="px-3 py-1 text-sm rounded bg-blue-500/20 text-blue-400 font-mono">
                             ${article.therapyArea}
                         </span>
-                        <span class="px-2 py-1 text-xs rounded-full bg-green-100 text-brand-dark-red">
+                        <span class="px-3 py-1 text-sm rounded bg-purple-500/20 text-purple-400 font-mono">
                             ${article.term}
                         </span>
-                        <span class="px-2 py-1 text-xs rounded-full bg-blue-100 text-brand-dark-red">
+                        <span class="px-3 py-1 text-sm rounded bg-green-500/20 text-green-400 font-mono">
                             ${article.journal}
                         </span>
                     </div>
                     
-                    <div class="mb-4">
-                        <p><strong>Date:</strong> ${article.date}</p>
-                        <p><strong>Source:</strong> ${article.journal}</p>
-                        ${article.authors ? `<p><strong>Authors:</strong> ${article.authors}</p>` : ''}
+                    <div class="mb-4 p-4 bg-slate-700/30 rounded-lg">
+                        <p class="text-gray-400 text-sm font-mono mb-1">TIMESTAMP: ${article.date}</p>
+                        <p class="text-gray-400 text-sm font-mono mb-1">SOURCE: ${article.journal}</p>
+                        ${article.authors ? `<p class="text-gray-400 text-sm font-mono">AUTHORS: ${article.authors}</p>` : ''}
                     </div>
                     
                     <div class="mb-4">
-                        <h3 class="font-semibold text-lg mb-2">Summary</h3>
-                        <p>${article.summary}</p>
+                        <h3 class="font-semibold text-lg mb-2 text-blue-400 font-mono">SUMMARY.DATA</h3>
+                        <p class="text-gray-300 leading-relaxed">${article.summary}</p>
                     </div>
                     
-                    <div class="mb-4">
-                        <h3 class="font-semibold text-lg mb-2">Key Takeaways</h3>
-                        <ul class="list-disc pl-5">
+                    <div class="mb-6">
+                        <h3 class="font-semibold text-lg mb-2 text-blue-400 font-mono">EXTRACTED.INSIGHTS</h3>
+                        <ul class="list-disc pl-5 text-gray-300">
                             ${takeawaysList}
                         </ul>
                     </div>
                     
-                    <div class="mt-6 text-center">
+                    <div class="text-center">
                         <a href="${article.link}" target="_blank" rel="noopener noreferrer" 
-                           class="inline-block px-6 py-2 bg-brand-orange text-white rounded hover:bg-brand-red transition-colors">
-                            Read Original Article
+                           class="tech-button px-6 py-2 rounded font-mono transition-colors">
+                            ACCESS_ORIGINAL_SOURCE →
                         </a>
                     </div>
                 `;
@@ -911,21 +1005,49 @@
                     data: {
                         labels: sourceData.labels,
                         datasets: [{
-                            label: 'Number of Articles',
+                            label: 'Articles',
                             data: sourceData.data,
-                            backgroundColor: backgroundColors,
-                            borderColor: backgroundColors.map(color => color), // Use same colors for borders
+                            backgroundColor: backgroundColors.map(color => color + '40'),
+                            borderColor: backgroundColors,
                             borderWidth: 1
                         }]
                     },
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                labels: {
+                                    color: '#e2e8f0',
+                                    font: {
+                                        family: 'JetBrains Mono'
+                                    }
+                                }
+                            }
+                        },
                         scales: {
                             y: {
                                 beginAtZero: true,
                                 ticks: {
-                                    precision: 0
+                                    precision: 0,
+                                    color: '#94a3b8',
+                                    font: {
+                                        family: 'JetBrains Mono'
+                                    }
+                                },
+                                grid: {
+                                    color: 'rgba(59, 130, 246, 0.1)'
+                                }
+                            },
+                            x: {
+                                ticks: {
+                                    color: '#94a3b8',
+                                    font: {
+                                        family: 'JetBrains Mono'
+                                    }
+                                },
+                                grid: {
+                                    color: 'rgba(59, 130, 246, 0.1)'
                                 }
                             }
                         }
@@ -984,14 +1106,24 @@
                         labels: areaData.labels,
                         datasets: [{
                             data: areaData.data,
-                            backgroundColor: backgroundColors,
-                            borderColor: backgroundColors.map(color => color),
-                            borderWidth: 1
+                            backgroundColor: backgroundColors.map(color => color + '60'),
+                            borderColor: backgroundColors,
+                            borderWidth: 2
                         }]
                     },
                     options: {
                         responsive: true,
-                        maintainAspectRatio: false
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                labels: {
+                                    color: '#e2e8f0',
+                                    font: {
+                                        family: 'JetBrains Mono'
+                                    }
+                                }
+                            }
+                        }
                     }
                 });
             }
@@ -1036,26 +1168,55 @@
                     data: {
                         labels: dateData.labels,
                         datasets: [{
-                            label: 'Articles Published',
+                            label: 'Publications',
                             data: dateData.data,
-                            backgroundColor: 'rgba(248, 163, 82, 0.2)',
-                            borderColor: '#d94236',
+                            backgroundColor: 'rgba(59, 130, 246, 0.2)',
+                            borderColor: '#3b82f6',
                             borderWidth: 2,
-                            tension: 0.1,
-                            pointBackgroundColor: '#d94236',
-                            pointBorderColor: '#fff',
-                            pointRadius: 5,
-                            pointHoverRadius: 7
+                            tension: 0.4,
+                            pointBackgroundColor: '#3b82f6',
+                            pointBorderColor: '#ffffff',
+                            pointRadius: 4,
+                            pointHoverRadius: 6,
+                            fill: true
                         }]
                     },
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                labels: {
+                                    color: '#e2e8f0',
+                                    font: {
+                                        family: 'JetBrains Mono'
+                                    }
+                                }
+                            }
+                        },
                         scales: {
                             y: {
                                 beginAtZero: true,
                                 ticks: {
-                                    precision: 0
+                                    precision: 0,
+                                    color: '#94a3b8',
+                                    font: {
+                                        family: 'JetBrains Mono'
+                                    }
+                                },
+                                grid: {
+                                    color: 'rgba(59, 130, 246, 0.1)'
+                                }
+                            },
+                            x: {
+                                ticks: {
+                                    color: '#94a3b8',
+                                    font: {
+                                        family: 'JetBrains Mono'
+                                    }
+                                },
+                                grid: {
+                                    color: 'rgba(59, 130, 246, 0.1)'
                                 }
                             }
                         }
@@ -1092,5 +1253,45 @@
             }
         });
     </script>
+    
+    <style>
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 100;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.8);
+        }
+        
+        .modal-content {
+            margin: 5% auto;
+            padding: 20px;
+            width: 80%;
+            max-width: 800px;
+            max-height: 80vh;
+            overflow-y: auto;
+            border-radius: 12px;
+        }
+        
+        .close {
+            color: #94a3b8;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        
+        .close:hover,
+        .close:focus {
+            color: #3b82f6;
+            text-decoration: none;
+        }
+    </style>
 </body>
 </html>
