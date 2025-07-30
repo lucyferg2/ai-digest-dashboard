@@ -3,191 +3,219 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Digest Interactive Dashboard</title>
+    <title>Lucy's AI Digest</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link rel="stylesheet" href="assets/css/styles.css">
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        'tech-blue': '#3b82f6',
-                        'tech-purple': '#8b5cf6',
-                        'tech-indigo': '#6366f1',
-                        'dark-bg': '#0f172a',
-                        'card-bg': '#1e293b',
-                        'accent-blue': '#2563eb',
-                        'accent-purple': '#7c3aed',
-                        'neutral-800': '#262626',
-                        'neutral-850': '#1f1f1f',
-                        'neutral-900': '#171717',
-                        'neutral-950': '#0a0a0a'
-                    },
-                    fontFamily: {
-                        'mono': ['JetBrains Mono', 'Fira Code', 'Monaco', 'Consolas', 'monospace'],
-                        'sans': ['Inter', 'system-ui', 'sans-serif']
-                    },
-                    animation: {
-                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-                        'glow': 'glow 2s ease-in-out infinite alternate',
-                        'scan': 'scan 2s linear infinite'
-                    },
-                    keyframes: {
-                        glow: {
-                            '0%': { boxShadow: '0 0 5px rgba(59, 130, 246, 0.5)' },
-                            '100%': { boxShadow: '0 0 20px rgba(59, 130, 246, 0.8)' }
-                        },
-                        scan: {
-                            '0%': { transform: 'translateY(-100%)' },
-                            '100%': { transform: 'translateY(100vh)' }
-                        }
+                        'brand-orange': '#f8a352',
+                        'brand-red': '#d94236',
+                        'brand-dark-red': '#b5332e',
+                        'brand-light-orange': '#ffc680',
                     }
                 }
             }
         }
     </script>
     <style>
-        body {
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-            font-family: 'Inter', system-ui, sans-serif;
+        /* Company branding styles */
+        .brand-gradient {
+            background: linear-gradient(135deg, #f8a352 0%, #d94236 100%);
         }
         
-        .glass-card {
-            background: rgba(30, 41, 59, 0.8);
-            backdrop-filter: blur(16px);
-            border: 1px solid rgba(59, 130, 246, 0.2);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        .brand-gradient-text {
+            background: linear-gradient(135deg, #f8a352 0%, #d94236 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            color: transparent;
         }
         
-        .neon-border {
-            border: 1px solid rgba(59, 130, 246, 0.5);
-            box-shadow: 
-                0 0 5px rgba(59, 130, 246, 0.3),
-                inset 0 0 5px rgba(59, 130, 246, 0.1);
+        .article {
+            transition: all 0.2s ease;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
         }
         
-        .tech-grid {
-            background-image: 
-                linear-gradient(rgba(59, 130, 246, 0.1) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(59, 130, 246, 0.1) 1px, transparent 1px);
-            background-size: 20px 20px;
+        .article:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
         }
         
-        .article-card {
-            background: rgba(30, 41, 59, 0.6);
-            border: 1px solid rgba(59, 130, 246, 0.2);
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
+        .article h3 {
+            transition: color 0.2s;
+            cursor: pointer;
         }
         
-        .article-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, #3b82f6, transparent);
-            transition: left 0.5s ease;
+        .article:hover h3 {
+            color: #d94236;
         }
         
-        .article-card:hover::before {
-            left: 100%;
-        }
-        
-        .article-card:hover {
-            transform: translateY(-2px);
-            border-color: rgba(59, 130, 246, 0.6);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
-        }
-        
-        .filter-input {
-            background: rgba(30, 41, 59, 0.8);
-            border: 1px solid rgba(59, 130, 246, 0.3);
-            color: #e2e8f0;
-        }
-        
-        .filter-input:focus {
-            border-color: #3b82f6;
-            box-shadow: 0 0 10px rgba(59, 130, 246, 0.3);
-            outline: none;
-        }
-        
+        /* Chart containers with fixed height */
         .chart-container {
-            height: 280px;
+            height: 250px;
             position: relative;
         }
         
-        .scan-line {
+        /* Improve readability */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+        
+        /* Header wave shape */
+        .wave-shape {
             position: absolute;
-            width: 100%;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, #3b82f6, transparent);
-            animation: scan 3s linear infinite;
             top: 0;
-            opacity: 0.7;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: white;
+            border-top: 4px solid #f8a352;
+            z-index: -1;
         }
         
-        .highlight-card {
-            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
-            border: 1px solid rgba(59, 130, 246, 0.3);
+        /* Custom branded scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
         }
         
-        .pulse-dot {
-            width: 8px;
-            height: 8px;
-            background: #10b981;
-            border-radius: 50%;
-            animation: pulse 2s infinite;
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
         }
         
-        .tech-button {
-            background: linear-gradient(135deg, rgba(59, 130, 246, 0.2) 0%, rgba(139, 92, 246, 0.2) 100%);
-            border: 1px solid rgba(59, 130, 246, 0.5);
-            color: #3b82f6;
-            transition: all 0.3s ease;
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(to bottom, #f8a352, #d94236);
+            border-radius: 5px;
         }
         
-        .tech-button:hover {
-            background: linear-gradient(135deg, rgba(59, 130, 246, 0.4) 0%, rgba(139, 92, 246, 0.4) 100%);
-            box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(to bottom, #d94236, #b5332e);
         }
         
-        .status-indicator {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 4px 12px;
-            background: rgba(16, 185, 129, 0.1);
-            border: 1px solid rgba(16, 185, 129, 0.3);
-            border-radius: 6px;
-            font-size: 0.75rem;
-            color: #10b981;
-            font-family: 'JetBrains Mono', monospace;
-        }
-        
-        .metric-card {
-            background: linear-gradient(135deg, rgba(30, 41, 59, 0.9) 0%, rgba(15, 23, 42, 0.9) 100%);
-            border: 1px solid rgba(59, 130, 246, 0.3);
-            position: relative;
+        /* Truncate text with ellipsis */
+        .summary-text {
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
             overflow: hidden;
         }
         
-        .metric-card::after {
-            content: '';
-            position: absolute;
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 100;
+            left: 0;
             top: 0;
-            right: 0;
-            width: 60px;
-            height: 60px;
-            background: radial-gradient(circle, rgba(59, 130, 246, 0.1) 0%, transparent 70%);
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
         }
         
-        /* Mobile sidebar styles */
-        .filter-sidebar {
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            border-radius: 8px;
+            width: 80%;
+            max-width: 800px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        
+        /* Key Highlights section */
+        .highlights-card {
+            background-color: #fff;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            overflow: hidden;
+            border-top: 4px solid #f8a352;
+        }
+        
+        .highlights-header {
+            padding: 1rem;
+            border-bottom: 1px solid #e5e7eb;
+            cursor: pointer;
+        }
+        
+        .highlights-content {
+            padding: 1.5rem;
+            display: none; /* Initially hidden */
+        }
+        
+        .highlights-section {
+            margin-bottom: 1.5rem;
+        }
+        
+        .highlights-section:last-child {
+            margin-bottom: 0;
+        }
+        
+        /* Filter buttons */
+        .filter-btn {
             display: block;
+            width: 100%;
+            text-align: left;
+            padding: 0.5rem 1rem;
+            border-radius: 0.25rem;
+            transition: all 0.2s;
+            margin-bottom: 0.25rem;
+            position: relative;
+        }
+        
+        .filter-btn:hover {
+            background-color: #f3f4f6;
+        }
+        
+        .filter-btn.active {
+            background-color: #f8a352;
+            color: white;
+        }
+        
+        .filter-btn.no-articles {
+            opacity: 0.6;
+            font-style: italic;
+        }
+        
+        .sidebar-heading {
+            font-weight: 600;
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: #4b5563;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        /* Article age indicators */
+        
+        .article-this-week {
+            border-left: 4px solid #10b981;
+        }
+        
+        .article-older {
+            border-left: 4px solid #6b7280;
+            opacity: 0.8;
         }
         
         @media (max-width: 768px) {
@@ -199,7 +227,7 @@
                 width: 100%;
                 height: 100%;
                 z-index: 50;
-                background-color: rgba(15, 23, 42, 0.95);
+                background-color: white;
                 padding: 1rem;
                 overflow-y: auto;
             }
@@ -215,7 +243,6 @@
                 right: 1rem;
                 font-size: 1.5rem;
                 cursor: pointer;
-                color: #3b82f6;
             }
             
             .show-filters-mobile {
@@ -232,131 +259,56 @@
                 display: none;
             }
         }
-        
-        /* Custom scrollbar */
-        ::-webkit-scrollbar {
-            width: 6px;
-        }
-        
-        ::-webkit-scrollbar-track {
-            background: rgba(30, 41, 59, 0.5);
-        }
-        
-        ::-webkit-scrollbar-thumb {
-            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-            border-radius: 3px;
-        }
-        
-        ::-webkit-scrollbar-thumb:hover {
-            background: linear-gradient(135deg, #2563eb, #7c3aed);
-        }
-        
-        /* Filter button styles */
-        .filter-btn {
-            display: block;
-            width: 100%;
-            text-align: left;
-            padding: 0.5rem 1rem;
-            border-radius: 0.25rem;
-            transition: all 0.2s;
-            margin-bottom: 0.25rem;
-            background: transparent;
-            border: 1px solid rgba(59, 130, 246, 0.2);
-            color: #e2e8f0;
-        }
-        
-        .filter-btn:hover {
-            background-color: rgba(59, 130, 246, 0.1);
-            border-color: rgba(59, 130, 246, 0.4);
-        }
-        
-        .filter-btn.active {
-            background-color: rgba(59, 130, 246, 0.3);
-            border-color: rgba(59, 130, 246, 0.6);
-            color: #3b82f6;
-        }
-        
-        .sidebar-heading {
-            font-weight: 600;
-            margin-top: 1.5rem;
-            margin-bottom: 0.5rem;
-            color: #9ca3af;
-            font-size: 0.875rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            font-family: 'JetBrains Mono', monospace;
-        }
     </style>
 </head>
-<body class="min-h-screen text-gray-100 tech-grid">
-    <!-- Header -->
-    <header class="relative overflow-hidden">
-        <div class="glass-card border-b-0 rounded-none">
-            <div class="scan-line"></div>
-            <div class="container mx-auto px-6 py-8 relative z-10">
-                <div class="flex flex-col items-center space-y-4">
-                    <!-- Logo placeholder with tech styling -->
-                    <div class="w-16 h-16 bg-gradient-to-br from-tech-blue to-tech-purple rounded-lg flex items-center justify-center shadow-lg">
-                        <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
-                        </svg>
-                    </div>
-                    
-                    <div class="text-center">
-                        <h1 class="text-4xl font-bold bg-gradient-to-r from-blue-400 to-white bg-clip-text text-transparent font-mono">
-                            AI DIGEST
-                        </h1>
-                        <div class="flex items-center justify-center gap-2 mt-2">
-                            <div class="pulse-dot"></div>
-                            <span class="text-lg text-gray-300 font-light">Interactive Intelligence Dashboard</span>
-                        </div>
-                        <div class="status-indicator mt-3">
-                            <div class="pulse-dot"></div>
-                            <span id="dashboard-date">Loading system data...</span>
-                        </div>
-                    </div>
-                </div>
+<body class="bg-gray-50 min-h-screen">
+    <header class="relative overflow-hidden bg-white shadow mb-6 py-6">
+        <div class="wave-shape"></div>
+        <div class="container mx-auto relative z-10">
+            <div class="flex justify-center items-center mb-2">
+                <img src="logo.png" alt="Company Logo" class="h-16">
             </div>
+            <h1 class="text-3xl font-bold text-center text-brand-dark-red mb-2">Weekly AI Digest</h1>
+            <h2 class="text-xl text-center text-brand-red mb-2">Weekly updates for relevant AI news</h2>
+            <p class="text-center text-brand-orange" id="dashboard-date">Loading...</p>
+            <p class="text-center text-sm text-gray-600 mt-1" id="article-summary">Loading...</p>
         </div>
     </header>
 
-    <div class="container mx-auto px-6 py-8">
-        <!-- Key Highlights Section -->
-        <div class="highlight-card rounded-xl p-6 mb-8">
-            <div class="flex items-center justify-between mb-4">
-                <h2 class="text-xl font-semibold text-blue-400 font-mono">SYSTEM.HIGHLIGHTS</h2>
-                <div class="flex items-center gap-2 text-green-400">
-                    <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                    <span class="text-sm font-mono">ACTIVE</span>
-                </div>
+    <div class="container mx-auto px-4">
+        <!-- Collapsible Key Highlights Section -->
+        <div class="highlights-card mb-6">
+            <div class="highlights-header flex justify-between items-center" id="highlights-toggle">
+                <h2 class="text-xl font-semibold text-brand-red">Key Highlights This Week</h2>
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 transform transition-transform duration-200" id="highlights-chevron" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                </svg>
             </div>
-            <div id="key-highlights" class="space-y-4 text-gray-300">
-                <div class="text-center py-6 text-gray-500 font-mono">
-                    Initializing neural network analysis...
+            <div class="highlights-content" id="key-highlights">
+                <div class="text-center py-6 text-gray-500">
+                    Loading key highlights...
                 </div>
             </div>
         </div>
 
         <!-- Mobile filter toggle button -->
-        <button class="show-filters-mobile mb-4 tech-button py-2 px-4 rounded shadow w-full md:hidden font-mono">
-            OPEN FILTERS
+        <button class="show-filters-mobile mb-4 bg-brand-orange text-white py-2 px-4 rounded shadow w-full md:hidden">
+            Show Filters
         </button>
 
         <div class="flex flex-col md:flex-row gap-6">
             <!-- Filter Sidebar -->
-            <div class="filter-sidebar glass-card rounded-lg p-4 md:w-64 mb-6">
+            <div class="filter-sidebar bg-white rounded-lg shadow p-4 md:w-64 mb-6 border-t-4 border-brand-orange">
                 <span class="close-sidebar">&times;</span>
                 
-                <h3 class="text-lg font-semibold text-blue-400 mb-4 font-mono">CONTROL.PANEL</h3>
-                
                 <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-400 mb-2 font-mono">SEARCH</label>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Search Articles</label>
                     <div class="relative">
                         <input 
                             type="text" 
                             id="search-input" 
-                            placeholder="Query neural networks..." 
-                            class="filter-input w-full p-2 pl-8 rounded-md font-mono text-sm"
+                            placeholder="Search by title or keyword..." 
+                            class="w-full p-2 pl-8 border border-gray-300 rounded-md focus:ring-brand-orange focus:border-brand-orange"
                         >
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 absolute left-2 top-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -365,17 +317,30 @@
                 </div>
                 
                 <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-400 mb-2 font-mono">TEMPORAL</label>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Sort By Date</label>
                     <select 
                         id="sort-select" 
-                        class="filter-input w-full p-2 rounded-md font-mono text-sm"
+                        class="w-full p-2 border border-gray-300 rounded-md focus:ring-brand-orange focus:border-brand-orange"
                     >
-                        <option value="newest">Latest First</option>
-                        <option value="oldest">Historical First</option>
+                        <option value="newest">Newest First</option>
+                        <option value="oldest">Oldest First</option>
+                    </select>
+                </div>
+
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Filter By Date Range</label>
+                    <select 
+                        id="date-range-select" 
+                        class="w-full p-2 border border-gray-300 rounded-md focus:ring-brand-orange focus:border-brand-orange"
+                    >
+                        <option value="all">All Time (1 Month)</option>
+                        <option value="this-week">This Week</option>
+                        <option value="last-week">Last Week</option>
+                        <option value="last-two-weeks">Last 2 Weeks</option>
                     </select>
                 </div>
                 
-                <h3 class="sidebar-heading">Domain Areas</h3>
+                <h3 class="sidebar-heading">Clients</h3>
                 <div id="therapy-area-buttons">
                     <!-- Topic area buttons will be dynamically added here -->
                     <button class="filter-btn active" data-value="All">All Areas</button>
@@ -390,68 +355,58 @@
 
             <!-- Main Content -->
             <div class="flex-1">
-                <!-- Analytics Grid -->
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-                    <div class="metric-card rounded-xl p-6">
-                        <h3 class="text-lg font-semibold text-blue-400 mb-4 font-mono">SOURCE.DISTRIBUTION</h3>
+                <!-- Dashboard Stats -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                    <div class="bg-white rounded-lg shadow p-4 border-t-4 border-brand-orange">
+                        <h2 class="text-lg font-semibold mb-4 text-brand-red">Articles by Source</h2>
                         <div class="chart-container">
                             <canvas id="sources-chart"></canvas>
                         </div>
                     </div>
                     
-                    <div class="metric-card rounded-xl p-6">
-                        <h3 class="text-lg font-semibold text-blue-400 mb-4 font-mono">DOMAIN.ANALYSIS</h3>
+                    <div class="bg-white rounded-lg shadow p-4 border-t-4 border-brand-orange">
+                        <h2 class="text-lg font-semibold mb-4 text-brand-red">Articles by Client</h2>
                         <div class="chart-container">
                             <canvas id="areas-chart"></canvas>
                         </div>
                     </div>
                     
-                    <div class="metric-card rounded-xl p-6">
-                        <h3 class="text-lg font-semibold text-blue-400 mb-4 font-mono">TEMPORAL.FLOW</h3>
+                    <div class="bg-white rounded-lg shadow p-4 border-t-4 border-brand-orange">
+                        <h2 class="text-lg font-semibold mb-4 text-brand-red">Publication Date Trend</h2>
                         <div class="chart-container">
                             <canvas id="dates-chart"></canvas>
                         </div>
                     </div>
                 </div>
 
-                <!-- Data Stream -->
-                <div class="glass-card rounded-xl p-6">
-                    <div class="flex justify-between items-center mb-6">
-                        <h2 class="text-xl font-semibold text-blue-400 font-mono">DATA.STREAM</h2>
-                        <div class="flex items-center gap-4">
-                            <span class="text-sm text-gray-400 font-mono" id="showing-count">Processing...</span>
-                            <span class="text-lg font-bold text-green-400 font-mono" id="article-count">[0]</span>
+                <!-- Articles List -->
+                <div class="bg-white rounded-lg shadow p-4 mb-6 border-t-4 border-brand-orange">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-xl font-semibold text-brand-red">Articles <span id="article-count">(0)</span></h2>
+                        <div class="text-sm text-gray-500" id="showing-count">
+                            Showing 0 of 0 articles
                         </div>
                     </div>
                     
-                    <div id="articles-container" class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                        <div class="text-center py-8 text-gray-500 col-span-full font-mono">
-                            Initializing data stream...
+                    <!-- Grid layout for articles - changed to 2 columns -->
+                    <div id="articles-container" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="text-center py-6 text-gray-500 col-span-full">
+                            Loading articles...
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-
-        <!-- Footer -->
-        <footer class="mt-12 text-center">
-            <div class="glass-card rounded-xl p-6">
-                <div class="flex items-center justify-center gap-2 mb-2">
-                    <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                    <span class="text-sm text-gray-400 font-mono">SYSTEM.STATUS: OPERATIONAL</span>
-                </div>
-                <p class="text-gray-500 text-sm">Neural network updated monthly • Contact: 
-                    <a href="mailto:lucy.ferguson@syneoshealth.com" class="text-blue-400 hover:text-blue-300 transition-colors">
-                        lucy.ferguson@syneoshealth.com
-                    </a>
-                </p>
-            </div>
+        
+        <footer class="text-center text-gray-600 text-sm mt-6 mb-8 p-6 bg-white rounded-lg shadow border-t-4 border-brand-orange">
+            <p>This dashboard is updated weekly with the latest Pharma news.</p>
+            <p class="mt-1">For feedback, please contact <a href="mailto:lucy.ferguson@syneoshealth.com" class="text-brand-red hover:underline">lucy.ferguson@syneoshealth.com</a></p>
         </footer>
     </div>
-
+    
     <!-- Modal for article details -->
     <div id="article-modal" class="modal">
-        <div class="modal-content glass-card">
+        <div class="modal-content">
             <span class="close">&times;</span>
             <div id="modal-content"></div>
         </div>
@@ -462,8 +417,10 @@
         document.addEventListener('DOMContentLoaded', function() {
             // DOM elements
             const dashboardDate = document.getElementById('dashboard-date');
+            const articleSummary = document.getElementById('article-summary');
             const searchInput = document.getElementById('search-input');
             const sortSelect = document.getElementById('sort-select');
+            const dateRangeSelect = document.getElementById('date-range-select');
             const articlesContainer = document.getElementById('articles-container');
             const articleCount = document.getElementById('article-count');
             const showingCount = document.getElementById('showing-count');
@@ -473,26 +430,36 @@
             const closeBtn = document.getElementsByClassName('close')[0];
             const therapyAreaButtons = document.getElementById('therapy-area-buttons');
             const termButtons = document.getElementById('term-buttons');
+            const highlightsToggle = document.getElementById('highlights-toggle');
+            const highlightsChevron = document.getElementById('highlights-chevron');
             const showFiltersMobile = document.querySelector('.show-filters-mobile');
             const filterSidebar = document.querySelector('.filter-sidebar');
             const closeSidebar = document.querySelector('.close-sidebar');
             
+            // Toggle highlights section
+            highlightsToggle.addEventListener('click', function() {
+                const highlightsContent = document.getElementById('key-highlights');
+                if (highlightsContent.style.display === 'block') {
+                    highlightsContent.style.display = 'none';
+                    highlightsChevron.classList.remove('rotate-180');
+                } else {
+                    highlightsContent.style.display = 'block';
+                    highlightsChevron.classList.add('rotate-180');
+                }
+            });
+            
             // Mobile filters toggle
-            if (showFiltersMobile && filterSidebar && closeSidebar) {
-                showFiltersMobile.addEventListener('click', function() {
-                    filterSidebar.classList.add('active');
-                });
-                
-                closeSidebar.addEventListener('click', function() {
-                    filterSidebar.classList.remove('active');
-                });
-            }
+            showFiltersMobile.addEventListener('click', function() {
+                filterSidebar.classList.add('active');
+            });
+            
+            closeSidebar.addEventListener('click', function() {
+                filterSidebar.classList.remove('active');
+            });
             
             // Close modal when clicking the × button
-            if (closeBtn) {
-                closeBtn.onclick = function() {
-                    modal.style.display = "none";
-                }
+            closeBtn.onclick = function() {
+                modal.style.display = "none";
             }
             
             // Close modal when clicking outside of it
@@ -521,22 +488,22 @@
             
             // Multicolored chart palettes
             const multiColorPalette = [
-                '#3b82f6', // tech blue
-                '#8b5cf6', // tech purple
-                '#10b981', // emerald
-                '#f59e0b', // amber
-                '#ef4444', // red
-                '#06b6d4', // cyan
-                '#84cc16', // lime
-                '#f97316', // orange
-                '#8b5cf6', // violet
-                '#6366f1', // indigo
-                '#14b8a6', // teal
-                '#eab308', // yellow
-                '#f43f5e', // rose
-                '#a855f7', // purple
-                '#0ea5e9', // sky
-                '#22c55e'  // green
+                '#f8a352', // brand orange
+                '#4BC0C0', // teal
+                '#36A2EB', // blue
+                '#9966FF', // purple
+                '#d94236', // brand red
+                '#FF9F40', // light orange
+                '#FFCD56', // yellow
+                '#7ED6DF', // light blue
+                '#E84393', // pink
+                '#6C5CE7', // indigo
+                '#00b894', // mint
+                '#ffeaa7', // cream
+                '#fab1a0', // peach
+                '#a29bfe', // light purple
+                '#fd79a8', // light pink
+                '#fdcb6e'  // light yellow
             ];
             
             // State variables
@@ -545,14 +512,31 @@
             let keyHighlights = null;
             let selectedTherapyArea = 'All';
             let selectedTerm = 'All';
+            let selectedDateRange = 'all';
+            let metadata = null;
+            
+            // All therapy areas (will be populated from data)
+            let allTherapyAreas = [];
             
             // Fetch data - Replace this URL with your JSON file path
-            fetch('latest_dashboard_data.json')
+            fetch('/data/latest_dashboard_data.json')
                 .then(response => response.json())
                 .then(data => {
-                    // Update dashboard date
+                    // Store metadata
+                    metadata = data.metadata;
+                    
+                    // Update dashboard date and summary
                     const generatedAt = new Date(data.metadata.generatedAt);
-                    dashboardDate.textContent = `LAST_SYNC: ${generatedAt.toISOString().split('T')[0].replace(/-/g, '.')}_${generatedAt.toTimeString().split(' ')[0].replace(/:/g, ':')}`;
+                    dashboardDate.textContent = `Last Updated: ${generatedAt.toLocaleDateString('en-US', { 
+                        year: 'numeric', 
+                        month: 'long', 
+                        day: 'numeric' 
+                    })}`;
+                    
+                    // Create article summary
+                    const totalArticles = data.metadata.articleCount;
+                    const newArticles = data.metadata.newArticlesThisWeek || 0;
+                    articleSummary.textContent = `${totalArticles} total articles (${newArticles} new this week) • Last 30 days`;
                     
                     // Store articles
                     allArticles = data.articles;
@@ -564,8 +548,8 @@
                         renderKeyHighlights();
                     } else {
                         keyHighlightsContainer.innerHTML = `
-                            <div class="text-center py-4 text-gray-500 font-mono">
-                                No neural patterns detected for this period.
+                            <div class="text-center py-4 text-gray-500">
+                                No key highlights available for this period.
                             </div>
                         `;
                     }
@@ -585,16 +569,90 @@
                 .catch(error => {
                     console.error('Error loading data:', error);
                     articlesContainer.innerHTML = `
-                        <div class="text-center py-6 text-red-500 col-span-full font-mono">
-                            ERROR: Neural network connection failed. Please retry.
+                        <div class="text-center py-6 text-red-500 col-span-full">
+                            Error loading data. Please try again later.
                         </div>
                     `;
                     keyHighlightsContainer.innerHTML = `
-                        <div class="text-center py-4 text-red-500 font-mono">
-                            ERROR: Failed to load system highlights.
+                        <div class="text-center py-4 text-red-500">
+                            Error loading key highlights.
                         </div>
                     `;
                 });
+            
+            // Helper function to get article age
+            function getArticleAge(articleDate) {
+                const now = new Date();
+                const articleDateTime = new Date(articleDate);
+                const diffTime = now.getTime() - articleDateTime.getTime();
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                
+                if (diffDays <= 7) return 'new';
+                return 'older';
+            }
+            
+            // Helper function to filter by date range
+            function filterByDateRange(articles, range) {
+                if (range === 'all') return articles;
+                
+                const now = new Date();
+                let cutoffDate;
+                
+                switch (range) {
+                    case 'this-week':
+                        cutoffDate = new Date(now.getTime() - (7 * 24 * 60 * 60 * 1000));
+                        break;
+                    case 'last-week':
+                        const oneWeekAgo = new Date(now.getTime() - (7 * 24 * 60 * 60 * 1000));
+                        const twoWeeksAgo = new Date(now.getTime() - (14 * 24 * 60 * 60 * 1000));
+                        return articles.filter(article => {
+                            const articleDate = new Date(article.date);
+                            return articleDate >= twoWeeksAgo && articleDate < oneWeekAgo;
+                        });
+                    case 'last-two-weeks':
+                        cutoffDate = new Date(now.getTime() - (14 * 24 * 60 * 60 * 1000));
+                        break;
+                    default:
+                        return articles;
+                }
+                
+                return articles.filter(article => {
+                    const articleDate = new Date(article.date);
+                    return articleDate >= cutoffDate;
+                });
+            }
+            
+            // Function to handle multiple therapy areas and terms
+            function createMultipleBadges(therapyAreas, terms, articleAge) {
+                let badgesHtml = '';
+                
+                // Create therapy area badges
+                if (Array.isArray(therapyAreas)) {
+                    therapyAreas.forEach(area => {
+                        badgesHtml += `<span class="px-2 py-0.5 text-xs rounded-full bg-brand-light-orange text-brand-dark-red mr-1 mb-1 inline-block">${area}</span>`;
+                    });
+                } else {
+                    // Fallback for single therapy area (backward compatibility)
+                    badgesHtml += `<span class="px-2 py-0.5 text-xs rounded-full bg-brand-light-orange text-brand-dark-red mr-1 mb-1 inline-block">${therapyAreas}</span>`;
+                }
+                
+                // Create source/term badges
+                if (Array.isArray(terms)) {
+                    terms.forEach(term => {
+                        badgesHtml += `<span class="px-2 py-0.5 text-xs rounded-full bg-green-100 text-brand-dark-red mr-1 mb-1 inline-block">${term}</span>`;
+                    });
+                } else {
+                    // Fallback for single term (backward compatibility)
+                    badgesHtml += `<span class="px-2 py-0.5 text-xs rounded-full bg-green-100 text-brand-dark-red mr-1 mb-1 inline-block">${terms}</span>`;
+                }
+                
+                // Add age indicator
+                if (articleAge === 'new') {
+                    badgesHtml += '<span class="px-2 py-0.5 text-xs rounded-full bg-green-500 text-white mr-1 mb-1 inline-block">NEW</span>';
+                }
+                
+                return badgesHtml;
+            }
             
             // Render key highlights section
             function renderKeyHighlights() {
@@ -603,25 +661,25 @@
                 let highlightsHTML = '';
                 
                 // Add summary
-                highlightsHTML += `
-                    <div class="mb-6">
-                        <h3 class="text-lg font-medium text-blue-400 mb-3 font-mono">NETWORK.SUMMARY</h3>
-                        <p class="text-gray-300 leading-relaxed">${keyHighlights.summary}</p>
-                    </div>
-                `;
+                if (keyHighlights.summary) {
+                    highlightsHTML += `
+                        <div class="highlights-section">
+                            <h3 class="text-lg font-medium text-brand-dark-red mb-2">Weekly Summary</h3>
+                            <p class="text-gray-700">${keyHighlights.summary}</p>
+                        </div>
+                    `;
+                }
                 
                 // Add key trends if available
                 if (keyHighlights.trends && keyHighlights.trends.length > 0) {
                     highlightsHTML += `
-                        <div class="mb-6">
-                            <h3 class="text-lg font-medium text-blue-400 mb-3 font-mono">TREND.ANALYSIS</h3>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div class="highlights-section">
+                            <h3 class="text-lg font-medium text-brand-dark-red mb-2">Key Trends</h3>
+                            <ul class="list-disc pl-5">
                                 ${keyHighlights.trends.map(trend => 
-                                    `<div class="p-3 rounded-lg bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-blue-500/20">
-                                        <span class="text-gray-300 text-sm">${trend.startsWith('-') ? trend.substring(1).trim() : trend}</span>
-                                    </div>`
+                                    `<li class="text-gray-700 mb-1">${trend.startsWith('-') ? trend.substring(1).trim() : trend}</li>`
                                 ).join('')}
-                            </div>
+                            </ul>
                         </div>
                     `;
                 }
@@ -629,15 +687,13 @@
                 // Add emerging technologies if available
                 if (keyHighlights.technologies && keyHighlights.technologies.length > 0) {
                     highlightsHTML += `
-                        <div class="mb-6">
-                            <h3 class="text-lg font-medium text-blue-400 mb-3 font-mono">EMERGING.TECH</h3>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div class="highlights-section">
+                            <h3 class="text-lg font-medium text-brand-dark-red mb-2">Emerging Technologies</h3>
+                            <ul class="list-disc pl-5">
                                 ${keyHighlights.technologies.map(tech => 
-                                    `<div class="p-3 rounded-lg bg-gradient-to-r from-purple-500/10 to-green-500/10 border border-purple-500/20">
-                                        <span class="text-gray-300 text-sm">${tech.startsWith('-') ? tech.substring(1).trim() : tech}</span>
-                                    </div>`
+                                    `<li class="text-gray-700 mb-1">${tech.startsWith('-') ? tech.substring(1).trim() : tech}</li>`
                                 ).join('')}
-                            </div>
+                            </ul>
                         </div>
                     `;
                 }
@@ -648,18 +704,18 @@
                         Object.values(keyHighlights.therapy_area_distribution).reduce((a, b) => a + b, 0);
                         
                     highlightsHTML += `
-                        <div class="mb-4">
-                            <h3 class="text-lg font-medium text-blue-400 mb-3 font-mono">DATA.METRICS</h3>
-                            <div class="p-4 rounded-lg bg-gradient-to-r from-green-500/10 to-blue-500/10 border border-green-500/20">
-                                <p class="text-gray-300 mb-3 font-mono">TOTAL_ARTICLES: <span class="text-green-400 font-bold">${totalArticles}</span></p>
-                                <div class="grid grid-cols-2 md:grid-cols-3 gap-2">
-                                    ${Object.entries(keyHighlights.therapy_area_distribution).map(([area, count]) => `
-                                        <div class="flex justify-between items-center bg-slate-700/30 p-2 rounded text-xs">
-                                            <span class="text-gray-400 font-mono">${area}</span>
-                                            <span class="px-2 py-1 bg-blue-500/20 text-blue-400 rounded font-mono">${count}</span>
-                                        </div>
-                                    `).join('')}
-                                </div>
+                        <div class="highlights-section">
+                            <h3 class="text-lg font-medium text-brand-dark-red mb-2">Article Distribution</h3>
+                            <p class="text-gray-700 mb-2">Total articles analyzed: <strong>${totalArticles}</strong></p>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-3">
+                                ${Object.entries(keyHighlights.therapy_area_distribution).map(([area, count]) => `
+                                    <div class="flex justify-between items-center bg-gray-50 p-2 rounded">
+                                        <span class="text-gray-700">${area}</span>
+                                        <span class="px-2 py-1 ${count > 0 ? 'bg-brand-light-orange text-brand-dark-red' : 'bg-gray-200 text-gray-500'} rounded-full text-xs font-medium">
+                                            ${count > 0 ? `${count} articles` : 'No articles'}
+                                        </span>
+                                    </div>
+                                `).join('')}
                             </div>
                         </div>
                     `;
@@ -674,20 +730,62 @@
                 therapyAreaButtons.innerHTML = '<button class="filter-btn active" data-value="All">All Areas</button>';
                 termButtons.innerHTML = '<button class="filter-btn active" data-value="All">All Sources</button>';
                 
-                // Get unique therapy areas
-                const therapyAreas = [...new Set(allArticles.map(article => article.therapyArea))];
+                // Get all therapy areas from keyHighlights (which includes all areas from config)
+                if (keyHighlights && keyHighlights.therapy_area_distribution) {
+                    allTherapyAreas = Object.keys(keyHighlights.therapy_area_distribution);
+                } else {
+                    // Fallback: get unique therapy areas from articles (handle multiple therapy areas)
+                    allTherapyAreas = [];
+                    allArticles.forEach(article => {
+                        if (Array.isArray(article.therapyAreas)) {
+                            article.therapyAreas.forEach(area => {
+                                if (!allTherapyAreas.includes(area)) {
+                                    allTherapyAreas.push(area);
+                                }
+                            });
+                        } else if (article.therapyArea && !allTherapyAreas.includes(article.therapyArea)) {
+                            allTherapyAreas.push(article.therapyArea);
+                        }
+                    });
+                }
                 
-                // Create therapy area buttons
-                therapyAreas.forEach(area => {
+                // Create therapy area buttons - show all areas, even with 0 articles
+                allTherapyAreas.forEach(area => {
                     const button = document.createElement('button');
                     button.className = 'filter-btn';
-                    button.textContent = area;
+                    
+                    // Check if this area has articles
+                    const articleCount = keyHighlights && keyHighlights.therapy_area_distribution ? 
+                        keyHighlights.therapy_area_distribution[area] : 
+                        allArticles.filter(article => {
+                            if (Array.isArray(article.therapyAreas)) {
+                                return article.therapyAreas.includes(area);
+                            } else {
+                                return article.therapyArea === area;
+                            }
+                        }).length;
+                    
+                    if (articleCount === 0) {
+                        button.classList.add('no-articles');
+                        button.innerHTML = `${area} <span class="text-xs">(No articles)</span>`;
+                    } else {
+                        button.textContent = area;
+                    }
+                    
                     button.dataset.value = area;
                     therapyAreaButtons.appendChild(button);
                 });
                 
-                // Get all terms
-                const allTerms = [...new Set(allArticles.map(article => article.term))];
+                // Get all terms (handle multiple terms per article)
+                const allTermsSet = new Set();
+                allArticles.forEach(article => {
+                    if (Array.isArray(article.terms)) {
+                        article.terms.forEach(term => allTermsSet.add(term));
+                    } else if (article.term) {
+                        allTermsSet.add(article.term);
+                    }
+                });
+                const allTerms = Array.from(allTermsSet);
                 
                 // Create term buttons
                 allTerms.forEach(term => {
@@ -704,11 +802,34 @@
                 // Get terms for the selected therapy area
                 let availableTerms;
                 if (selectedTherapyArea === 'All') {
-                    availableTerms = ['All', ...new Set(allArticles.map(article => article.term))];
+                    const allTermsSet = new Set(['All']);
+                    allArticles.forEach(article => {
+                        if (Array.isArray(article.terms)) {
+                            article.terms.forEach(term => allTermsSet.add(term));
+                        } else if (article.term) {
+                            allTermsSet.add(article.term);
+                        }
+                    });
+                    availableTerms = Array.from(allTermsSet);
                 } else {
-                    availableTerms = ['All', ...new Set(allArticles
-                        .filter(article => article.therapyArea === selectedTherapyArea)
-                        .map(article => article.term))];
+                    const availableTermsSet = new Set(['All']);
+                    allArticles.forEach(article => {
+                        let hasTherapyArea = false;
+                        if (Array.isArray(article.therapyAreas)) {
+                            hasTherapyArea = article.therapyAreas.includes(selectedTherapyArea);
+                        } else {
+                            hasTherapyArea = article.therapyArea === selectedTherapyArea;
+                        }
+                        
+                        if (hasTherapyArea) {
+                            if (Array.isArray(article.terms)) {
+                                article.terms.forEach(term => availableTermsSet.add(term));
+                            } else if (article.term) {
+                                availableTermsSet.add(article.term);
+                            }
+                        }
+                    });
+                    availableTerms = Array.from(availableTermsSet);
                 }
                 
                 // Update button styles to show which terms are available
@@ -738,6 +859,12 @@
                 
                 // Sort select
                 sortSelect.addEventListener('change', applyFilters);
+                
+                // Date range select
+                dateRangeSelect.addEventListener('change', function() {
+                    selectedDateRange = this.value;
+                    applyFilters();
+                });
                 
                 // Topic area buttons
                 therapyAreaButtons.addEventListener('click', function(e) {
@@ -769,9 +896,7 @@
                         applyFilters();
                         
                         // Close mobile sidebar if open
-                        if (filterSidebar) {
-                            filterSidebar.classList.remove('active');
-                        }
+                        filterSidebar.classList.remove('active');
                     }
                 });
                 
@@ -793,28 +918,48 @@
                         applyFilters();
                         
                         // Close mobile sidebar if open
-                        if (filterSidebar) {
-                            filterSidebar.classList.remove('active');
-                        }
+                        filterSidebar.classList.remove('active');
                     }
                 });
             }
             
-            // Apply filters
+            // Apply filters - UPDATED to handle multiple therapy areas and terms
             function applyFilters() {
                 const searchTerm = searchInput.value.toLowerCase();
                 const sortOrder = sortSelect.value;
                 
-                // Filter articles
-                filteredArticles = allArticles.filter(article => {
-                    // Filter by therapy area
-                    if (selectedTherapyArea !== 'All' && article.therapyArea !== selectedTherapyArea) {
-                        return false;
+                // Start with all articles
+                let articles = [...allArticles];
+                
+                // Filter by date range first
+                articles = filterByDateRange(articles, selectedDateRange);
+                
+                // Filter articles by other criteria
+                filteredArticles = articles.filter(article => {
+                    // Filter by therapy area - check both single and multiple therapy areas
+                    if (selectedTherapyArea !== 'All') {
+                        let hasTherapyArea = false;
+                        if (Array.isArray(article.therapyAreas)) {
+                            hasTherapyArea = article.therapyAreas.includes(selectedTherapyArea);
+                        } else {
+                            hasTherapyArea = article.therapyArea === selectedTherapyArea;
+                        }
+                        if (!hasTherapyArea) {
+                            return false;
+                        }
                     }
                     
-                    // Filter by term
-                    if (selectedTerm !== 'All' && article.term !== selectedTerm) {
-                        return false;
+                    // Filter by term - check both single and multiple terms
+                    if (selectedTerm !== 'All') {
+                        let hasTerm = false;
+                        if (Array.isArray(article.terms)) {
+                            hasTerm = article.terms.includes(selectedTerm);
+                        } else {
+                            hasTerm = article.term === selectedTerm;
+                        }
+                        if (!hasTerm) {
+                            return false;
+                        }
                     }
                     
                     // Filter by search term
@@ -834,8 +979,8 @@
                 });
                 
                 // Update article count
-                articleCount.textContent = `[${filteredArticles.length}]`;
-                showingCount.textContent = `DISPLAYING ${filteredArticles.length} OF ${allArticles.length} RECORDS`;
+                articleCount.textContent = `(${filteredArticles.length})`;
+                showingCount.textContent = `Showing ${filteredArticles.length} of ${allArticles.length} articles`;
                 
                 // Render articles
                 renderArticles();
@@ -844,12 +989,30 @@
                 updateCharts();
             }
             
-            // Render articles in a grid layout
+            // Render articles in a grid layout with age indicators - UPDATED
             function renderArticles() {
                 if (filteredArticles.length === 0) {
+                    let emptyMessage = "No articles found matching your filters.";
+                    
+                    // Special message for therapy areas with no articles
+                    if (selectedTherapyArea !== 'All') {
+                        const hasArticlesForTherapyArea = allArticles.some(article => {
+                            // Check both single and multiple therapy areas
+                            if (Array.isArray(article.therapyAreas)) {
+                                return article.therapyAreas.includes(selectedTherapyArea);
+                            } else {
+                                return article.therapyArea === selectedTherapyArea;
+                            }
+                        });
+                        if (!hasArticlesForTherapyArea) {
+                            emptyMessage = `No relevant articles published for ${selectedTherapyArea} in the past month.`;
+                        }
+                    }
+                    
                     articlesContainer.innerHTML = `
-                        <div class="text-center py-6 text-gray-500 col-span-full font-mono">
-                            NO RECORDS MATCH CURRENT FILTERS. ADJUST PARAMETERS.
+                        <div class="text-center py-6 text-gray-500 col-span-full">
+                            ${emptyMessage}
+                            ${selectedTherapyArea !== 'All' || selectedTerm !== 'All' || searchInput.value ? '<br>Try adjusting your search criteria.' : ''}
                         </div>
                     `;
                     return;
@@ -859,110 +1022,119 @@
                 
                 filteredArticles.forEach((article, index) => {
                     const articleElement = document.createElement('div');
-                    articleElement.className = 'article-card rounded-lg p-5 transition-all duration-300';
+                    const articleAge = getArticleAge(article.date);
+                    
+                    // Determine article classes based on age
+                    let articleClasses = 'border border-gray-200 rounded-lg p-5 hover:shadow-md transition-shadow article bg-white';
+                    if (articleAge === 'new') {
+                        articleClasses += ' article-this-week';
+                    } else {
+                        articleClasses += ' article-older';
+                    }
+                    
+                    articleElement.className = articleClasses;
                     articleElement.dataset.articleIndex = index;
                     
-                    // Format takeaways as list items
-                    const takeawaysList = article.takeaways.map(takeaway => 
-                        `<li class="mb-1 text-sm text-gray-300">${takeaway.startsWith('-') ? takeaway.substring(1).trim() : takeaway}</li>`
-                    ).join('');
+                    // Use the date as-is without relative time indicators
+                    const dateDisplay = article.date;
+                    
+                    // Handle multiple therapy areas and terms
+                    const therapyAreas = article.therapyAreas || [article.therapyArea];
+                    const terms = article.terms || [article.term];
+                    const badgesHtml = createMultipleBadges(therapyAreas, terms, articleAge);
                     
                     articleElement.innerHTML = `
-                        <div class="mb-3">
-                            <h3 class="text-lg font-medium text-white mb-2 line-clamp-2 cursor-pointer hover:text-blue-400 transition-colors view-details">
-                                ${article.title}
-                            </h3>
-                            <div class="flex flex-wrap gap-2 mb-3">
-                                <span class="px-2 py-1 text-xs rounded bg-blue-500/20 text-blue-400 font-mono">
-                                    ${article.therapyArea}
-                                </span>
-                                <span class="px-2 py-1 text-xs rounded bg-purple-500/20 text-purple-400 font-mono">
-                                    ${article.term}
-                                </span>
-                            </div>
-                            <div class="text-sm text-gray-400 mb-3 font-mono">${article.date} • ${article.journal}</div>
+                        <h3 class="text-lg font-medium text-brand-red mb-2 line-clamp-2">
+                            ${article.title}
+                        </h3>
+                        <div class="flex flex-wrap gap-1 mb-3">
+                            ${badgesHtml}
                         </div>
-                        
-                        <div class="mb-4">
-                            <p class="text-gray-300 text-sm mb-3 leading-relaxed">${article.summary}</p>
-                            <div class="text-sm">
-                                <span class="text-blue-400 font-medium font-mono">KEY_INSIGHTS:</span>
-                                <ul class="list-disc pl-5 mt-2">
-                                    ${takeawaysList}
-                                </ul>
-                            </div>
-                        </div>
-                        
-                        <div class="flex justify-between items-center pt-3 border-t border-gray-600">
-                            <button class="tech-button py-1 px-3 rounded-md text-sm transition-colors view-details font-mono">
-                                VIEW_DETAILS
-                            </button>
-                            <a href="${article.link}" target="_blank" rel="noopener noreferrer" class="text-blue-400 hover:text-blue-300 text-sm font-mono transition-colors">
-                                READ_ORIGINAL →
-                            </a>
+                        <div class="text-sm text-gray-500 mb-3">${dateDisplay} · ${article.journal}</div>
+                        <p class="text-gray-600 text-sm summary-text mb-4">${article.summary}</p>
+                        <div class="mt-auto pt-2 flex justify-between items-center">
+                            <button class="bg-brand-orange hover:bg-brand-red text-white py-1 px-3 rounded-md text-sm transition-colors view-details">View Details</button>
+                            <a href="${article.link}" target="_blank" rel="noopener noreferrer" class="text-brand-red hover:underline text-sm">Read Original</a>
                         </div>
                     `;
                     
-                    // Add event listeners to view details buttons and title
-                    const viewDetailsElements = articleElement.querySelectorAll('.view-details');
-                    viewDetailsElements.forEach(element => {
-                        element.addEventListener('click', function() {
-                            showArticleDetails(article);
-                        });
+                    // Add event listener to view details button
+                    articleElement.querySelector('.view-details').addEventListener('click', function() {
+                        showArticleDetails(article);
+                    });
+                    
+                    // Add event listener to article title for viewing details
+                    articleElement.querySelector('h3').addEventListener('click', function() {
+                        showArticleDetails(article);
                     });
                     
                     articlesContainer.appendChild(articleElement);
                 });
             }
             
-            // Show article details in modal
+            // Show article details in modal - UPDATED
             function showArticleDetails(article) {
+                const articleAge = getArticleAge(article.date);
+                const articleDate = new Date(article.date);
+                const daysAgo = Math.ceil((new Date().getTime() - articleDate.getTime()) / (1000 * 60 * 60 * 24));
+                
+                // Handle multiple therapy areas and terms
+                const therapyAreas = article.therapyAreas || [article.therapyArea];
+                const terms = article.terms || [article.term];
+                
+                // Create badges for modal
+                let modalBadgesHtml = '';
+                therapyAreas.forEach(area => {
+                    modalBadgesHtml += `<span class="px-2 py-1 text-xs rounded-full bg-brand-light-orange text-brand-dark-red mr-1 mb-1 inline-block">${area}</span>`;
+                });
+                terms.forEach(term => {
+                    modalBadgesHtml += `<span class="px-2 py-1 text-xs rounded-full bg-green-100 text-brand-dark-red mr-1 mb-1 inline-block">${term}</span>`;
+                });
+                modalBadgesHtml += `<span class="px-2 py-1 text-xs rounded-full bg-blue-100 text-brand-dark-red mr-1 mb-1 inline-block">${article.journal}</span>`;
+                
+                if (articleAge === 'new') {
+                    modalBadgesHtml += '<span class="px-2 py-1 text-xs rounded-full bg-green-500 text-white mr-1 mb-1 inline-block">NEW</span>';
+                }
+                if (daysAgo <= 7) {
+                    modalBadgesHtml += '<span class="px-2 py-1 text-xs rounded-full bg-yellow-100 text-yellow-800 mr-1 mb-1 inline-block">This Week</span>';
+                }
+                
                 // Format takeaways as list items
                 const takeawaysList = article.takeaways.map(takeaway => 
                     `<li class="mb-1">${takeaway.startsWith('-') ? takeaway.substring(1).trim() : takeaway}</li>`
                 ).join('');
                 
                 modalContent.innerHTML = `
-                    <h2 class="text-xl font-bold text-blue-400 mb-4 font-mono">NEURAL_RECORD_${article.id.toString().padStart(3, '0')}</h2>
+                    <h2 class="text-xl font-bold text-brand-dark-red mb-4">${article.title}</h2>
                     
-                    <div class="mb-4">
-                        <h3 class="text-lg font-semibold text-white mb-2">${article.title}</h3>
-                    </div>
-                    
-                    <div class="flex flex-wrap gap-2 mb-4">
-                        <span class="px-3 py-1 text-sm rounded bg-blue-500/20 text-blue-400 font-mono">
-                            ${article.therapyArea}
-                        </span>
-                        <span class="px-3 py-1 text-sm rounded bg-purple-500/20 text-purple-400 font-mono">
-                            ${article.term}
-                        </span>
-                        <span class="px-3 py-1 text-sm rounded bg-green-500/20 text-green-400 font-mono">
-                            ${article.journal}
-                        </span>
-                    </div>
-                    
-                    <div class="mb-4 p-4 bg-slate-700/30 rounded-lg">
-                        <p class="text-gray-400 text-sm font-mono mb-1">TIMESTAMP: ${article.date}</p>
-                        <p class="text-gray-400 text-sm font-mono mb-1">SOURCE: ${article.journal}</p>
-                        ${article.authors ? `<p class="text-gray-400 text-sm font-mono">AUTHORS: ${article.authors}</p>` : ''}
+                    <div class="flex flex-wrap gap-2 mb-3">
+                        ${modalBadgesHtml}
                     </div>
                     
                     <div class="mb-4">
-                        <h3 class="font-semibold text-lg mb-2 text-blue-400 font-mono">SUMMARY.DATA</h3>
-                        <p class="text-gray-300 leading-relaxed">${article.summary}</p>
+                        <p><strong>Date:</strong> ${article.date}</p>
+                        <p><strong>Source:</strong> ${article.journal}</p>
+                        ${article.authors ? `<p><strong>Authors:</strong> ${article.authors}</p>` : ''}
+                        ${therapyAreas.length > 1 ? `<p><strong>Relevant to:</strong> ${therapyAreas.join(', ')}</p>` : ''}
+                        ${terms.length > 1 ? `<p><strong>Found on:</strong> ${terms.join(', ')}</p>` : ''}
                     </div>
                     
-                    <div class="mb-6">
-                        <h3 class="font-semibold text-lg mb-2 text-blue-400 font-mono">EXTRACTED.INSIGHTS</h3>
-                        <ul class="list-disc pl-5 text-gray-300">
+                    <div class="mb-4">
+                        <h3 class="font-semibold text-lg mb-2">Summary</h3>
+                        <p>${article.summary}</p>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <h3 class="font-semibold text-lg mb-2">Key Takeaways</h3>
+                        <ul class="list-disc pl-5">
                             ${takeawaysList}
                         </ul>
                     </div>
                     
-                    <div class="text-center">
+                    <div class="mt-6 text-center">
                         <a href="${article.link}" target="_blank" rel="noopener noreferrer" 
-                           class="tech-button px-6 py-2 rounded font-mono transition-colors">
-                            ACCESS_ORIGINAL_SOURCE →
+                           class="inline-block px-6 py-2 bg-brand-orange text-white rounded hover:bg-brand-red transition-colors">
+                            Read Original Article
                         </a>
                     </div>
                 `;
@@ -995,6 +1167,12 @@
                 // Prepare data
                 const sourceData = prepareSourcesData();
                 
+                if (sourceData.labels.length === 0) {
+                    // Show empty chart message
+                    sourcesChart.canvas.parentElement.innerHTML = '<div class="flex items-center justify-center h-full text-gray-500 text-sm">No data to display</div>';
+                    return;
+                }
+                
                 // Generate background colors for each bar
                 const backgroundColors = sourceData.labels.map((_, index) => 
                     multiColorPalette[index % multiColorPalette.length]
@@ -1006,49 +1184,21 @@
                     data: {
                         labels: sourceData.labels,
                         datasets: [{
-                            label: 'Articles',
+                            label: 'Number of Articles',
                             data: sourceData.data,
-                            backgroundColor: backgroundColors.map(color => color + '40'),
-                            borderColor: backgroundColors,
+                            backgroundColor: backgroundColors,
+                            borderColor: backgroundColors.map(color => color),
                             borderWidth: 1
                         }]
                     },
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
-                        plugins: {
-                            legend: {
-                                labels: {
-                                    color: '#e2e8f0',
-                                    font: {
-                                        family: 'JetBrains Mono'
-                                    }
-                                }
-                            }
-                        },
                         scales: {
                             y: {
                                 beginAtZero: true,
                                 ticks: {
-                                    precision: 0,
-                                    color: '#94a3b8',
-                                    font: {
-                                        family: 'JetBrains Mono'
-                                    }
-                                },
-                                grid: {
-                                    color: 'rgba(59, 130, 246, 0.1)'
-                                }
-                            },
-                            x: {
-                                ticks: {
-                                    color: '#94a3b8',
-                                    font: {
-                                        family: 'JetBrains Mono'
-                                    }
-                                },
-                                grid: {
-                                    color: 'rgba(59, 130, 246, 0.1)'
+                                    precision: 0
                                 }
                             }
                         }
@@ -1085,7 +1235,7 @@
                 return { labels, data };
             }
             
-            // Create and update areas chart
+            // Create and update areas chart - UPDATED
             function createAreasChart() {
                 // Destroy existing chart if it exists
                 if (areasChartInstance) {
@@ -1094,6 +1244,12 @@
                 
                 // Prepare data
                 const areaData = prepareAreasData();
+                
+                if (areaData.labels.length === 0) {
+                    // Show empty chart message
+                    areasChart.canvas.parentElement.innerHTML = '<div class="flex items-center justify-center h-full text-gray-500 text-sm">No data to display</div>';
+                    return;
+                }
                 
                 // Generate background colors for each slice
                 const backgroundColors = areaData.labels.map((_, index) => 
@@ -1107,9 +1263,9 @@
                         labels: areaData.labels,
                         datasets: [{
                             data: areaData.data,
-                            backgroundColor: backgroundColors.map(color => color + '60'),
-                            borderColor: backgroundColors,
-                            borderWidth: 2
+                            backgroundColor: backgroundColors,
+                            borderColor: backgroundColors.map(color => color),
+                            borderWidth: 1
                         }]
                     },
                     options: {
@@ -1117,10 +1273,16 @@
                         maintainAspectRatio: false,
                         plugins: {
                             legend: {
-                                labels: {
-                                    color: '#e2e8f0',
-                                    font: {
-                                        family: 'JetBrains Mono'
+                                display: true,
+                                position: 'bottom'
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        const value = context.parsed;
+                                        const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                        const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+                                        return `${context.label}: ${value} articles (${percentage}%)`;
                                     }
                                 }
                             }
@@ -1140,15 +1302,33 @@
             }
             
             function prepareAreasData() {
-                // Count articles by therapy area
+                // Count articles by therapy area - handle both single and multiple therapy areas
                 const areaCounts = {};
-                filteredArticles.forEach(article => {
-                    areaCounts[article.therapyArea] = (areaCounts[article.therapyArea] || 0) + 1;
+                
+                // Initialize all therapy areas with 0
+                allTherapyAreas.forEach(area => {
+                    areaCounts[area] = 0;
                 });
                 
+                // Count filtered articles - handle multiple therapy areas per article
+                filteredArticles.forEach(article => {
+                    if (Array.isArray(article.therapyAreas)) {
+                        // Multiple therapy areas - count for each
+                        article.therapyAreas.forEach(area => {
+                            areaCounts[area] = (areaCounts[area] || 0) + 1;
+                        });
+                    } else {
+                        // Single therapy area (backward compatibility)
+                        areaCounts[article.therapyArea] = (areaCounts[article.therapyArea] || 0) + 1;
+                    }
+                });
+                
+                // Only show areas that have articles for the chart
+                const entriesWithArticles = Object.entries(areaCounts).filter(([area, count]) => count > 0);
+                
                 // Convert to arrays
-                const labels = Object.keys(areaCounts);
-                const data = Object.values(areaCounts);
+                const labels = entriesWithArticles.map(entry => entry[0]);
+                const data = entriesWithArticles.map(entry => entry[1]);
                 
                 return { labels, data };
             }
@@ -1163,61 +1343,38 @@
                 // Prepare data
                 const dateData = prepareDatesData();
                 
+                if (dateData.labels.length === 0) {
+                    // Show empty chart message
+                    datesChart.canvas.parentElement.innerHTML = '<div class="flex items-center justify-center h-full text-gray-500 text-sm">No data to display</div>';
+                    return;
+                }
+                
                 // Create chart
                 datesChartInstance = new Chart(datesChart, {
                     type: 'line',
                     data: {
                         labels: dateData.labels,
                         datasets: [{
-                            label: 'Publications',
+                            label: 'Articles Published',
                             data: dateData.data,
-                            backgroundColor: 'rgba(59, 130, 246, 0.2)',
-                            borderColor: '#3b82f6',
+                            backgroundColor: 'rgba(248, 163, 82, 0.2)',
+                            borderColor: '#d94236',
                             borderWidth: 2,
-                            tension: 0.4,
-                            pointBackgroundColor: '#3b82f6',
-                            pointBorderColor: '#ffffff',
-                            pointRadius: 4,
-                            pointHoverRadius: 6,
-                            fill: true
+                            tension: 0.1,
+                            pointBackgroundColor: '#d94236',
+                            pointBorderColor: '#fff',
+                            pointRadius: 5,
+                            pointHoverRadius: 7
                         }]
                     },
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
-                        plugins: {
-                            legend: {
-                                labels: {
-                                    color: '#e2e8f0',
-                                    font: {
-                                        family: 'JetBrains Mono'
-                                    }
-                                }
-                            }
-                        },
                         scales: {
                             y: {
                                 beginAtZero: true,
                                 ticks: {
-                                    precision: 0,
-                                    color: '#94a3b8',
-                                    font: {
-                                        family: 'JetBrains Mono'
-                                    }
-                                },
-                                grid: {
-                                    color: 'rgba(59, 130, 246, 0.1)'
-                                }
-                            },
-                            x: {
-                                ticks: {
-                                    color: '#94a3b8',
-                                    font: {
-                                        family: 'JetBrains Mono'
-                                    }
-                                },
-                                grid: {
-                                    color: 'rgba(59, 130, 246, 0.1)'
+                                    precision: 0
                                 }
                             }
                         }
@@ -1254,46 +1411,5 @@
             }
         });
     </script>
-    
-    <style>
-        /* Modal styles */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 100;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0,0,0,0.8);
-        }
-        
-        .modal-content {
-            margin: 5% auto;
-            padding: 20px;
-            width: 80%;
-            max-width: 800px;
-            max-height: 80vh;
-            overflow-y: auto;
-            border-radius: 12px;
-        }
-        
-        .close {
-            color: #94a3b8;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: color 0.2s;
-        }
-        
-        .close:hover,
-        .close:focus {
-            color: #3b82f6;
-            text-decoration: none;
-        }
-    <script src="assets/js/dashboard.js"></script>
 </body>
-</html>
 </html>
