@@ -33,6 +33,27 @@
             background-clip: text;
             color: transparent;
         }
+
+        /* Tab styles */
+        .tab-button {
+            @apply px-6 py-3 font-medium rounded-t-lg transition-all duration-200;
+        }
+        
+        .tab-button.active {
+            @apply bg-white text-brand-red border-b-2 border-brand-orange;
+        }
+        
+        .tab-button:not(.active) {
+            @apply bg-gray-100 text-gray-600 hover:bg-gray-200;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
         
         .article {
             transition: all 0.2s ease;
@@ -58,6 +79,11 @@
         /* Chart containers with fixed height */
         .chart-container {
             height: 250px;
+            position: relative;
+        }
+        
+        .analytics-chart-container {
+            height: 300px;
             position: relative;
         }
         
@@ -208,7 +234,6 @@
         }
         
         /* Article age indicators */
-        
         .article-this-week {
             border-left: 4px solid #10b981;
         }
@@ -225,6 +250,44 @@
         
         .pulsar-article:hover {
             background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+        }
+
+        /* Analytics specific styles */
+        .analytics-card {
+            @apply bg-white rounded-lg shadow-lg p-6 border-t-4 border-brand-orange;
+        }
+
+        .metric-card {
+            @apply bg-gradient-to-r from-brand-light-orange to-brand-orange text-white rounded-lg p-4 text-center;
+        }
+
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        /* Word cloud style */
+        .word-cloud {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+        }
+
+        .word-item {
+            padding: 0.25rem 0.75rem;
+            background: linear-gradient(135deg, #f8a352, #d94236);
+            color: white;
+            border-radius: 1rem;
+            font-weight: 500;
+            transition: transform 0.2s;
+        }
+
+        .word-item:hover {
+            transform: scale(1.05);
         }
         
         @media (max-width: 768px) {
@@ -257,6 +320,10 @@
             .show-filters-mobile {
                 display: block;
             }
+
+            .analytics-grid {
+                grid-template-columns: 1fr;
+            }
         }
         
         @media (min-width: 769px) {
@@ -285,141 +352,235 @@
     </header>
 
     <div class="container mx-auto px-4">
-        <!-- Collapsible Key Highlights Section -->
-        <div class="highlights-card mb-6">
-            <div class="highlights-header flex justify-between items-center" id="highlights-toggle">
-                <h2 class="text-xl font-semibold text-brand-red">Key Highlights This Week</h2>
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 transform transition-transform duration-200" id="highlights-chevron" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                </svg>
+        <!-- Tab Navigation -->
+        <div class="mb-6">
+            <div class="border-b border-gray-200">
+                <nav class="-mb-px flex space-x-8">
+                    <button class="tab-button active" data-tab="articles">
+                        📰 Articles & News
+                    </button>
+                    <button class="tab-button" data-tab="analytics">
+                        📊 Social Analytics
+                    </button>
+                </nav>
             </div>
-            <div class="highlights-content" id="key-highlights">
-                <div class="text-center py-6 text-gray-500">
-                    Loading key highlights...
+        </div>
+
+        <!-- Articles Tab Content -->
+        <div id="articles-tab" class="tab-content active">
+            <!-- Collapsible Key Highlights Section -->
+            <div class="highlights-card mb-6">
+                <div class="highlights-header flex justify-between items-center" id="highlights-toggle">
+                    <h2 class="text-xl font-semibold text-brand-red">Key Highlights This Week</h2>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 transform transition-transform duration-200" id="highlights-chevron" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                </div>
+                <div class="highlights-content" id="key-highlights">
+                    <div class="text-center py-6 text-gray-500">
+                        Loading key highlights...
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mobile filter toggle button -->
+            <button class="show-filters-mobile mb-4 bg-brand-orange text-white py-2 px-4 rounded shadow w-full md:hidden">
+                Show Filters
+            </button>
+
+            <div class="flex flex-col md:flex-row gap-6">
+                <!-- Filter Sidebar -->
+                <div class="filter-sidebar bg-white rounded-lg shadow p-4 md:w-64 mb-6 border-t-4 border-brand-orange">
+                    <span class="close-sidebar">&times;</span>
+                    
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Search Articles</label>
+                        <div class="relative">
+                            <input 
+                                type="text" 
+                                id="search-input" 
+                                placeholder="Search by title or keyword..." 
+                                class="w-full p-2 pl-8 border border-gray-300 rounded-md focus:ring-brand-orange focus:border-brand-orange"
+                            >
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 absolute left-2 top-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                            </svg>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Article Type</label>
+                        <select 
+                            id="article-type-select" 
+                            class="w-full p-2 border border-gray-300 rounded-md focus:ring-brand-orange focus:border-brand-orange"
+                        >
+                            <option value="all">All Articles</option>
+                            <option value="rss">News & Research</option>
+                            <option value="pulsar">Social Listening</option>
+                        </select>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Sort By Date</label>
+                        <select 
+                            id="sort-select" 
+                            class="w-full p-2 border border-gray-300 rounded-md focus:ring-brand-orange focus:border-brand-orange"
+                        >
+                            <option value="newest">Newest First</option>
+                            <option value="oldest">Oldest First</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Filter By Date Range</label>
+                        <select 
+                            id="date-range-select" 
+                            class="w-full p-2 border border-gray-300 rounded-md focus:ring-brand-orange focus:border-brand-orange"
+                        >
+                            <option value="all">All Time (1 Month)</option>
+                            <option value="this-week">This Week</option>
+                            <option value="last-week">Last Week</option>
+                            <option value="last-two-weeks">Last 2 Weeks</option>
+                        </select>
+                    </div>
+                    
+                    <h3 class="sidebar-heading">Clients</h3>
+                    <div id="therapy-area-buttons">
+                        <!-- Topic area buttons will be dynamically added here -->
+                        <button class="filter-btn active" data-value="All">All Areas</button>
+                    </div>
+                    
+                    <h3 class="sidebar-heading">Sources</h3>
+                    <div id="term-buttons">
+                        <!-- Source term buttons will be dynamically added here -->
+                        <button class="filter-btn active" data-value="All">All Sources</button>
+                    </div>
+                </div>
+
+                <!-- Main Content -->
+                <div class="flex-1">
+                    <!-- Dashboard Stats -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                        <div class="bg-white rounded-lg shadow p-4 border-t-4 border-brand-orange">
+                            <h2 class="text-lg font-semibold mb-4 text-brand-red">Articles by Source</h2>
+                            <div class="chart-container">
+                                <canvas id="sources-chart"></canvas>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white rounded-lg shadow p-4 border-t-4 border-brand-orange">
+                            <h2 class="text-lg font-semibold mb-4 text-brand-red">Articles by Client</h2>
+                            <div class="chart-container">
+                                <canvas id="areas-chart"></canvas>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white rounded-lg shadow p-4 border-t-4 border-brand-orange">
+                            <h2 class="text-lg font-semibold mb-4 text-brand-red">Publication Date Trend</h2>
+                            <div class="chart-container">
+                                <canvas id="dates-chart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Articles List -->
+                    <div class="bg-white rounded-lg shadow p-4 mb-6 border-t-4 border-brand-orange">
+                        <div class="flex justify-between items-center mb-4">
+                            <h2 class="text-xl font-semibold text-brand-red">Articles <span id="article-count">(0)</span></h2>
+                            <div class="text-sm text-gray-500" id="showing-count">
+                                Showing 0 of 0 articles
+                            </div>
+                        </div>
+                        
+                        <!-- Grid layout for articles - changed to 2 columns -->
+                        <div id="articles-container" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="text-center py-6 text-gray-500 col-span-full">
+                                Loading articles...
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- Mobile filter toggle button -->
-        <button class="show-filters-mobile mb-4 bg-brand-orange text-white py-2 px-4 rounded shadow w-full md:hidden">
-            Show Filters
-        </button>
+        <!-- Analytics Tab Content -->
+        <div id="analytics-tab" class="tab-content">
+            <div class="mb-6">
+                <h2 class="text-2xl font-bold text-brand-red mb-4">📊 Social Media Analytics Dashboard</h2>
+                <p class="text-gray-600">Comprehensive analysis of AI-related social media conversations and engagement patterns.</p>
+            </div>
 
-        <div class="flex flex-col md:flex-row gap-6">
-            <!-- Filter Sidebar -->
-            <div class="filter-sidebar bg-white rounded-lg shadow p-4 md:w-64 mb-6 border-t-4 border-brand-orange">
-                <span class="close-sidebar">&times;</span>
-                
-                <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Search Articles</label>
-                    <div class="relative">
-                        <input 
-                            type="text" 
-                            id="search-input" 
-                            placeholder="Search by title or keyword..." 
-                            class="w-full p-2 pl-8 border border-gray-300 rounded-md focus:ring-brand-orange focus:border-brand-orange"
-                        >
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 absolute left-2 top-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                        </svg>
+            <!-- Analytics Overview Cards -->
+            <div id="analytics-overview" class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+                <!-- Overview cards will be populated here -->
+            </div>
+
+            <!-- Analytics Charts Grid -->
+            <div class="analytics-grid mb-8">
+                <!-- Sentiment Analysis Chart -->
+                <div class="analytics-card">
+                    <h3 class="text-lg font-semibold mb-4 text-brand-red">Sentiment Distribution</h3>
+                    <div class="analytics-chart-container">
+                        <canvas id="sentiment-chart"></canvas>
                     </div>
                 </div>
-                
-                <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Article Type</label>
-                    <select 
-                        id="article-type-select" 
-                        class="w-full p-2 border border-gray-300 rounded-md focus:ring-brand-orange focus:border-brand-orange"
-                    >
-                        <option value="all">All Articles</option>
-                        <option value="rss">News & Research</option>
-                        <option value="pulsar">Social Listening</option>
-                    </select>
-                </div>
-                <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Sort By Date</label>
-                    <select 
-                        id="sort-select" 
-                        class="w-full p-2 border border-gray-300 rounded-md focus:ring-brand-orange focus:border-brand-orange"
-                    >
-                        <option value="newest">Newest First</option>
-                        <option value="oldest">Oldest First</option>
-                    </select>
+
+                <!-- Source Distribution Chart -->
+                <div class="analytics-card">
+                    <h3 class="text-lg font-semibold mb-4 text-brand-red">Content Sources</h3>
+                    <div class="analytics-chart-container">
+                        <canvas id="sources-analytics-chart"></canvas>
+                    </div>
                 </div>
 
-                <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Filter By Date Range</label>
-                    <select 
-                        id="date-range-select" 
-                        class="w-full p-2 border border-gray-300 rounded-md focus:ring-brand-orange focus:border-brand-orange"
-                    >
-                        <option value="all">All Time (1 Month)</option>
-                        <option value="this-week">This Week</option>
-                        <option value="last-week">Last Week</option>
-                        <option value="last-two-weeks">Last 2 Weeks</option>
-                    </select>
+                <!-- Content Quality Chart -->
+                <div class="analytics-card">
+                    <h3 class="text-lg font-semibold mb-4 text-brand-red">Content Quality Distribution</h3>
+                    <div class="analytics-chart-container">
+                        <canvas id="quality-chart"></canvas>
+                    </div>
                 </div>
-                
-                <h3 class="sidebar-heading">Clients</h3>
-                <div id="therapy-area-buttons">
-                    <!-- Topic area buttons will be dynamically added here -->
-                    <button class="filter-btn active" data-value="All">All Areas</button>
+
+                <!-- Posting Times Chart -->
+                <div class="analytics-card">
+                    <h3 class="text-lg font-semibold mb-4 text-brand-red">Posting Patterns by Hour</h3>
+                    <div class="analytics-chart-container">
+                        <canvas id="hourly-chart"></canvas>
+                    </div>
                 </div>
-                
-                <h3 class="sidebar-heading">Sources</h3>
-                <div id="term-buttons">
-                    <!-- Source term buttons will be dynamically added here -->
-                    <button class="filter-btn active" data-value="All">All Sources</button>
+
+                <!-- Credibility Analysis -->
+                <div class="analytics-card">
+                    <h3 class="text-lg font-semibold mb-4 text-brand-red">Source Credibility</h3>
+                    <div class="analytics-chart-container">
+                        <canvas id="credibility-chart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Trending Narratives -->
+                <div class="analytics-card">
+                    <h3 class="text-lg font-semibold mb-4 text-brand-red">Trending Topics</h3>
+                    <div id="trending-narratives" class="word-cloud">
+                        <!-- Word cloud will be populated here -->
+                    </div>
                 </div>
             </div>
 
-            <!-- Main Content -->
-            <div class="flex-1">
-                <!-- Dashboard Stats -->
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-                    <div class="bg-white rounded-lg shadow p-4 border-t-4 border-brand-orange">
-                        <h2 class="text-lg font-semibold mb-4 text-brand-red">Articles by Source</h2>
-                        <div class="chart-container">
-                            <canvas id="sources-chart"></canvas>
-                        </div>
-                    </div>
-                    
-                    <div class="bg-white rounded-lg shadow p-4 border-t-4 border-brand-orange">
-                        <h2 class="text-lg font-semibold mb-4 text-brand-red">Articles by Client</h2>
-                        <div class="chart-container">
-                            <canvas id="areas-chart"></canvas>
-                        </div>
-                    </div>
-                    
-                    <div class="bg-white rounded-lg shadow p-4 border-t-4 border-brand-orange">
-                        <h2 class="text-lg font-semibold mb-4 text-brand-red">Publication Date Trend</h2>
-                        <div class="chart-container">
-                            <canvas id="dates-chart"></canvas>
-                        </div>
-                    </div>
+            <!-- Top Performing Content -->
+            <div class="analytics-card mb-8">
+                <h3 class="text-lg font-semibold mb-4 text-brand-red">🏆 Top Performing Content</h3>
+                <div id="top-content" class="space-y-4">
+                    <!-- Top content will be populated here -->
                 </div>
+            </div>
 
-                <!-- Articles List -->
-                <div class="bg-white rounded-lg shadow p-4 mb-6 border-t-4 border-brand-orange">
-                    <div class="flex justify-between items-center mb-4">
-                        <h2 class="text-xl font-semibold text-brand-red">Articles <span id="article-count">(0)</span></h2>
-                        <div class="text-sm text-gray-500" id="showing-count">
-                            Showing 0 of 0 articles
-                        </div>
-                    </div>
-                    
-                    <!-- Grid layout for articles - changed to 2 columns -->
-                    <div id="articles-container" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div class="text-center py-6 text-gray-500 col-span-full">
-                            Loading articles...
-                        </div>
-                    </div>
-                </div>
+            <!-- Therapy Area Analytics -->
+            <div id="therapy-area-analytics" class="space-y-6">
+                <!-- Individual therapy area analytics will be populated here -->
             </div>
         </div>
         
         <footer class="text-center text-gray-600 text-sm mt-6 mb-8 p-6 bg-white rounded-lg shadow border-t-4 border-brand-orange">
-            <p>This dashboard is updated weekly with the latest Pharma news.</p>
+            <p>This dashboard is updated weekly with the latest AI news and social media analytics.</p>
             <p class="mt-1">For feedback, please contact <a href="mailto:lucy.ferguson@syneoshealth.com" class="text-brand-red hover:underline">lucy.ferguson@syneoshealth.com</a></p>
         </footer>
     </div>
@@ -455,6 +616,43 @@
             const showFiltersMobile = document.querySelector('.show-filters-mobile');
             const filterSidebar = document.querySelector('.filter-sidebar');
             const closeSidebar = document.querySelector('.close-sidebar');
+            
+            // Tab elements
+            const tabButtons = document.querySelectorAll('.tab-button');
+            const tabContents = document.querySelectorAll('.tab-content');
+
+            // Analytics elements
+            const analyticsOverview = document.getElementById('analytics-overview');
+            const topContent = document.getElementById('top-content');
+            const trendingNarratives = document.getElementById('trending-narratives');
+            const therapyAreaAnalytics = document.getElementById('therapy-area-analytics');
+
+            // Chart instances for analytics
+            let sentimentChartInstance = null;
+            let sourcesAnalyticsChartInstance = null;
+            let qualityChartInstance = null;
+            let hourlyChartInstance = null;
+            let credibilityChartInstance = null;
+            
+            // Tab switching functionality
+            tabButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const targetTab = this.getAttribute('data-tab');
+                    
+                    // Update tab buttons
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Update tab content
+                    tabContents.forEach(content => content.classList.remove('active'));
+                    document.getElementById(targetTab + '-tab').classList.add('active');
+                    
+                    // Load analytics if switching to analytics tab
+                    if (targetTab === 'analytics' && window.dashboardData && window.dashboardData.pulsarAnalytics) {
+                        loadAnalytics(window.dashboardData.pulsarAnalytics);
+                    }
+                });
+            });
             
             // Toggle highlights section
             highlightsToggle.addEventListener('click', function() {
@@ -496,12 +694,12 @@
                 }
             });
             
-            // Chart elements
+            // Chart elements for articles tab
             const sourcesChart = document.getElementById('sources-chart').getContext('2d');
             const areasChart = document.getElementById('areas-chart').getContext('2d');
             const datesChart = document.getElementById('dates-chart').getContext('2d');
             
-            // Chart instances
+            // Chart instances for articles tab
             let sourcesChartInstance = null;
             let areasChartInstance = null;
             let datesChartInstance = null;
@@ -538,10 +736,16 @@
             // All therapy areas (will be populated from data)
             let allTherapyAreas = [];
             
-            // Fetch data - Replace this URL with your JSON file path
+            // Store dashboard data globally for analytics tab
+            window.dashboardData = null;
+            
+            // Fetch data
             fetch('/data/latest_dashboard_data.json')
                 .then(response => response.json())
                 .then(data => {
+                    // Store data globally
+                    window.dashboardData = data;
+                    
                     // Store metadata
                     metadata = data.metadata;
                     
@@ -599,6 +803,512 @@
                         </div>
                     `;
                 });
+
+            // Analytics functions
+            function loadAnalytics(pulsarAnalytics) {
+                console.log('Loading analytics:', pulsarAnalytics);
+                
+                if (!pulsarAnalytics || Object.keys(pulsarAnalytics).length === 0) {
+                    analyticsOverview.innerHTML = `
+                        <div class="col-span-full text-center py-8 text-gray-500">
+                            <h3 class="text-lg font-semibold mb-2">No Analytics Data Available</h3>
+                            <p>Analytics data will be available once Pulsar social listening data is collected.</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                // Combine analytics from all therapy areas
+                const combinedAnalytics = combineAnalytics(pulsarAnalytics);
+                
+                // Render overview cards
+                renderAnalyticsOverview(combinedAnalytics);
+                
+                // Render analytics charts
+                renderAnalyticsCharts(combinedAnalytics);
+                
+                // Render top content
+                renderTopContent(combinedAnalytics);
+                
+                // Render trending narratives
+                renderTrendingNarratives(combinedAnalytics);
+                
+                // Render therapy area specific analytics
+                renderTherapyAreaAnalytics(pulsarAnalytics);
+            }
+
+            function combineAnalytics(pulsarAnalytics) {
+                const combined = {
+                    overview: {
+                        total_posts: 0,
+                        total_reach: 0,
+                        total_engagement: 0,
+                        avg_quality_score: 0,
+                        high_quality_posts: 0,
+                        avg_sentiment_score: 0
+                    },
+                    sentiment_distribution: {},
+                    source_distribution: {},
+                    credibility_distribution: {},
+                    time_patterns: {
+                        hourly: {},
+                        daily: {}
+                    },
+                    top_content: [],
+                    trending_narratives: [],
+                    chart_data: {
+                        sentiment_chart: [],
+                        source_chart: [],
+                        credibility_chart: [],
+                        hourly_chart: [],
+                        quality_distribution: []
+                    }
+                };
+
+                const therapyAreas = Object.keys(pulsarAnalytics);
+                let totalAreas = 0;
+
+                // Combine data from all therapy areas
+                therapyAreas.forEach(area => {
+                    const analytics = pulsarAnalytics[area];
+                    if (!analytics || !analytics.overview) return;
+
+                    totalAreas++;
+                    
+                    // Combine overview metrics
+                    combined.overview.total_posts += analytics.overview.total_posts || 0;
+                    combined.overview.total_reach += analytics.overview.total_reach || 0;
+                    combined.overview.total_engagement += analytics.overview.total_engagement || 0;
+                    combined.overview.avg_quality_score += analytics.overview.avg_quality_score || 0;
+                    combined.overview.high_quality_posts += analytics.overview.high_quality_posts || 0;
+                    combined.overview.avg_sentiment_score += analytics.overview.avg_sentiment_score || 0;
+
+                    // Combine sentiment distribution
+                    if (analytics.sentiment_distribution) {
+                        Object.keys(analytics.sentiment_distribution).forEach(sentiment => {
+                            combined.sentiment_distribution[sentiment] = 
+                                (combined.sentiment_distribution[sentiment] || 0) + analytics.sentiment_distribution[sentiment];
+                        });
+                    }
+
+                    // Combine source distribution
+                    if (analytics.source_distribution) {
+                        Object.keys(analytics.source_distribution).forEach(source => {
+                            combined.source_distribution[source] = 
+                                (combined.source_distribution[source] || 0) + analytics.source_distribution[source];
+                        });
+                    }
+
+                    // Combine credibility distribution
+                    if (analytics.credibility_distribution) {
+                        Object.keys(analytics.credibility_distribution).forEach(cred => {
+                            combined.credibility_distribution[cred] = 
+                                (combined.credibility_distribution[cred] || 0) + analytics.credibility_distribution[cred];
+                        });
+                    }
+
+                    // Combine hourly patterns
+                    if (analytics.time_patterns && analytics.time_patterns.hourly) {
+                        Object.keys(analytics.time_patterns.hourly).forEach(hour => {
+                            combined.time_patterns.hourly[hour] = 
+                                (combined.time_patterns.hourly[hour] || 0) + analytics.time_patterns.hourly[hour];
+                        });
+                    }
+
+                    // Combine top content
+                    if (analytics.top_content) {
+                        combined.top_content = combined.top_content.concat(analytics.top_content);
+                    }
+
+                    // Combine trending narratives
+                    if (analytics.trending_narratives) {
+                        combined.trending_narratives = combined.trending_narratives.concat(analytics.trending_narratives);
+                    }
+
+                    // Combine quality distribution
+                    if (analytics.chart_data && analytics.chart_data.quality_distribution) {
+                        combined.chart_data.quality_distribution = 
+                            combined.chart_data.quality_distribution.concat(analytics.chart_data.quality_distribution);
+                    }
+                });
+
+                // Calculate averages
+                if (totalAreas > 0) {
+                    combined.overview.avg_quality_score = combined.overview.avg_quality_score / totalAreas;
+                    combined.overview.avg_sentiment_score = combined.overview.avg_sentiment_score / totalAreas;
+                }
+
+                // Sort and limit top content
+                combined.top_content = combined.top_content
+                    .sort((a, b) => b.quality_score - a.quality_score)
+                    .slice(0, 10);
+
+                // Aggregate and sort trending narratives
+                const narrativeMap = {};
+                combined.trending_narratives.forEach(narrative => {
+                    if (narrativeMap[narrative.word]) {
+                        narrativeMap[narrative.word] += narrative.count;
+                    } else {
+                        narrativeMap[narrative.word] = narrative.count;
+                    }
+                });
+                
+                combined.trending_narratives = Object.entries(narrativeMap)
+                    .map(([word, count]) => ({ word, count }))
+                    .sort((a, b) => b.count - a.count)
+                    .slice(0, 20);
+
+                // Prepare chart data
+                combined.chart_data.sentiment_chart = Object.entries(combined.sentiment_distribution)
+                    .map(([name, value]) => ({ name, value }));
+                combined.chart_data.source_chart = Object.entries(combined.source_distribution)
+                    .map(([name, value]) => ({ name, value }))
+                    .sort((a, b) => b.value - a.value)
+                    .slice(0, 10);
+                combined.chart_data.credibility_chart = Object.entries(combined.credibility_distribution)
+                    .map(([name, value]) => ({ name, value }));
+                combined.chart_data.hourly_chart = Object.entries(combined.time_patterns.hourly)
+                    .map(([hour, posts]) => ({ hour: parseInt(hour), posts }))
+                    .sort((a, b) => a.hour - b.hour);
+
+                return combined;
+            }
+
+            function renderAnalyticsOverview(analytics) {
+                const overview = analytics.overview;
+                
+                analyticsOverview.innerHTML = `
+                    <div class="metric-card">
+                        <div class="text-2xl font-bold">${overview.total_posts.toLocaleString()}</div>
+                        <div class="text-sm opacity-90">Total Posts</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="text-2xl font-bold">${(overview.total_reach / 1000000).toFixed(1)}M</div>
+                        <div class="text-sm opacity-90">Total Reach</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="text-2xl font-bold">${overview.avg_quality_score.toFixed(2)}</div>
+                        <div class="text-sm opacity-90">Avg Quality Score</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="text-2xl font-bold">${overview.high_quality_posts}</div>
+                        <div class="text-sm opacity-90">High Quality Posts</div>
+                    </div>
+                `;
+            }
+
+            function renderAnalyticsCharts(analytics) {
+                // Sentiment Chart
+                renderSentimentChart(analytics.chart_data.sentiment_chart);
+                
+                // Sources Chart
+                renderSourcesAnalyticsChart(analytics.chart_data.source_chart);
+                
+                // Quality Chart
+                renderQualityChart(analytics.chart_data.quality_distribution);
+                
+                // Hourly Chart
+                renderHourlyChart(analytics.chart_data.hourly_chart);
+                
+                // Credibility Chart
+                renderCredibilityChart(analytics.chart_data.credibility_chart);
+            }
+
+            function renderSentimentChart(sentimentData) {
+                const ctx = document.getElementById('sentiment-chart').getContext('2d');
+                
+                if (sentimentChartInstance) {
+                    sentimentChartInstance.destroy();
+                }
+
+                const colors = {
+                    'very positive': '#22c55e',
+                    'positive': '#65a30d',
+                    'neutral': '#64748b',
+                    'negative': '#ef4444',
+                    'very negative': '#dc2626'
+                };
+
+                sentimentChartInstance = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: sentimentData.map(item => item.name),
+                        datasets: [{
+                            data: sentimentData.map(item => item.value),
+                            backgroundColor: sentimentData.map(item => colors[item.name] || '#64748b'),
+                            borderWidth: 2,
+                            borderColor: '#fff'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom'
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                        const percentage = ((context.parsed / total) * 100).toFixed(1);
+                                        return `${context.label}: ${context.parsed} (${percentage}%)`;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            function renderSourcesAnalyticsChart(sourcesData) {
+                const ctx = document.getElementById('sources-analytics-chart').getContext('2d');
+                
+                if (sourcesAnalyticsChartInstance) {
+                    sourcesAnalyticsChartInstance.destroy();
+                }
+
+                sourcesAnalyticsChartInstance = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: sourcesData.map(item => item.name),
+                        datasets: [{
+                            label: 'Posts',
+                            data: sourcesData.map(item => item.value),
+                            backgroundColor: multiColorPalette.slice(0, sourcesData.length),
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    precision: 0
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        }
+                    }
+                });
+            }
+
+            function renderQualityChart(qualityData) {
+                const ctx = document.getElementById('quality-chart').getContext('2d');
+                
+                if (qualityChartInstance) {
+                    qualityChartInstance.destroy();
+                }
+
+                qualityChartInstance = new Chart(ctx, {
+                    type: 'histogram',
+                    data: {
+                        datasets: [{
+                            label: 'Content Quality',
+                            data: qualityData,
+                            backgroundColor: 'rgba(248, 163, 82, 0.7)',
+                            borderColor: '#d94236',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            x: {
+                                type: 'linear',
+                                position: 'bottom',
+                                title: {
+                                    display: true,
+                                    text: 'Quality Score'
+                                }
+                            },
+                            y: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Number of Posts'
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            function renderHourlyChart(hourlyData) {
+                const ctx = document.getElementById('hourly-chart').getContext('2d');
+                
+                if (hourlyChartInstance) {
+                    hourlyChartInstance.destroy();
+                }
+
+                hourlyChartInstance = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: hourlyData.map(item => `${item.hour}:00`),
+                        datasets: [{
+                            label: 'Posts',
+                            data: hourlyData.map(item => item.posts),
+                            backgroundColor: 'rgba(248, 163, 82, 0.2)',
+                            borderColor: '#d94236',
+                            borderWidth: 2,
+                            tension: 0.4,
+                            fill: true
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    precision: 0
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            function renderCredibilityChart(credibilityData) {
+                const ctx = document.getElementById('credibility-chart').getContext('2d');
+                
+                if (credibilityChartInstance) {
+                    credibilityChartInstance.destroy();
+                }
+
+                const colors = {
+                    'high': '#22c55e',
+                    'medium-high': '#65a30d',
+                    'medium': '#f59e0b',
+                    'low': '#ef4444',
+                    'unknown': '#64748b'
+                };
+
+                credibilityChartInstance = new Chart(ctx, {
+                    type: 'pie',
+                    data: {
+                        labels: credibilityData.map(item => item.name),
+                        datasets: [{
+                            data: credibilityData.map(item => item.value),
+                            backgroundColor: credibilityData.map(item => colors[item.name] || '#64748b'),
+                            borderWidth: 2,
+                            borderColor: '#fff'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom'
+                            }
+                        }
+                    }
+                });
+            }
+
+            function renderTopContent(analytics) {
+                if (!analytics.top_content || analytics.top_content.length === 0) {
+                    topContent.innerHTML = '<p class="text-gray-500">No top content data available.</p>';
+                    return;
+                }
+
+                topContent.innerHTML = analytics.top_content.slice(0, 5).map((content, index) => `
+                    <div class="border-l-4 border-brand-orange pl-4 py-2">
+                        <div class="flex justify-between items-start mb-2">
+                            <h4 class="font-semibold text-brand-red text-sm">#${index + 1} ${content.title.substring(0, 60)}${content.title.length > 60 ? '...' : ''}</h4>
+                            <div class="flex gap-2 text-xs">
+                                <span class="bg-brand-light-orange text-brand-dark-red px-2 py-1 rounded">
+                                    Quality: ${content.quality_score.toFixed(2)}
+                                </span>
+                                <span class="bg-gray-100 text-gray-700 px-2 py-1 rounded">
+                                    ${content.sentiment}
+                                </span>
+                            </div>
+                        </div>
+                        <p class="text-sm text-gray-600">
+                            Source: ${content.source} | Engagement: ${content.engagement || 0}
+                        </p>
+                    </div>
+                `).join('');
+            }
+
+            function renderTrendingNarratives(analytics) {
+                if (!analytics.trending_narratives || analytics.trending_narratives.length === 0) {
+                    trendingNarratives.innerHTML = '<p class="text-gray-500">No trending topics data available.</p>';
+                    return;
+                }
+
+                trendingNarratives.innerHTML = analytics.trending_narratives.slice(0, 15).map(narrative => {
+                    const fontSize = Math.min(1.5, Math.max(0.8, narrative.count / 10));
+                    return `
+                        <span class="word-item" style="font-size: ${fontSize}rem;">
+                            ${narrative.word} (${narrative.count})
+                        </span>
+                    `;
+                }).join('');
+            }
+
+            function renderTherapyAreaAnalytics(pulsarAnalytics) {
+                const therapyAreas = Object.keys(pulsarAnalytics);
+                
+                if (therapyAreas.length === 0) {
+                    therapyAreaAnalytics.innerHTML = '<p class="text-gray-500">No therapy area analytics available.</p>';
+                    return;
+                }
+
+                therapyAreaAnalytics.innerHTML = `
+                    <h3 class="text-xl font-semibold text-brand-red mb-4">📋 Analytics by Client Area</h3>
+                    ${therapyAreas.map(area => {
+                        const analytics = pulsarAnalytics[area];
+                        if (!analytics || !analytics.overview) return '';
+                        
+                        return `
+                            <div class="analytics-card mb-4">
+                                <h4 class="text-lg font-semibold text-brand-red mb-3">${area}</h4>
+                                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+                                    <div class="text-center">
+                                        <div class="text-xl font-bold text-brand-orange">${analytics.overview.total_posts}</div>
+                                        <div class="text-sm text-gray-600">Posts</div>
+                                    </div>
+                                    <div class="text-center">
+                                        <div class="text-xl font-bold text-brand-orange">${(analytics.overview.total_reach / 1000).toFixed(0)}K</div>
+                                        <div class="text-sm text-gray-600">Reach</div>
+                                    </div>
+                                    <div class="text-center">
+                                        <div class="text-xl font-bold text-brand-orange">${analytics.overview.avg_quality_score.toFixed(2)}</div>
+                                        <div class="text-sm text-gray-600">Avg Quality</div>
+                                    </div>
+                                    <div class="text-center">
+                                        <div class="text-xl font-bold text-brand-orange">${analytics.overview.high_quality_posts}</div>
+                                        <div class="text-sm text-gray-600">High Quality</div>
+                                    </div>
+                                </div>
+                                ${analytics.trending_narratives && analytics.trending_narratives.length > 0 ? `
+                                    <div>
+                                        <h5 class="font-medium text-gray-700 mb-2">Key Topics:</h5>
+                                        <div class="flex flex-wrap gap-2">
+                                            ${analytics.trending_narratives.slice(0, 8).map(narrative => `
+                                                <span class="bg-brand-light-orange text-brand-dark-red px-2 py-1 rounded-full text-xs">
+                                                    ${narrative.word} (${narrative.count})
+                                                </span>
+                                            `).join('')}
+                                        </div>
+                                    </div>
+                                ` : ''}
+                            </div>
+                        `;
+                    }).join('')}
+                `;
+            }
             
             // Helper function to get article age
             function getArticleAge(articleDate) {
@@ -1152,6 +1862,23 @@
                 if (isPulsarArticle) {
                     modalBadgesHtml += '<span class="px-2 py-1 text-xs rounded-full bg-blue-500 text-white mr-1 mb-1 inline-block">Social Listening</span>';
                 }
+
+                // Add analytics badges if available
+                if (article.analytics) {
+                    if (article.analytics.sentiment) {
+                        const sentimentColor = article.analytics.sentiment.includes('positive') ? 'bg-green-500' : 
+                                             article.analytics.sentiment.includes('negative') ? 'bg-red-500' : 'bg-gray-500';
+                        modalBadgesHtml += `<span class="px-2 py-1 text-xs rounded-full ${sentimentColor} text-white mr-1 mb-1 inline-block">
+                            ${article.analytics.sentiment}
+                        </span>`;
+                    }
+                    if (article.analytics.content_quality_score > 0.7) {
+                        modalBadgesHtml += '<span class="px-2 py-1 text-xs rounded-full bg-purple-500 text-white mr-1 mb-1 inline-block">High Quality</span>';
+                    }
+                    if (article.analytics.viral_score > 10) {
+                        modalBadgesHtml += '<span class="px-2 py-1 text-xs rounded-full bg-yellow-500 text-white mr-1 mb-1 inline-block">Viral Candidate</span>';
+                    }
+                }
                 
                 // Format takeaways as list items
                 const takeawaysList = article.takeaways.map(takeaway => 
@@ -1161,6 +1888,23 @@
                 // Create author info section - hide for Pulsar articles
                 const authorInfo = isPulsarArticle ? '' : 
                     `${article.authors ? `<p><strong>Authors:</strong> ${article.authors}</p>` : ''}`;
+                
+                // Create analytics section if available
+                const analyticsSection = article.analytics ? `
+                    <div class="mb-4">
+                        <h3 class="font-semibold text-lg mb-2">Analytics</h3>
+                        <div class="bg-gray-50 p-3 rounded-lg">
+                            <div class="grid grid-cols-2 gap-4 text-sm">
+                                ${article.analytics.sentiment ? `<div><strong>Sentiment:</strong> ${article.analytics.sentiment}</div>` : ''}
+                                ${article.analytics.credibility_level ? `<div><strong>Credibility:</strong> ${article.analytics.credibility_level}</div>` : ''}
+                                ${article.analytics.content_quality_score ? `<div><strong>Quality Score:</strong> ${article.analytics.content_quality_score.toFixed(2)}</div>` : ''}
+                                ${article.analytics.engagement ? `<div><strong>Engagement:</strong> ${article.analytics.engagement}</div>` : ''}
+                                ${article.analytics.viral_score ? `<div><strong>Viral Score:</strong> ${article.analytics.viral_score.toFixed(1)}</div>` : ''}
+                                ${article.analytics.total_interactions ? `<div><strong>Interactions:</strong> ${article.analytics.total_interactions}</div>` : ''}
+                            </div>
+                        </div>
+                    </div>
+                ` : '';
                 
                 // Create original content section for Pulsar articles
                 const originalContentSection = isPulsarArticle && article.description ? `
@@ -1207,6 +1951,8 @@
                         ${therapyAreas.length > 1 ? `<p><strong>Relevant to:</strong> ${therapyAreas.join(', ')}</p>` : ''}
                         ${terms.length > 1 ? `<p><strong>Found on:</strong> ${terms.join(', ')}</p>` : ''}
                     </div>
+                    
+                    ${analyticsSection}
                     
                     <div class="mb-4">
                         <h3 class="font-semibold text-lg mb-2">Summary</h3>
