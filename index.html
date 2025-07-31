@@ -352,7 +352,6 @@
     </header>
 
     <div class="container mx-auto px-4">
-        <!-- Tab Navigation -->
         <div class="mb-6">
             <div class="border-b border-gray-200">
                 <nav class="-mb-px flex space-x-8">
@@ -366,9 +365,7 @@
             </div>
         </div>
 
-        <!-- Articles Tab Content -->
         <div id="articles-tab" class="tab-content active">
-            <!-- Collapsible Key Highlights Section -->
             <div class="highlights-card mb-6">
                 <div class="highlights-header flex justify-between items-center" id="highlights-toggle">
                     <h2 class="text-xl font-semibold text-brand-red">Key Highlights This Week</h2>
@@ -383,13 +380,11 @@
                 </div>
             </div>
 
-            <!-- Mobile filter toggle button -->
             <button class="show-filters-mobile mb-4 bg-brand-orange text-white py-2 px-4 rounded shadow w-full md:hidden">
                 Show Filters
             </button>
 
             <div class="flex flex-col md:flex-row gap-6">
-                <!-- Filter Sidebar -->
                 <div class="filter-sidebar bg-white rounded-lg shadow p-4 md:w-64 mb-6 border-t-4 border-brand-orange">
                     <span class="close-sidebar">&times;</span>
                     
@@ -445,20 +440,16 @@
                     
                     <h3 class="sidebar-heading">Clients</h3>
                     <div id="therapy-area-buttons">
-                        <!-- Topic area buttons will be dynamically added here -->
                         <button class="filter-btn active" data-value="All">All Areas</button>
                     </div>
                     
                     <h3 class="sidebar-heading">Sources</h3>
                     <div id="term-buttons">
-                        <!-- Source term buttons will be dynamically added here -->
                         <button class="filter-btn active" data-value="All">All Sources</button>
                     </div>
                 </div>
 
-                <!-- Main Content -->
                 <div class="flex-1">
-                    <!-- Dashboard Stats -->
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
                         <div class="bg-white rounded-lg shadow p-4 border-t-4 border-brand-orange">
                             <h2 class="text-lg font-semibold mb-4 text-brand-red">Articles by Source</h2>
@@ -482,7 +473,6 @@
                         </div>
                     </div>
 
-                    <!-- Articles List -->
                     <div class="bg-white rounded-lg shadow p-4 mb-6 border-t-4 border-brand-orange">
                         <div class="flex justify-between items-center mb-4">
                             <h2 class="text-xl font-semibold text-brand-red">Articles <span id="article-count">(0)</span></h2>
@@ -491,7 +481,6 @@
                             </div>
                         </div>
                         
-                        <!-- Grid layout for articles - changed to 2 columns -->
                         <div id="articles-container" class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div class="text-center py-6 text-gray-500 col-span-full">
                                 Loading articles...
@@ -502,21 +491,16 @@
             </div>
         </div>
 
-        <!-- Analytics Tab Content -->
         <div id="analytics-tab" class="tab-content">
             <div class="mb-6">
                 <h2 class="text-2xl font-bold text-brand-red mb-4">📊 Social Media Analytics Dashboard</h2>
                 <p class="text-gray-600">Comprehensive analysis of AI-related social media conversations and engagement patterns.</p>
             </div>
 
-            <!-- Analytics Overview Cards -->
             <div id="analytics-overview" class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-                <!-- Overview cards will be populated here -->
-            </div>
+                </div>
 
-            <!-- Analytics Charts Grid -->
             <div class="analytics-grid mb-8">
-                <!-- Sentiment Analysis Chart -->
                 <div class="analytics-card">
                     <h3 class="text-lg font-semibold mb-4 text-brand-red">Sentiment Distribution</h3>
                     <div class="analytics-chart-container">
@@ -524,7 +508,6 @@
                     </div>
                 </div>
 
-                <!-- Source Distribution Chart -->
                 <div class="analytics-card">
                     <h3 class="text-lg font-semibold mb-4 text-brand-red">Content Sources</h3>
                     <div class="analytics-chart-container">
@@ -532,7 +515,6 @@
                     </div>
                 </div>
 
-                <!-- Content Quality Chart -->
                 <div class="analytics-card">
                     <h3 class="text-lg font-semibold mb-4 text-brand-red">Content Quality Distribution</h3>
                     <div class="analytics-chart-container">
@@ -540,7 +522,6 @@
                     </div>
                 </div>
 
-                <!-- Posting Times Chart -->
                 <div class="analytics-card">
                     <h3 class="text-lg font-semibold mb-4 text-brand-red">Posting Patterns by Hour</h3>
                     <div class="analytics-chart-container">
@@ -548,7 +529,6 @@
                     </div>
                 </div>
 
-                <!-- Credibility Analysis -->
                 <div class="analytics-card">
                     <h3 class="text-lg font-semibold mb-4 text-brand-red">Source Credibility</h3>
                     <div class="analytics-chart-container">
@@ -556,27 +536,21 @@
                     </div>
                 </div>
 
-                <!-- Trending Narratives -->
                 <div class="analytics-card">
                     <h3 class="text-lg font-semibold mb-4 text-brand-red">Trending Topics</h3>
                     <div id="trending-narratives" class="word-cloud">
-                        <!-- Word cloud will be populated here -->
-                    </div>
+                        </div>
                 </div>
             </div>
 
-            <!-- Top Performing Content -->
             <div class="analytics-card mb-8">
                 <h3 class="text-lg font-semibold mb-4 text-brand-red">🏆 Top Performing Content</h3>
                 <div id="top-content" class="space-y-4">
-                    <!-- Top content will be populated here -->
-                </div>
+                    </div>
             </div>
 
-            <!-- Therapy Area Analytics -->
             <div id="therapy-area-analytics" class="space-y-6">
-                <!-- Individual therapy area analytics will be populated here -->
-            </div>
+                </div>
         </div>
         
         <footer class="text-center text-gray-600 text-sm mt-6 mb-8 p-6 bg-white rounded-lg shadow border-t-4 border-brand-orange">
@@ -585,7 +559,6 @@
         </footer>
     </div>
     
-    <!-- Modal for article details -->
     <div id="article-modal" class="modal">
         <div class="modal-content">
             <span class="close">&times;</span>
@@ -740,7 +713,8 @@
             window.dashboardData = null;
             
             // Fetch data
-            fetch('/data/latest_dashboard_data.json')
+            // FIX: Changed fetch path to be relative
+            fetch('data/latest_dashboard_data.json')
                 .then(response => response.json())
                 .then(data => {
                     // Store data globally
@@ -1099,19 +1073,39 @@
                 });
             }
 
+            // FIX: Replaced 'histogram' chart with a 'bar' chart and added data binning
             function renderQualityChart(qualityData) {
                 const ctx = document.getElementById('quality-chart').getContext('2d');
-                
+
                 if (qualityChartInstance) {
                     qualityChartInstance.destroy();
                 }
 
+                // Bin the data for the histogram
+                const bins = [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0];
+                const histData = new Array(bins.length - 1).fill(0);
+
+                qualityData.forEach(score => {
+                    for (let i = 0; i < bins.length - 1; i++) {
+                        if (score >= bins[i] && score < bins[i+1]) {
+                            histData[i]++;
+                            break;
+                        }
+                    }
+                    if(score === 1.0) { // include score of 1.0 in the last bin
+                        histData[histData.length -1]++;
+                    }
+                });
+
+                const labels = bins.slice(0, -1).map((bin, i) => `${bin.toFixed(1)}-${bins[i+1].toFixed(1)}`);
+
                 qualityChartInstance = new Chart(ctx, {
-                    type: 'histogram',
+                    type: 'bar',
                     data: {
+                        labels: labels,
                         datasets: [{
                             label: 'Content Quality',
-                            data: qualityData,
+                            data: histData,
                             backgroundColor: 'rgba(248, 163, 82, 0.7)',
                             borderColor: '#d94236',
                             borderWidth: 1
@@ -1122,8 +1116,6 @@
                         maintainAspectRatio: false,
                         scales: {
                             x: {
-                                type: 'linear',
-                                position: 'bottom',
                                 title: {
                                     display: true,
                                     text: 'Quality Score'
@@ -1134,7 +1126,15 @@
                                 title: {
                                     display: true,
                                     text: 'Number of Posts'
+                                },
+                                ticks: {
+                                    precision: 0
                                 }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                display: false
                             }
                         }
                     }
@@ -1671,7 +1671,7 @@
                 // Filter articles by other criteria
                 filteredArticles = articles.filter(article => {
                     // Filter by article type (RSS vs Pulsar)
-                    const isPulsarArticle = article.link === "#" || article.authors === "Unknown Author";
+                    const isPulsarArticle = article.journal === "PODCAST"; // FIX: More specific check
                     if (articleType === 'rss' && isPulsarArticle) return false;
                     if (articleType === 'pulsar' && !isPulsarArticle) return false;
                     
@@ -1782,8 +1782,9 @@
                     const terms = article.terms || [article.term];
                     const badgesHtml = createMultipleBadges(therapyAreas, terms, articleAge);
                     
-                    // Check if this is a Pulsar article (no external link)
-                    const isPulsarArticle = article.link === "#" || article.authors === "Unknown Author";
+                    // Check if this is a Pulsar article
+                    // FIX: Changed the condition to be more specific
+                    const isPulsarArticle = article.journal === "PODCAST";
                     
                     // Create different HTML based on article type
                     const articleFooter = isPulsarArticle ? 
@@ -1835,7 +1836,8 @@
                 const daysAgo = Math.ceil((new Date().getTime() - articleDate.getTime()) / (1000 * 60 * 60 * 24));
                 
                 // Check if this is a Pulsar article
-                const isPulsarArticle = article.link === "#" || article.authors === "Unknown Author";
+                // FIX: Changed the condition to be more specific
+                const isPulsarArticle = article.journal === "PODCAST";
                 
                 // Handle multiple therapy areas and terms
                 const therapyAreas = article.therapyAreas || [article.therapyArea];
@@ -1983,6 +1985,7 @@
             }
             
             // Update charts based on filtered articles
+            // FIX: Made chart updates more efficient
             function updateCharts() {
                 updateSourcesChart();
                 updateAreasChart();
@@ -1991,26 +1994,17 @@
             
             // Create and update sources chart
             function createSourcesChart() {
-                // Destroy existing chart if it exists
                 if (sourcesChartInstance) {
                     sourcesChartInstance.destroy();
                 }
-                
-                // Prepare data
                 const sourceData = prepareSourcesData();
-                
                 if (sourceData.labels.length === 0) {
-                    // Show empty chart message
                     sourcesChart.canvas.parentElement.innerHTML = '<div class="flex items-center justify-center h-full text-gray-500 text-sm">No data to display</div>';
                     return;
                 }
-                
-                // Generate background colors for each bar
                 const backgroundColors = sourceData.labels.map((_, index) => 
                     multiColorPalette[index % multiColorPalette.length]
                 );
-                
-                // Create chart
                 sourcesChartInstance = new Chart(sourcesChart, {
                     type: 'bar',
                     data: {
@@ -2019,76 +2013,60 @@
                             label: 'Number of Articles',
                             data: sourceData.data,
                             backgroundColor: backgroundColors,
-                            borderColor: backgroundColors.map(color => color),
+                            borderColor: backgroundColors,
                             borderWidth: 1
                         }]
                     },
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                ticks: {
-                                    precision: 0
-                                }
-                            }
-                        }
+                        scales: { y: { beginAtZero: true, ticks: { precision: 0 } } }
                     }
                 });
             }
             
             function updateSourcesChart() {
-                if (!sourcesChartInstance) return;
-                
-                // Destroy existing chart
-                sourcesChartInstance.destroy();
-                
-                // Create a new chart
-                createSourcesChart();
+                if (!sourcesChartInstance) {
+                    createSourcesChart();
+                    return;
+                }
+                const sourceData = prepareSourcesData();
+                sourcesChartInstance.data.labels = sourceData.labels;
+                sourcesChartInstance.data.datasets[0].data = sourceData.data;
+                sourcesChartInstance.data.datasets[0].backgroundColor = sourceData.labels.map((_, index) =>
+                    multiColorPalette[index % multiColorPalette.length]
+                );
+                sourcesChartInstance.data.datasets[0].borderColor = sourcesChartInstance.data.datasets[0].backgroundColor;
+                sourcesChartInstance.update();
             }
             
             function prepareSourcesData() {
-                // Count articles by source
                 const sourceCounts = {};
                 filteredArticles.forEach(article => {
                     sourceCounts[article.journal] = (sourceCounts[article.journal] || 0) + 1;
                 });
-                
-                // Convert to arrays and sort by count (descending)
                 const entries = Object.entries(sourceCounts)
                     .sort((a, b) => b[1] - a[1])
-                    .slice(0, 10); // Top 10 sources
-                
-                // Extract labels and data
-                const labels = entries.map(entry => entry[0]);
-                const data = entries.map(entry => entry[1]);
-                
-                return { labels, data };
+                    .slice(0, 10);
+                return {
+                    labels: entries.map(entry => entry[0]),
+                    data: entries.map(entry => entry[1])
+                };
             }
             
-            // Create and update areas chart - UPDATED
+            // Create and update areas chart
             function createAreasChart() {
-                // Destroy existing chart if it exists
                 if (areasChartInstance) {
                     areasChartInstance.destroy();
                 }
-                
-                // Prepare data
                 const areaData = prepareAreasData();
-                
                 if (areaData.labels.length === 0) {
-                    // Show empty chart message
                     areasChart.canvas.parentElement.innerHTML = '<div class="flex items-center justify-center h-full text-gray-500 text-sm">No data to display</div>';
                     return;
                 }
-                
-                // Generate background colors for each slice
                 const backgroundColors = areaData.labels.map((_, index) => 
                     multiColorPalette[index % multiColorPalette.length]
                 );
-                
-                // Create chart
                 areasChartInstance = new Chart(areasChart, {
                     type: 'pie',
                     data: {
@@ -2096,7 +2074,7 @@
                         datasets: [{
                             data: areaData.data,
                             backgroundColor: backgroundColors,
-                            borderColor: backgroundColors.map(color => color),
+                            borderColor: backgroundColors,
                             borderWidth: 1
                         }]
                     },
@@ -2104,17 +2082,13 @@
                         responsive: true,
                         maintainAspectRatio: false,
                         plugins: {
-                            legend: {
-                                display: true,
-                                position: 'bottom'
-                            },
+                            legend: { display: true, position: 'bottom' },
                             tooltip: {
                                 callbacks: {
                                     label: function(context) {
-                                        const value = context.parsed;
                                         const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                                        const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
-                                        return `${context.label}: ${value} articles (${percentage}%)`;
+                                        const percentage = total > 0 ? ((context.parsed / total) * 100).toFixed(1) : 0;
+                                        return `${context.label}: ${context.parsed} articles (${percentage}%)`;
                                     }
                                 }
                             }
@@ -2124,64 +2098,49 @@
             }
             
             function updateAreasChart() {
-                if (!areasChartInstance) return;
-                
-                // Destroy existing chart
-                areasChartInstance.destroy();
-                
-                // Create a new chart
-                createAreasChart();
+                if (!areasChartInstance) {
+                    createAreasChart();
+                    return;
+                }
+                const areaData = prepareAreasData();
+                areasChartInstance.data.labels = areaData.labels;
+                areasChartInstance.data.datasets[0].data = areaData.data;
+                areasChartInstance.data.datasets[0].backgroundColor = areaData.labels.map((_, index) =>
+                    multiColorPalette[index % multiColorPalette.length]
+                );
+                areasChartInstance.data.datasets[0].borderColor = areasChartInstance.data.datasets[0].backgroundColor;
+                areasChartInstance.update();
             }
             
             function prepareAreasData() {
-                // Count articles by therapy area - handle both single and multiple therapy areas
                 const areaCounts = {};
-                
-                // Initialize all therapy areas with 0
-                allTherapyAreas.forEach(area => {
-                    areaCounts[area] = 0;
-                });
-                
-                // Count filtered articles - handle multiple therapy areas per article
+                allTherapyAreas.forEach(area => { areaCounts[area] = 0; });
                 filteredArticles.forEach(article => {
                     if (Array.isArray(article.therapyAreas)) {
-                        // Multiple therapy areas - count for each
                         article.therapyAreas.forEach(area => {
                             areaCounts[area] = (areaCounts[area] || 0) + 1;
                         });
-                    } else {
-                        // Single therapy area (backward compatibility)
+                    } else if(article.therapyArea) {
                         areaCounts[article.therapyArea] = (areaCounts[article.therapyArea] || 0) + 1;
                     }
                 });
-                
-                // Only show areas that have articles for the chart
                 const entriesWithArticles = Object.entries(areaCounts).filter(([area, count]) => count > 0);
-                
-                // Convert to arrays
-                const labels = entriesWithArticles.map(entry => entry[0]);
-                const data = entriesWithArticles.map(entry => entry[1]);
-                
-                return { labels, data };
+                return {
+                    labels: entriesWithArticles.map(entry => entry[0]),
+                    data: entriesWithArticles.map(entry => entry[1])
+                };
             }
             
             // Create and update dates chart
             function createDatesChart() {
-                // Destroy existing chart if it exists
                 if (datesChartInstance) {
                     datesChartInstance.destroy();
                 }
-                
-                // Prepare data
                 const dateData = prepareDatesData();
-                
                 if (dateData.labels.length === 0) {
-                    // Show empty chart message
                     datesChart.canvas.parentElement.innerHTML = '<div class="flex items-center justify-center h-full text-gray-500 text-sm">No data to display</div>';
                     return;
                 }
-                
-                // Create chart
                 datesChartInstance = new Chart(datesChart, {
                     type: 'line',
                     data: {
@@ -2202,44 +2161,33 @@
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                ticks: {
-                                    precision: 0
-                                }
-                            }
-                        }
+                        scales: { y: { beginAtZero: true, ticks: { precision: 0 } } }
                     }
                 });
             }
             
             function updateDatesChart() {
-                if (!datesChartInstance) return;
-                
-                // Destroy existing chart
-                datesChartInstance.destroy();
-                
-                // Create a new chart
-                createDatesChart();
+                if (!datesChartInstance) {
+                    createDatesChart();
+                    return;
+                }
+                const dateData = prepareDatesData();
+                datesChartInstance.data.labels = dateData.labels;
+                datesChartInstance.data.datasets[0].data = dateData.data;
+                datesChartInstance.update();
             }
             
             function prepareDatesData() {
-                // Count articles by date
                 const dateCounts = {};
                 filteredArticles.forEach(article => {
                     dateCounts[article.date] = (dateCounts[article.date] || 0) + 1;
                 });
-                
-                // Convert to arrays and sort by date
                 const entries = Object.entries(dateCounts)
                     .sort((a, b) => new Date(a[0]) - new Date(b[0]));
-                
-                // Extract labels and data
-                const labels = entries.map(entry => entry[0]);
-                const data = entries.map(entry => entry[1]);
-                
-                return { labels, data };
+                return {
+                    labels: entries.map(entry => entry[0]),
+                    data: entries.map(entry => entry[1])
+                };
             }
         });
     </script>
