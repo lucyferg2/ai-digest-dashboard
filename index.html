@@ -603,15 +603,17 @@
         function loadDashboardData() {
             // Try to read the uploaded file first
             if (window.fs && window.fs.readFile) {
-                window.fs.readFile('/data/latest_dashboard_data.json', { encoding: 'utf8' })
+                window.fs.readFile('detailed_dashboard_data.json.rtf', { encoding: 'utf8' })
                     .then(data => {
-                        const parsedData = JSON.parse(data);
+                        // Clean RTF formatting
+                        const cleanData = data.replace(/\\\\/g, '\\').replace(/\\"/g, '"').replace(/\\\[/g, '[').replace(/\\\]/g, ']');
+                        const parsedData = JSON.parse(cleanData);
                         processDashboardData(parsedData);
                     })
                     .catch(error => {
-                        console.error('Error reading uploaded file:', error);
-                        // Fallback to fetch
-                        fetchDashboardData();
+                        console.error('Error reading RTF file:', error);
+                        // Try sample file
+                        tryReadSampleFile();
                     });
             } else {
                 // Fallback to fetch
@@ -619,21 +621,111 @@
             }
         }
 
+        function tryReadSampleFile() {
+            if (window.fs && window.fs.readFile) {
+                window.fs.readFile('sample_latest_dashboard_data.json', { encoding: 'utf8' })
+                    .then(data => {
+                        const parsedData = JSON.parse(data);
+                        processDashboardData(parsedData);
+                    })
+                    .catch(error => {
+                        console.error('Error reading sample file:', error);
+                        fetchDashboardData();
+                    });
+            } else {
+                fetchDashboardData();
+            }
+        }
+
         function fetchDashboardData() {
-            fetch('/data/latest_dashboard_data.json')
+            // Try multiple file paths
+            const filesToTry = [
+                'detailed_dashboard_data.json.rtf',
+                'sample_latest_dashboard_data.json',
+                'data/latest_dashboard_data.json'
+            ];
+            
+            tryFetchFiles(filesToTry, 0);
+        }
+
+        function tryFetchFiles(files, index) {
+            if (index >= files.length) {
+                showErrorMessage();
+                return;
+            }
+
+            fetch(files[index])
                 .then(response => {
                     if (!response.ok) {
                         throw new Error(`HTTP error! status: ${response.status}`);
                     }
-                    return response.json();
+                    return response.text();
                 })
                 .then(data => {
-                    processDashboardData(data);
+                    // Handle RTF format if needed
+                    let cleanData = data;
+                    if (files[index].endsWith('.rtf')) {
+                        cleanData = data.replace(/\\\\/g, '\\').replace(/\\"/g, '"').replace(/\\\[/g, '[').replace(/\\\]/g, ']');
+                    }
+                    const parsedData = JSON.parse(cleanData);
+                    processDashboardData(parsedData);
                 })
                 .catch(error => {
-                    console.error('Error loading dashboard data:', error);
-                    showErrorMessage();
+                    console.error(`Error loading ${files[index]}:`, error);
+                    tryFetchFiles(files, index + 1);
                 });
+        }
+
+        function loadPlaceholderSocialData() {
+            // Since there's no social data available, show placeholder data
+            const placeholderKeywords = {
+                'artificial intelligence': 45,
+                'machine learning': 32,
+                'deep learning': 28,
+                'neural networks': 24,
+                'AI automation': 20
+            };
+
+            const placeholderHashtags = {
+                'AI': 15,
+                'MachineLearning': 12,
+                'ArtificialIntelligence': 10,
+                'DeepLearning': 8,
+                'TechTrends': 6
+            };
+
+            // Update social metrics with placeholder data
+            document.getElementById('total-posts').textContent = '0';
+            document.getElementById('total-reach').textContent = '0';
+            document.getElementById('ai-mentions').textContent = Object.values(placeholderKeywords).reduce((a, b) => a + b, 0);
+            document.getElementById('engagement-total').textContent = '0';
+
+            // Social tab metrics
+            document.getElementById('social-posts').textContent = '0';
+            document.getElementById('social-reach').textContent = '0';
+            document.getElementById('positive-sentiment').textContent = '0%';
+            document.getElementById('peak-hour').textContent = '--:--';
+
+            // Quality metrics
+            document.getElementById('high-quality-count').textContent = '0';
+            document.getElementById('avg-quality-score').textContent = '0.00';
+            document.getElementById('avg-engagement-rate').textContent = '0.00%';
+
+            // Update footer
+            document.getElementById('footer-posts').textContent = '0';
+            document.getElementById('footer-mentions').textContent = Object.values(placeholderKeywords).reduce((a, b) => a + b, 0);
+
+            // Display AI keywords
+            displayAIKeywords(placeholderKeywords);
+            
+            // Display hashtags
+            displayHashtags(placeholderHashtags);
+            
+            // Create placeholder charts
+            createPlaceholderCharts();
+            
+            // Update trends tab
+            updateTrendsTabPlaceholder(placeholderKeywords);
         }
 
         function processDashboardData(data) {
@@ -652,8 +744,12 @@
             // Load RSS articles analytics
             loadArticlesAnalytics();
             
-            // Load social analytics if available (will show placeholder data since none exists)
-            loadPlaceholderSocialData();
+            // Load social analytics if available
+            if (pulsarAnalytics && Object.keys(pulsarAnalytics).length > 0) {
+                loadEnhancedAnalytics(pulsarAnalytics);
+            } else {
+                loadPlaceholderSocialData();
+            }
             
             // Initialize article filters and display
             initializeArticleFilters();
@@ -1217,56 +1313,539 @@
             modal.classList.remove('hidden');
         }
 
-        function loadPlaceholderSocialData() {
-            // Since there's no social data in the sample, show placeholder data
-            const placeholderKeywords = {
-                'artificial intelligence': 45,
-                'machine learning': 32,
-                'deep learning': 28,
-                'neural networks': 24,
-                'AI automation': 20
-            };
+        function loadEnhancedAnalytics(analytics) {
+            // Combine analytics from all therapy areas
+            let totalPosts = 0;
+            let totalReach = 0;
+            let totalEngagement = 0;
+            let allAiKeywords = {};
+            let allHashtags = {};
+            let combinedSentiment = {};
+            let combinedSources = {};
+            let combinedCountries = {};
+            let combinedHourly = {};
 
-            const placeholderHashtags = {
-                'AI': 15,
-                'MachineLearning': 12,
-                'ArtificialIntelligence': 10,
-                'DeepLearning': 8,
-                'TechTrends': 6
-            };
+            Object.values(analytics).forEach(areaAnalytics => {
+                if (areaAnalytics && areaAnalytics.overview) {
+                    totalPosts += areaAnalytics.overview.total_posts || 0;
+                    totalReach += areaAnalytics.overview.total_reach || 0;
+                    totalEngagement += areaAnalytics.overview.total_engagement || 0;
+                    
+                    // Combine AI keywords
+                    if (areaAnalytics.ai_keywords) {
+                        areaAnalytics.ai_keywords.forEach(kw => {
+                            allAiKeywords[kw.keyword] = (allAiKeywords[kw.keyword] || 0) + kw.count;
+                        });
+                    }
+                    
+                    // Combine hashtags
+                    if (areaAnalytics.hashtags) {
+                        areaAnalytics.hashtags.forEach(ht => {
+                            allHashtags[ht.hashtag] = (allHashtags[ht.hashtag] || 0) + ht.count;
+                        });
+                    }
+                    
+                    // Combine distributions
+                    if (areaAnalytics.sentiment_distribution) {
+                        Object.entries(areaAnalytics.sentiment_distribution).forEach(([key, value]) => {
+                            combinedSentiment[key] = (combinedSentiment[key] || 0) + value;
+                        });
+                    }
+                    
+                    if (areaAnalytics.source_distribution) {
+                        Object.entries(areaAnalytics.source_distribution).forEach(([key, value]) => {
+                            combinedSources[key] = (combinedSources[key] || 0) + value;
+                        });
+                    }
+                    
+                    if (areaAnalytics.country_distribution) {
+                        Object.entries(areaAnalytics.country_distribution).forEach(([key, value]) => {
+                            combinedCountries[key] = (combinedCountries[key] || 0) + value;
+                        });
+                    }
+                    
+                    if (areaAnalytics.time_patterns && areaAnalytics.time_patterns.hourly) {
+                        Object.entries(areaAnalytics.time_patterns.hourly).forEach(([key, value]) => {
+                            combinedHourly[key] = (combinedHourly[key] || 0) + value;
+                        });
+                    }
+                }
+            });
 
-            // Update social metrics with placeholder data
-            document.getElementById('total-posts').textContent = '0';
-            document.getElementById('total-reach').textContent = '0';
-            document.getElementById('ai-mentions').textContent = Object.values(placeholderKeywords).reduce((a, b) => a + b, 0);
-            document.getElementById('engagement-total').textContent = '0';
+            console.log('Social analytics loaded:', {
+                totalPosts,
+                totalReach,
+                totalEngagement,
+                aiKeywords: Object.keys(allAiKeywords).length,
+                hashtags: Object.keys(allHashtags).length
+            });
 
-            // Social tab metrics
-            document.getElementById('social-posts').textContent = '0';
-            document.getElementById('social-reach').textContent = '0';
-            document.getElementById('positive-sentiment').textContent = '0%';
-            document.getElementById('peak-hour').textContent = '--:--';
+            // Update social overview metrics
+            document.getElementById('total-posts').textContent = formatNumber(totalPosts);
+            document.getElementById('total-reach').textContent = formatNumber(totalReach);
+            document.getElementById('ai-mentions').textContent = formatNumber(Object.values(allAiKeywords).reduce((a, b) => a + b, 0));
+            document.getElementById('engagement-total').textContent = formatNumber(totalEngagement);
 
-            // Quality metrics
-            document.getElementById('high-quality-count').textContent = '0';
-            document.getElementById('avg-quality-score').textContent = '0.00';
-            document.getElementById('avg-engagement-rate').textContent = '0.00%';
+            // Update quality metrics
+            const firstArea = Object.values(analytics)[0];
+            if (firstArea && firstArea.overview) {
+                document.getElementById('high-quality-count').textContent = firstArea.overview.high_quality_posts || 0;
+                document.getElementById('avg-quality-score').textContent = (firstArea.overview.avg_quality_score || 0).toFixed(2);
+                document.getElementById('avg-engagement-rate').textContent = ((firstArea.overview.avg_engagement_rate || 0) * 100).toFixed(2) + '%';
+            }
+
+            // Update social tab metrics
+            document.getElementById('social-posts').textContent = formatNumber(totalPosts);
+            document.getElementById('social-reach').textContent = formatNumber(totalReach);
+            
+            // Calculate positive sentiment percentage
+            const totalSentimentPosts = Object.values(combinedSentiment).reduce((a, b) => a + b, 0);
+            const positiveCount = (combinedSentiment['positive'] || 0) + (combinedSentiment['very positive'] || 0);
+            const positivePercentage = totalSentimentPosts > 0 ? ((positiveCount / totalSentimentPosts) * 100).toFixed(1) : 0;
+            document.getElementById('positive-sentiment').textContent = positivePercentage + '%';
+            
+            // Find peak hour
+            const peakHourEntry = Object.entries(combinedHourly).sort((a, b) => b[1] - a[1])[0];
+            document.getElementById('peak-hour').textContent = peakHourEntry ? `${peakHourEntry[0]}:00` : '--:--';
 
             // Update footer
-            document.getElementById('footer-posts').textContent = '0';
-            document.getElementById('footer-mentions').textContent = Object.values(placeholderKeywords).reduce((a, b) => a + b, 0);
+            document.getElementById('footer-posts').textContent = formatNumber(totalPosts);
+            document.getElementById('footer-mentions').textContent = formatNumber(Object.values(allAiKeywords).reduce((a, b) => a + b, 0));
 
             // Display AI keywords
-            displayAIKeywords(placeholderKeywords);
+            displayAIKeywords(allAiKeywords);
             
             // Display hashtags
-            displayHashtags(placeholderHashtags);
+            displayHashtags(allHashtags);
             
-            // Create placeholder charts
-            createPlaceholderCharts();
+            // Create social charts
+            createSocialCharts(combinedSentiment, combinedSources, combinedHourly, combinedCountries, allAiKeywords);
             
             // Update trends tab
-            updateTrendsTab(placeholderKeywords);
+            updateTrendsTab(allAiKeywords, combinedHourly, firstArea);
+        }
+
+        function createSocialCharts(sentiment, sources, hourly, countries, aiKeywords) {
+            // Create all social charts
+            createSentimentChart(sentiment);
+            createSourcesChart(sources);
+            createHourlyChart(hourly);
+            createCountryChart(countries);
+            createAIKeywordsChart(aiKeywords);
+        }
+
+        function createSentimentChart(sentimentData) {
+            const ctx = document.getElementById('sentiment-overview-chart').getContext('2d');
+            
+            if (chartInstances.sentiment) {
+                chartInstances.sentiment.destroy();
+            }
+
+            if (Object.keys(sentimentData).length === 0) {
+                ctx.canvas.parentElement.innerHTML = '<div class="flex items-center justify-center h-full text-gray-500">No sentiment data available</div>';
+                return;
+            }
+
+            const colors = {
+                'very positive': '#22c55e',
+                'positive': '#65a30d',
+                'neutral': '#64748b',
+                'negative': '#ef4444',
+                'very negative': '#dc2626'
+            };
+
+            chartInstances.sentiment = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(sentimentData),
+                    datasets: [{
+                        data: Object.values(sentimentData),
+                        backgroundColor: Object.keys(sentimentData).map(key => colors[key] || '#64748b'),
+                        borderWidth: 3,
+                        borderColor: '#fff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 20,
+                                font: { size: 12 }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = ((context.parsed / total) * 100).toFixed(1);
+                                    return `${context.label}: ${context.parsed} (${percentage}%)`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Also create detailed sentiment chart
+            const ctx2 = document.getElementById('sentiment-detailed-chart').getContext('2d');
+            
+            if (chartInstances.sentimentDetailed) {
+                chartInstances.sentimentDetailed.destroy();
+            }
+
+            chartInstances.sentimentDetailed = new Chart(ctx2, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(sentimentData),
+                    datasets: [{
+                        label: 'Posts',
+                        data: Object.values(sentimentData),
+                        backgroundColor: Object.keys(sentimentData).map(key => colors[key] || '#64748b'),
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { precision: 0 }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false }
+                    }
+                }
+            });
+        }
+
+        function createSourcesChart(sourcesData) {
+            const ctx = document.getElementById('sources-overview-chart').getContext('2d');
+            
+            if (chartInstances.sources) {
+                chartInstances.sources.destroy();
+            }
+
+            if (Object.keys(sourcesData).length === 0) {
+                ctx.canvas.parentElement.innerHTML = '<div class="flex items-center justify-center h-full text-gray-500">No source data available</div>';
+                return;
+            }
+
+            const sourceColors = {
+                'PODCAST': '#f59e0b',
+                'ONLINE_NEWS': '#3b82f6',
+                'REDDIT': '#ef4444',
+                'SOCIAL_MEDIA': '#8b5cf6'
+            };
+
+            chartInstances.sources = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: Object.keys(sourcesData),
+                    datasets: [{
+                        data: Object.values(sourcesData),
+                        backgroundColor: Object.keys(sourcesData).map(key => sourceColors[key] || '#64748b'),
+                        borderWidth: 3,
+                        borderColor: '#fff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 20,
+                                font: { size: 12 }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Also create source distribution chart
+            const ctx2 = document.getElementById('source-distribution-chart').getContext('2d');
+            
+            if (chartInstances.sourceDistribution) {
+                chartInstances.sourceDistribution.destroy();
+            }
+
+            chartInstances.sourceDistribution = new Chart(ctx2, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(sourcesData),
+                    datasets: [{
+                        label: 'Posts',
+                        data: Object.values(sourcesData),
+                        backgroundColor: Object.keys(sourcesData).map(key => sourceColors[key] || '#64748b'),
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            ticks: { precision: 0 }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false }
+                    }
+                }
+            });
+        }
+
+        function createHourlyChart(hourlyData) {
+            const ctx = document.getElementById('hourly-overview-chart').getContext('2d');
+            
+            if (chartInstances.hourly) {
+                chartInstances.hourly.destroy();
+            }
+
+            if (Object.keys(hourlyData).length === 0) {
+                ctx.canvas.parentElement.innerHTML = '<div class="flex items-center justify-center h-full text-gray-500">No hourly data available</div>';
+                return;
+            }
+
+            // Convert to 24-hour format and sort
+            const hourlyArray = Object.entries(hourlyData)
+                .map(([hour, count]) => ({ hour: parseInt(hour), count }))
+                .sort((a, b) => a.hour - b.hour);
+
+            chartInstances.hourly = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: hourlyArray.map(item => `${item.hour}:00`),
+                    datasets: [{
+                        label: 'Posts per Hour',
+                        data: hourlyArray.map(item => item.count),
+                        backgroundColor: 'rgba(248, 163, 82, 0.3)',
+                        borderColor: '#d94236',
+                        borderWidth: 3,
+                        tension: 0.4,
+                        fill: true,
+                        pointBackgroundColor: '#d94236',
+                        pointBorderColor: '#fff',
+                        pointRadius: 6,
+                        pointHoverRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { precision: 0 }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false }
+                    }
+                }
+            });
+
+            // Also create pattern chart
+            const ctx2 = document.getElementById('hourly-pattern-chart').getContext('2d');
+            
+            if (chartInstances.hourlyPattern) {
+                chartInstances.hourlyPattern.destroy();
+            }
+
+            chartInstances.hourlyPattern = new Chart(ctx2, {
+                type: 'bar',
+                data: {
+                    labels: hourlyArray.map(item => `${item.hour}:00`),
+                    datasets: [{
+                        label: 'Activity Level',
+                        data: hourlyArray.map(item => item.count),
+                        backgroundColor: hourlyArray.map(item => {
+                            if (item.count > 80) return '#22c55e'; // High activity
+                            if (item.count > 50) return '#f59e0b'; // Medium activity
+                            return '#64748b'; // Low activity
+                        }),
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { precision: 0 }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                afterLabel: function(context) {
+                                    if (context.parsed.y > 80) return 'High Activity Period';
+                                    if (context.parsed.y > 50) return 'Medium Activity Period';
+                                    return 'Low Activity Period';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function createCountryChart(countriesData) {
+            const ctx = document.getElementById('country-overview-chart').getContext('2d');
+            
+            if (chartInstances.countries) {
+                chartInstances.countries.destroy();
+            }
+
+            if (Object.keys(countriesData).length === 0) {
+                ctx.canvas.parentElement.innerHTML = '<div class="flex items-center justify-center h-full text-gray-500">No geographic data available</div>';
+                return;
+            }
+
+            chartInstances.countries = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(countriesData),
+                    datasets: [{
+                        label: 'Posts',
+                        data: Object.values(countriesData),
+                        backgroundColor: ['#f59e0b', '#3b82f6', '#ef4444', '#8b5cf6', '#22c55e'],
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            ticks: { precision: 0 }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false }
+                    }
+                }
+            });
+
+            // Also create geographic chart
+            const ctx2 = document.getElementById('geographic-chart').getContext('2d');
+            
+            if (chartInstances.geographic) {
+                chartInstances.geographic.destroy();
+            }
+
+            chartInstances.geographic = new Chart(ctx2, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(countriesData),
+                    datasets: [{
+                        label: 'Posts by Country',
+                        data: Object.values(countriesData),
+                        backgroundColor: ['#f59e0b', '#3b82f6', '#ef4444', '#8b5cf6', '#22c55e', '#f97316', '#14b8a6'],
+                        borderColor: '#ffffff',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                        },
+                        title: {
+                            display: true,
+                            text: 'Global Reach Distribution'
+                        }
+                    }
+                }
+            });
+        }
+
+        function createAIKeywordsChart(aiKeywords) {
+            const ctx = document.getElementById('ai-keywords-chart').getContext('2d');
+            
+            if (chartInstances.aiKeywords) {
+                chartInstances.aiKeywords.destroy();
+            }
+
+            if (Object.keys(aiKeywords).length === 0) {
+                ctx.canvas.parentElement.innerHTML = '<div class="flex items-center justify-center h-full text-gray-500">No AI keywords data available</div>';
+                return;
+            }
+
+            const sortedKeywords = Object.entries(aiKeywords).sort((a, b) => b[1] - a[1]).slice(0, 10);
+
+            chartInstances.aiKeywords = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: sortedKeywords.map(kw => kw[0]),
+                    datasets: [{
+                        label: 'Keyword Mentions',
+                        data: sortedKeywords.map(kw => kw[1]),
+                        backgroundColor: '#f8a352',
+                        borderColor: '#d94236',
+                        borderWidth: 2,
+                        borderRadius: 5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y',
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            ticks: {
+                                precision: 0
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateTrendsTab(allAiKeywords, combinedHourly, firstArea) {
+            document.getElementById('ai-total-mentions').textContent = formatNumber(Object.values(allAiKeywords).reduce((a, b) => a + b, 0));
+            document.getElementById('trending-topics').textContent = Object.keys(allAiKeywords).length;
+
+            const sortedKeywords = Object.entries(allAiKeywords).sort((a, b) => b[1] - a[1]);
+            document.getElementById('dominant-category').textContent = sortedKeywords.length > 0 ? sortedKeywords[0][0] : 'N/A';
+
+            const peakHours = Object.entries(combinedHourly).sort((a, b) => b[1] - a[1]).slice(0, 3);
+            document.getElementById('peak-times-display').innerHTML = peakHours.length > 0 ? 
+                peakHours.map(([hour, count]) => `<div class="py-1">${hour}:00 - ${count} posts</div>`).join('') :
+                '<div class="text-gray-500">No hourly data available</div>';
+            
+            // Weekly data placeholder
+            document.getElementById('weekly-activity-display').innerHTML = '<div class="text-gray-500">Weekly data not available in current dataset</div>'; 
+
+            const topContent = firstArea?.top_content?.by_engagement?.slice(0, 3) || [];
+            document.getElementById('top-content-display').innerHTML = topContent.length > 0 ?
+                topContent.map(item => 
+                    `<div class="border-b py-3 last:border-b-0">
+                        <div class="font-medium text-gray-800">${item.title}</div>
+                        <div class="text-sm text-gray-600">${item.engagement} engagement</div>
+                    </div>`
+                ).join('') :
+                '<div class="text-gray-500">No top content data available</div>';
         }
 
         function displayAIKeywords(keywords) {
