@@ -159,7 +159,6 @@
     </header>
 
     <div class="container mx-auto px-4">
-        <!-- Tab Navigation -->
         <div class="mb-8">
             <div class="border-b border-gray-200">
                 <nav class="-mb-px flex space-x-8 justify-center">
@@ -179,9 +178,7 @@
             </div>
         </div>
 
-        <!-- Overview Tab -->
         <div id="overview-tab" class="tab-content active">
-            <!-- Key Metrics Overview -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                 <div class="metric-card pulse-animation">
                     <div class="text-3xl font-bold" id="total-posts">0</div>
@@ -201,7 +198,6 @@
                 </div>
             </div>
 
-            <!-- Top AI Keywords Section -->
             <div class="analytics-card mb-8">
                 <h3 class="text-2xl font-bold gradient-text mb-6">🤖 Top AI Keywords & Mentions</h3>
                 <div id="ai-keywords-display" class="text-center">
@@ -209,7 +205,6 @@
                 </div>
             </div>
 
-            <!-- Charts Grid -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
                 <div class="analytics-card">
                     <h3 class="text-xl font-bold text-brand-red mb-4">😊 Sentiment Analysis</h3>
@@ -240,7 +235,6 @@
                 </div>
             </div>
 
-            <!-- Quality Metrics -->
             <div class="analytics-card mb-8">
                 <h3 class="text-xl font-bold text-brand-red mb-4">⭐ Content Quality Insights</h3>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -260,10 +254,8 @@
             </div>
         </div>
 
-        <!-- Articles Tab -->
         <div id="articles-tab" class="tab-content">
             <div class="flex flex-col lg:flex-row gap-6">
-                <!-- Filters Sidebar -->
                 <div class="lg:w-64 bg-white rounded-lg shadow p-6 border-t-4 border-brand-orange">
                     <h3 class="font-bold text-brand-red mb-4">🔍 Filter Articles</h3>
                     
@@ -304,7 +296,6 @@
                     </div>
                 </div>
 
-                <!-- Articles Display -->
                 <div class="flex-1">
                     <div class="bg-white rounded-lg shadow p-6 border-t-4 border-brand-orange">
                         <div class="flex justify-between items-center mb-6">
@@ -320,9 +311,7 @@
             </div>
         </div>
 
-        <!-- Social Intelligence Tab -->
         <div id="social-tab" class="tab-content">
-            <!-- Social Metrics Grid -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                 <div class="analytics-card text-center">
                     <div class="text-3xl font-bold text-brand-orange" id="social-posts">0</div>
@@ -342,7 +331,6 @@
                 </div>
             </div>
 
-            <!-- Enhanced Charts -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
                 <div class="analytics-card">
                     <h3 class="text-xl font-bold text-brand-red mb-4">📊 Hourly Activity Pattern</h3>
@@ -373,7 +361,6 @@
                 </div>
             </div>
 
-            <!-- Hashtags Section -->
             <div class="analytics-card">
                 <h3 class="text-xl font-bold text-brand-red mb-4">#️⃣ Trending Hashtags & Topics</h3>
                 <div id="hashtags-display" class="text-center">
@@ -382,9 +369,7 @@
             </div>
         </div>
 
-        <!-- AI Trends Tab -->
         <div id="trends-tab" class="tab-content">
-            <!-- AI Trends Overview -->
             <div class="analytics-card mb-8">
                 <h3 class="text-2xl font-bold gradient-text mb-6">🚀 AI Trend Analysis</h3>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -403,7 +388,6 @@
                 </div>
             </div>
 
-            <!-- AI Keywords Detailed Chart -->
             <div class="analytics-card mb-8">
                 <h3 class="text-xl font-bold text-brand-red mb-4">🤖 AI Keywords Breakdown</h3>
                 <div class="chart-container">
@@ -411,7 +395,6 @@
                 </div>
             </div>
 
-            <!-- Time-based AI Trends -->
             <div class="analytics-card mb-8">
                 <h3 class="text-xl font-bold text-brand-red mb-4">📅 AI Discussion Patterns</h3>
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -426,7 +409,6 @@
                 </div>
             </div>
 
-            <!-- Top Performing Content -->
             <div class="analytics-card">
                 <h3 class="text-xl font-bold text-brand-red mb-4">🏆 Top Performing AI Content</h3>
                 <div id="top-content-display">Loading top content...</div>
@@ -434,7 +416,6 @@
         </div>
     </div>
 
-    <!-- Article Modal -->
     <div id="article-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-lg max-w-4xl max-h-90vh overflow-y-auto p-6">
             <div class="flex justify-between items-start mb-4">
@@ -994,7 +975,163 @@
 
             chartInstances.geographic = new Chart(ctx, {
                 type: 'doughnut',
-                data:
+                data: {
+                    labels: Object.keys(countriesData),
+                    datasets: [{
+                        label: 'Posts by Country',
+                        data: Object.values(countriesData),
+                        backgroundColor: ['#f59e0b', '#3b82f6', '#ef4444', '#8b5cf6', '#22c55e', '#f97316', '#14b8a6'],
+                        borderColor: '#ffffff',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                        },
+                        title: {
+                            display: true,
+                            text: 'Global Reach Distribution'
+                        }
+                    }
+                }
+            });
+        }
+        
+        function createAIKeywordsChart(aiKeywords) {
+            const ctx = document.getElementById('ai-keywords-chart').getContext('2d');
+            const sortedKeywords = Object.entries(aiKeywords).sort((a, b) => b[1] - a[1]).slice(0, 10);
+            
+            if (chartInstances.aiKeywords) {
+                chartInstances.aiKeywords.destroy();
+            }
+
+            chartInstances.aiKeywords = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: sortedKeywords.map(kw => kw[0]),
+                    datasets: [{
+                        label: 'Keyword Mentions',
+                        data: sortedKeywords.map(kw => kw[1]),
+                        backgroundColor: '#f8a352',
+                        borderColor: '#d94236',
+                        borderWidth: 2,
+                        borderRadius: 5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y',
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            ticks: {
+                                precision: 0
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+        }
+        
+        function updateTrendsTab(allAiKeywords, combinedHourly, firstArea) {
+            document.getElementById('ai-total-mentions').textContent = formatNumber(Object.values(allAiKeywords).reduce((a, b) => a + b, 0));
+            document.getElementById('trending-topics').textContent = Object.keys(allAiKeywords).length;
+
+            const sortedKeywords = Object.entries(allAiKeywords).sort((a, b) => b[1] - a[1]);
+            document.getElementById('dominant-category').textContent = sortedKeywords.length > 0 ? sortedKeywords[0][0] : 'N/A';
+
+            const peakHours = Object.entries(combinedHourly).sort((a, b) => b[1] - a[1]).slice(0, 3);
+            document.getElementById('peak-times-display').innerHTML = peakHours.map(([hour, count]) => `<div>${hour}:00 - ${count} posts</div>`).join('');
+            
+            // This part is a placeholder as weekly data isn't in the provided JSON
+            document.getElementById('weekly-activity-display').innerHTML = 'Weekly data not available.'; 
+
+            const topContent = firstArea?.top_content?.by_engagement?.slice(0, 3) || [];
+            document.getElementById('top-content-display').innerHTML = topContent.map(item => 
+                `<div class="border-b py-2">${item.title} (${item.engagement} engagement)</div>`
+            ).join('');
+        }
+        
+        function loadArticles() {
+            document.getElementById('search-input').addEventListener('input', debounce(applyArticleFilters, 300));
+            document.getElementById('source-filter').addEventListener('change', applyArticleFilters);
+            document.getElementById('sentiment-filter').addEventListener('change', applyArticleFilters);
+            document.getElementById('quality-filter').addEventListener('change', applyArticleFilters);
+            
+            applyArticleFilters();
+        }
+
+        function applyArticleFilters() {
+            const searchTerm = document.getElementById('search-input').value.toLowerCase();
+            const sourceFilter = document.getElementById('source-filter').value;
+            const sentimentFilter = document.getElementById('sentiment-filter').value;
+            const qualityFilter = document.getElementById('quality-filter').value;
+
+            filteredArticles = allArticles.filter(article => {
+                const titleMatch = article.title.toLowerCase().includes(searchTerm);
+                const summaryMatch = article.summary.toLowerCase().includes(searchTerm);
+                const sourceMatch = sourceFilter === 'all' || article.journal === sourceFilter;
+                
+                // This is a placeholder for sentiment and quality as they are not in the article objects
+                const sentimentMatch = sentimentFilter === 'all'; 
+                const qualityMatch = qualityFilter === 'all';
+                
+                return (titleMatch || summaryMatch) && sourceMatch && sentimentMatch && qualityMatch;
+            });
+
+            renderArticles();
+        }
+
+        function renderArticles() {
+            const container = document.getElementById('articles-container');
+            container.innerHTML = '';
+            document.getElementById('articles-showing').textContent = `Showing ${filteredArticles.length} articles`;
+
+            if (filteredArticles.length === 0) {
+                container.innerHTML = '<div class="text-center py-8 text-gray-500">No articles match your filters.</div>';
+                return;
+            }
+
+            filteredArticles.forEach(article => {
+                const articleEl = document.createElement('div');
+                articleEl.className = 'border rounded-lg p-4 hover:shadow-lg transition-shadow cursor-pointer';
+                articleEl.innerHTML = `
+                    <h4 class="font-bold text-lg text-brand-red">${article.title}</h4>
+                    <p class="text-sm text-gray-500">${article.date} - ${article.journal}</p>
+                    <p class="mt-2 text-gray-700">${article.summary}</p>
+                `;
+                articleEl.addEventListener('click', () => showArticleModal(article));
+                container.appendChild(articleEl);
+            });
+        }
+        
+        function showArticleModal(article) {
+            const modal = document.getElementById('article-modal');
+            const modalContent = document.getElementById('modal-content');
+            
+            modalContent.innerHTML = `
+                <h3 class="font-bold text-2xl mb-2">${article.title}</h3>
+                <p class="text-sm text-gray-600 mb-4">${article.date} | ${article.journal}</p>
+                <p class="mb-4">${article.summary}</p>
+                <h4 class="font-bold text-xl mb-2">Key Takeaways</h4>
+                <ul class="list-disc pl-5 mb-4">
+                    ${article.takeaways.map(t => `<li>${t}</li>`).join('')}
+                </ul>
+                <a href="${article.link}" target="_blank" class="text-brand-red hover:underline">Read Full Article</a>
+            `;
+            
+            modal.classList.remove('hidden');
+        }
 
         // Chart.js horizontalBar compatibility fix
         Chart.register({
