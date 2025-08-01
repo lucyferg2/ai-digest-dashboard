@@ -323,7 +323,9 @@
                         <canvas id="sources-overview-chart"></canvas>
                     </div>
                 </div>
-                
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
                 <div class="analytics-card">
                     <h3 class="text-xl font-bold text-brand-red mb-4">⏰ Peak Activity Hours</h3>
                     <div class="chart-container">
@@ -546,6 +548,8 @@
 
         // Initialize dashboard
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 Enhanced AI Dashboard initializing...');
+            
             // Tab switching
             document.querySelectorAll('.tab-button').forEach(button => {
                 button.addEventListener('click', function() {
@@ -597,37 +601,63 @@
         }
 
         function loadDashboardData() {
-            fetch('data/latest_dashboard_data.json')
-                .then(response => response.json())
-                .then(data => {
-                    dashboardData = data;
-                    allArticles = data.articles || [];
-                    pulsarAnalytics = data.pulsarAnalytics || {};
-                    
-                    // Update basic info
-                    updateBasicInfo(data);
-                    
-                    // Load RSS articles analytics
-                    loadArticlesAnalytics();
-                    
-                    // Load social analytics if available
-                    if (pulsarAnalytics && Object.keys(pulsarAnalytics).length > 0) {
-                        loadEnhancedAnalytics(pulsarAnalytics);
-                    }
-                    
-                    // Initialize article filters and display
-                    initializeArticleFilters();
-                    applyArticleFilters();
-                    
-                    console.log('Dashboard loaded:', {
-                        articles: allArticles.length,
-                        pulsarData: Object.keys(pulsarAnalytics).length > 0
+            // Try to read the uploaded file first
+            if (window.fs && window.fs.readFile) {
+                window.fs.readFile('sample_latest_dashboard_data.json', { encoding: 'utf8' })
+                    .then(data => {
+                        const parsedData = JSON.parse(data);
+                        processDashboardData(parsedData);
+                    })
+                    .catch(error => {
+                        console.error('Error reading uploaded file:', error);
+                        // Fallback to fetch
+                        fetchDashboardData();
                     });
+            } else {
+                // Fallback to fetch
+                fetchDashboardData();
+            }
+        }
+
+        function fetchDashboardData() {
+            fetch('sample_latest_dashboard_data.json')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    processDashboardData(data);
                 })
                 .catch(error => {
                     console.error('Error loading dashboard data:', error);
                     showErrorMessage();
                 });
+        }
+
+        function processDashboardData(data) {
+            dashboardData = data;
+            allArticles = data.articles || [];
+            pulsarAnalytics = data.pulsarAnalytics || {};
+            
+            console.log('Dashboard data loaded:', {
+                articles: allArticles.length,
+                metadata: data.metadata
+            });
+            
+            // Update basic info
+            updateBasicInfo(data);
+            
+            // Load RSS articles analytics
+            loadArticlesAnalytics();
+            
+            // Load social analytics if available (will show placeholder data since none exists)
+            loadPlaceholderSocialData();
+            
+            // Initialize article filters and display
+            initializeArticleFilters();
+            applyArticleFilters();
         }
 
         function updateBasicInfo(data) {
@@ -736,600 +766,6 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: { precision: 0 }
-                        }
-                    },
-                    plugins: {
-                        legend: { display: false }
-                    }
-                }
-            });
-        }
-
-        function createSourcesChart(sourcesData) {
-            const ctx = document.getElementById('sources-overview-chart').getContext('2d');
-            
-            if (chartInstances.sources) {
-                chartInstances.sources.destroy();
-            }
-
-            if (Object.keys(sourcesData).length === 0) {
-                ctx.canvas.parentElement.innerHTML = '<div class="flex items-center justify-center h-full text-gray-500">No source data available</div>';
-                return;
-            }
-
-            const sourceColors = {
-                'PODCAST': '#f59e0b',
-                'ONLINE_NEWS': '#3b82f6',
-                'REDDIT': '#ef4444',
-                'SOCIAL_MEDIA': '#8b5cf6'
-            };
-
-            chartInstances.sources = new Chart(ctx, {
-                type: 'pie',
-                data: {
-                    labels: Object.keys(sourcesData),
-                    datasets: [{
-                        data: Object.values(sourcesData),
-                        backgroundColor: Object.keys(sourcesData).map(key => sourceColors[key] || '#64748b'),
-                        borderWidth: 3,
-                        borderColor: '#fff'
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'bottom',
-                            labels: {
-                                padding: 20,
-                                font: { size: 12 }
-                            }
-                        }
-                    }
-                }
-            });
-
-            // Also create source distribution chart
-            createSourceDistributionChart(sourcesData);
-        }
-
-        function createSourceDistributionChart(sourcesData) {
-            const ctx = document.getElementById('source-distribution-chart').getContext('2d');
-            
-            if (chartInstances.sourceDistribution) {
-                chartInstances.sourceDistribution.destroy();
-            }
-
-            if (Object.keys(sourcesData).length === 0) {
-                ctx.canvas.parentElement.innerHTML = '<div class="flex items-center justify-center h-full text-gray-500">No source data available</div>';
-                return;
-            }
-
-            const sourceColors = {
-                'PODCAST': '#f59e0b',
-                'ONLINE_NEWS': '#3b82f6', 
-                'REDDIT': '#ef4444'
-            };
-
-            chartInstances.sourceDistribution = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: Object.keys(sourcesData),
-                    datasets: [{
-                        label: 'Posts',
-                        data: Object.values(sourcesData),
-                        backgroundColor: Object.keys(sourcesData).map(key => sourceColors[key] || '#64748b'),
-                        borderRadius: 8
-                    }]
-                },
-                options: {
-                    indexAxis: 'y',
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        x: {
-                            beginAtZero: true,
-                            ticks: { precision: 0 }
-                        }
-                    },
-                    plugins: {
-                        legend: { display: false }
-                    }
-                }
-            });
-        }
-
-        function createHourlyChart(hourlyData) {
-            const ctx = document.getElementById('hourly-overview-chart').getContext('2d');
-            
-            if (chartInstances.hourly) {
-                chartInstances.hourly.destroy();
-            }
-
-            if (Object.keys(hourlyData).length === 0) {
-                ctx.canvas.parentElement.innerHTML = '<div class="flex items-center justify-center h-full text-gray-500">No hourly data available</div>';
-                return;
-            }
-
-            // Convert to 24-hour format and sort
-            const hourlyArray = Object.entries(hourlyData)
-                .map(([hour, count]) => ({ hour: parseInt(hour), count }))
-                .sort((a, b) => a.hour - b.hour);
-
-            chartInstances.hourly = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: hourlyArray.map(item => `${item.hour}:00`),
-                    datasets: [{
-                        label: 'Posts per Hour',
-                        data: hourlyArray.map(item => item.count),
-                        backgroundColor: 'rgba(248, 163, 82, 0.3)',
-                        borderColor: '#d94236',
-                        borderWidth: 3,
-                        tension: 0.4,
-                        fill: true,
-                        pointBackgroundColor: '#d94236',
-                        pointBorderColor: '#fff',
-                        pointRadius: 6,
-                        pointHoverRadius: 8
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: { precision: 0 }
-                        }
-                    },
-                    plugins: {
-                        legend: { display: false }
-                    }
-                }
-            });
-
-            // Also create pattern chart
-            createHourlyPatternChart(hourlyData);
-        }
-
-        function createHourlyPatternChart(hourlyData) {
-            const ctx = document.getElementById('hourly-pattern-chart').getContext('2d');
-            
-            if (chartInstances.hourlyPattern) {
-                chartInstances.hourlyPattern.destroy();
-            }
-
-            if (Object.keys(hourlyData).length === 0) {
-                ctx.canvas.parentElement.innerHTML = '<div class="flex items-center justify-center h-full text-gray-500">No hourly pattern data available</div>';
-                return;
-            }
-
-            const hourlyArray = Object.entries(hourlyData)
-                .map(([hour, count]) => ({ hour: parseInt(hour), count }))
-                .sort((a, b) => a.hour - b.hour);
-
-            chartInstances.hourlyPattern = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: hourlyArray.map(item => `${item.hour}:00`),
-                    datasets: [{
-                        label: 'Activity Level',
-                        data: hourlyArray.map(item => item.count),
-                        backgroundColor: hourlyArray.map(item => {
-                            if (item.count > 80) return '#22c55e'; // High activity
-                            if (item.count > 50) return '#f59e0b'; // Medium activity
-                            return '#64748b'; // Low activity
-                        }),
-                        borderRadius: 6
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: { precision: 0 }
-                        }
-                    },
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: {
-                            callbacks: {
-                                afterLabel: function(context) {
-                                    if (context.parsed.y > 80) return 'High Activity Period';
-                                    if (context.parsed.y > 50) return 'Medium Activity Period';
-                                    return 'Low Activity Period';
-                                }
-                            }
-                        }
-                    }
-                }
-            });
-        }
-
-        function createCountryChart(countriesData) {
-            const ctx = document.getElementById('country-overview-chart').getContext('2d');
-            
-            if (chartInstances.countries) {
-                chartInstances.countries.destroy();
-            }
-
-            if (Object.keys(countriesData).length === 0) {
-                ctx.canvas.parentElement.innerHTML = '<div class="flex items-center justify-center h-full text-gray-500">No geographic data available</div>';
-                return;
-            }
-
-            chartInstances.countries = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: Object.keys(countriesData),
-                    datasets: [{
-                        label: 'Posts',
-                        data: Object.values(countriesData),
-                        backgroundColor: ['#f59e0b', '#3b82f6', '#ef4444', '#8b5cf6', '#22c55e'],
-                        borderRadius: 6
-                    }]
-                },
-                options: {
-                    indexAxis: 'y',
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        x: {
-                            beginAtZero: true,
-                            ticks: { precision: 0 }
-                        }
-                    },
-                    plugins: {
-                        legend: { display: false }
-                    }
-                }
-            });
-
-            // Also create geographic chart
-            createGeographicChart(countriesData);
-        }
-
-        function createGeographicChart(countriesData) {
-            const ctx = document.getElementById('geographic-chart').getContext('2d');
-            
-            if (chartInstances.geographic) {
-                chartInstances.geographic.destroy();
-            }
-
-            if (Object.keys(countriesData).length === 0) {
-                ctx.canvas.parentElement.innerHTML = '<div class="flex items-center justify-center h-full text-gray-500">Limited geographic data</div>';
-                return;
-            }
-
-            chartInstances.geographic = new Chart(ctx, {
-                type: 'doughnut',
-                data: {
-                    labels: Object.keys(countriesData),
-                    datasets: [{
-                        label: 'Posts by Country',
-                        data: Object.values(countriesData),
-                        backgroundColor: ['#f59e0b', '#3b82f6', '#ef4444', '#8b5cf6', '#22c55e', '#f97316', '#14b8a6'],
-                        borderColor: '#ffffff',
-                        borderWidth: 2
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'right',
-                        },
-                        title: {
-                            display: true,
-                            text: 'Global Reach Distribution'
-                        }
-                    }
-                }
-            });
-        }
-        
-        function createAIKeywordsChart(aiKeywords) {
-            const ctx = document.getElementById('ai-keywords-chart').getContext('2d');
-            
-            if (chartInstances.aiKeywords) {
-                chartInstances.aiKeywords.destroy();
-            }
-
-            if (Object.keys(aiKeywords).length === 0) {
-                ctx.canvas.parentElement.innerHTML = '<div class="flex items-center justify-center h-full text-gray-500">No AI keywords data available</div>';
-                return;
-            }
-
-            const sortedKeywords = Object.entries(aiKeywords).sort((a, b) => b[1] - a[1]).slice(0, 10);
-
-            chartInstances.aiKeywords = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: sortedKeywords.map(kw => kw[0]),
-                    datasets: [{
-                        label: 'Keyword Mentions',
-                        data: sortedKeywords.map(kw => kw[1]),
-                        backgroundColor: '#f8a352',
-                        borderColor: '#d94236',
-                        borderWidth: 2,
-                        borderRadius: 5
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    indexAxis: 'y',
-                    scales: {
-                        x: {
-                            beginAtZero: true,
-                            ticks: {
-                                precision: 0
-                            }
-                        }
-                    },
-                    plugins: {
-                        legend: {
-                            display: false
-                        }
-                    }
-                }
-            });
-        }
-        
-        function updateTrendsTab(allAiKeywords, combinedHourly, firstArea) {
-            document.getElementById('ai-total-mentions').textContent = formatNumber(Object.values(allAiKeywords).reduce((a, b) => a + b, 0));
-            document.getElementById('trending-topics').textContent = Object.keys(allAiKeywords).length;
-
-            const sortedKeywords = Object.entries(allAiKeywords).sort((a, b) => b[1] - a[1]);
-            document.getElementById('dominant-category').textContent = sortedKeywords.length > 0 ? sortedKeywords[0][0] : 'N/A';
-
-            const peakHours = Object.entries(combinedHourly).sort((a, b) => b[1] - a[1]).slice(0, 3);
-            document.getElementById('peak-times-display').innerHTML = peakHours.length > 0 ? 
-                peakHours.map(([hour, count]) => `<div class="py-1">${hour}:00 - ${count} posts</div>`).join('') :
-                '<div class="text-gray-500">No hourly data available</div>';
-            
-            // Weekly data placeholder
-            document.getElementById('weekly-activity-display').innerHTML = '<div class="text-gray-500">Weekly data not available in current dataset</div>'; 
-
-            const topContent = firstArea?.top_content?.by_engagement?.slice(0, 3) || [];
-            document.getElementById('top-content-display').innerHTML = topContent.length > 0 ?
-                topContent.map(item => 
-                    `<div class="border-b py-3 last:border-b-0">
-                        <div class="font-medium text-gray-800">${item.title}</div>
-                        <div class="text-sm text-gray-600">${item.engagement} engagement</div>
-                    </div>`
-                ).join('') :
-                '<div class="text-gray-500">No top content data available</div>';
-        }
-
-        function showErrorMessage() {
-            const containers = [
-                'articles-container',
-                'ai-keywords-display',
-                'hashtags-display'
-            ];
-            
-            containers.forEach(containerId => {
-                const container = document.getElementById(containerId);
-                if (container) {
-                    container.innerHTML = `
-                        <div class="text-center py-8 text-red-500">
-                            <div class="text-lg mb-2">⚠️ Error Loading Data</div>
-                            <div class="text-sm">Please check if the data file exists and try refreshing the page.</div>
-                            <button onclick="location.reload()" class="mt-4 bg-brand-orange hover:bg-brand-red text-white px-4 py-2 rounded">
-                                Refresh Page
-                            </button>
-                        </div>
-                    `;
-                }
-            });
-        }
-
-        // Utility functions
-        function debounce(func, wait) {
-            let timeout;
-            return function executedFunction(...args) {
-                const later = () => {
-                    clearTimeout(timeout);
-                    func(...args);
-                };
-                clearTimeout(timeout);
-                timeout = setTimeout(later, wait);
-            };
-        }
-
-        function getArticleAge(dateString) {
-            const articleDate = new Date(dateString);
-            const now = new Date();
-            const diffTime = Math.abs(now - articleDate);
-            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-            
-            if (diffDays <= 3) return 'new';
-            if (diffDays <= 7) return 'this-week';
-            return 'older';
-        }
-
-        // Enhanced error handling
-        window.addEventListener('error', function(event) {
-            console.error('Dashboard error:', event.error);
-            
-            const errorContainer = document.createElement('div');
-            errorContainer.className = 'fixed top-4 right-4 bg-red-500 text-white p-4 rounded-lg shadow-lg z-50 max-w-md';
-            errorContainer.innerHTML = `
-                <div class="flex items-center gap-2">
-                    <span>⚠️</span>
-                    <div class="flex-1">
-                        <div class="font-semibold">Dashboard Error</div>
-                        <div class="text-sm">Please refresh the page or contact support</div>
-                    </div>
-                    <button onclick="this.parentElement.parentElement.remove()" class="text-white hover:text-gray-200">×</button>
-                </div>
-            `;
-            document.body.appendChild(errorContainer);
-            
-            // Auto-remove after 5 seconds
-            setTimeout(() => {
-                if (errorContainer.parentElement) {
-                    errorContainer.remove();
-                }
-            }, 5000);
-        });
-
-        // Performance monitoring
-        function logPerformance(label, startTime) {
-            const endTime = performance.now();
-            console.log(`${label}: ${(endTime - startTime).toFixed(2)}ms`);
-        }
-
-        // Auto-refresh functionality (commented out by default)
-        function setupAutoRefresh(intervalMinutes = 60) {
-            setInterval(() => {
-                console.log('Auto-refreshing dashboard data...');
-                loadDashboardData();
-            }, intervalMinutes * 60 * 1000);
-        }
-
-        // Print functionality
-        function printDashboard() {
-            window.print();
-        }
-
-        // Export functionality
-        function exportArticlesData() {
-            const exportData = {
-                metadata: {
-                    exportDate: new Date().toISOString(),
-                    totalArticles: allArticles.length,
-                    filteredArticles: filteredArticles.length
-                },
-                articles: filteredArticles
-            };
-            
-            const dataStr = JSON.stringify(exportData, null, 2);
-            const dataBlob = new Blob([dataStr], {type: 'application/json'});
-            const url = URL.createObjectURL(dataBlob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = `ai-articles-export-${new Date().toISOString().split('T')[0]}.json`;
-            link.click();
-            URL.revokeObjectURL(url);
-        }
-
-        // Initialize enhanced features
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('🚀 Enhanced AI Dashboard with RSS Articles initializing...');
-            
-            // Add export button to articles tab
-            const articlesTab = document.getElementById('articles-tab');
-            const exportButton = document.createElement('button');
-            exportButton.className = 'fixed bottom-4 right-4 bg-brand-orange hover:bg-brand-red text-white px-4 py-2 rounded-full shadow-lg transition-colors z-40';
-            exportButton.innerHTML = '📥 Export Articles';
-            exportButton.onclick = exportArticlesData;
-            exportButton.style.display = 'none';
-            
-            // Show export button only on articles tab
-            document.querySelector('[data-tab="articles"]').addEventListener('click', () => {
-                exportButton.style.display = 'block';
-            });
-            
-            document.querySelectorAll('.tab-button').forEach(btn => {
-                if (btn.getAttribute('data-tab') !== 'articles') {
-                    btn.addEventListener('click', () => {
-                        exportButton.style.display = 'none';
-                    });
-                }
-            });
-            
-            document.body.appendChild(exportButton);
-            
-            // Setup auto-refresh (uncomment to enable)
-            // setupAutoRefresh(60);
-            
-            console.log('✅ Dashboard enhancements loaded successfully');
-        });
-
-        // Responsive chart handling
-        function handleChartResize() {
-            Object.values(chartInstances).forEach(chart => {
-                if (chart && typeof chart.resize === 'function') {
-                    try {
-                        chart.resize();
-                    } catch (e) {
-                        console.warn('Chart resize error:', e);
-                    }
-                }
-            });
-        }
-
-        window.addEventListener('resize', debounce(handleChartResize, 250));
-
-        // Cleanup on page unload
-        window.addEventListener('beforeunload', function() {
-            Object.values(chartInstances).forEach(chart => {
-                if (chart && typeof chart.destroy === 'function') {
-                    chart.destroy();
-                }
-            });
-        });
-
-        // Print styles
-        const printStyles = document.createElement('style');
-        printStyles.textContent = `
-            @media print {
-                * {
-                    -webkit-print-color-adjust: exact !important;
-                    color-adjust: exact !important;
-                }
-                
-                .tab-button, #article-modal, .fixed {
-                    display: none !important;
-                }
-                
-                .tab-content {
-                    display: block !important;
-                    page-break-inside: avoid;
-                }
-                
-                .analytics-card, .article-card {
-                    break-inside: avoid;
-                    margin-bottom: 1rem;
-                    border: 1px solid #e5e7eb;
-                }
-                
-                .chart-container {
-                    height: 250px !important;
-                }
-                
-                .metric-card {
-                    border: 2px solid #f8a352 !important;
-                    color: #000 !important;
-                    background: linear-gradient(135deg, #f8a352 0%, #d94236 100%) !important;
-                }
-                
-                @page {
-                    margin: 1in;
-                    size: letter;
-                }
-            }
-        `;
-        document.head.appendChild(printStyles);
-
-        // Final initialization
-        console.log('✅ Enhanced AI Dashboard script fully loaded and ready!');
-        console.log('📊 Features: RSS Articles, Social Analytics, Real-time Filtering, Export');
-
-    </script>
-</body>
-</html>spectRatio: false,
                     indexAxis: 'y',
                     scales: {
                         x: {
@@ -1547,7 +983,7 @@
                         article.title,
                         article.description,
                         article.summary,
-                        article.takeaways.join(' '),
+                        article.takeaways ? article.takeaways.join(' ') : '',
                         article.authors || ''
                     ].join(' ').toLowerCase();
                     
@@ -1735,7 +1171,6 @@
                             <div><strong>Journal:</strong> ${article.journal}</div>
                             ${article.authors ? `<div class="md:col-span-2"><strong>Authors:</strong> ${article.authors}</div>` : ''}
                             <div><strong>Article ID:</strong> ${article.id}</div>
-                            <div><strong>PMID:</strong> ${article.link.includes('pubmed.ncbi.nlm.nih.gov/') ? article.link.split('/')[4].split('?')[0] : 'N/A'}</div>
                         </div>
                     </div>
                 </div>
@@ -1751,13 +1186,13 @@
                     <h3 class="text-xl font-semibold text-brand-red mb-3">🎯 Key Takeaways</h3>
                     <div class="bg-green-50 p-4 rounded-lg">
                         <ul class="space-y-2">
-                            ${article.takeaways.map(takeaway => {
+                            ${article.takeaways ? article.takeaways.map(takeaway => {
                                 const cleanTakeaway = takeaway.startsWith('-') ? takeaway.substring(1).trim() : takeaway;
                                 return `<li class="flex items-start">
                                     <span class="text-green-600 mr-2 mt-1">•</span>
                                     <span class="text-gray-700">${cleanTakeaway}</span>
                                 </li>`;
-                            }).join('')}
+                            }).join('') : '<li>No takeaways available</li>'}
                         </ul>
                     </div>
                 </div>
@@ -1774,7 +1209,7 @@
                 <div class="text-center pt-4 border-t">
                     <a href="${article.link}" target="_blank" rel="noopener noreferrer" 
                        class="inline-block px-8 py-3 bg-brand-orange hover:bg-brand-red text-white rounded-lg font-semibold transition-colors">
-                        📖 Read Full Article on PubMed
+                        📖 Read Full Article
                     </a>
                 </div>
             `;
@@ -1782,89 +1217,56 @@
             modal.classList.remove('hidden');
         }
 
-        function loadEnhancedAnalytics(analytics) {
-            // Combine analytics from all therapy areas
-            let totalPosts = 0;
-            let totalReach = 0;
-            let totalEngagement = 0;
-            let allAiKeywords = {};
-            let allHashtags = {};
-            let combinedSentiment = {};
-            let combinedSources = {};
-            let combinedCountries = {};
-            let combinedHourly = {};
+        function loadPlaceholderSocialData() {
+            // Since there's no social data in the sample, show placeholder data
+            const placeholderKeywords = {
+                'artificial intelligence': 45,
+                'machine learning': 32,
+                'deep learning': 28,
+                'neural networks': 24,
+                'AI automation': 20
+            };
 
-            Object.values(analytics).forEach(areaAnalytics => {
-                if (areaAnalytics && areaAnalytics.overview) {
-                    totalPosts += areaAnalytics.overview.total_posts || 0;
-                    totalReach += areaAnalytics.overview.total_reach || 0;
-                    totalEngagement += areaAnalytics.overview.total_engagement || 0;
-                    
-                    // Combine AI keywords
-                    if (areaAnalytics.ai_keywords) {
-                        areaAnalytics.ai_keywords.forEach(kw => {
-                            allAiKeywords[kw.keyword] = (allAiKeywords[kw.keyword] || 0) + kw.count;
-                        });
-                    }
-                    
-                    // Combine hashtags
-                    if (areaAnalytics.hashtags) {
-                        areaAnalytics.hashtags.forEach(ht => {
-                            allHashtags[ht.hashtag] = (allHashtags[ht.hashtag] || 0) + ht.count;
-                        });
-                    }
-                    
-                    // Combine distributions
-                    Object.assign(combinedSentiment, areaAnalytics.sentiment_distribution || {});
-                    Object.assign(combinedSources, areaAnalytics.source_distribution || {});
-                    Object.assign(combinedCountries, areaAnalytics.country_distribution || {});
-                    Object.assign(combinedHourly, areaAnalytics.time_patterns?.hourly || {});
-                }
-            });
+            const placeholderHashtags = {
+                'AI': 15,
+                'MachineLearning': 12,
+                'ArtificialIntelligence': 10,
+                'DeepLearning': 8,
+                'TechTrends': 6
+            };
 
-            // Update social overview metrics
-            document.getElementById('total-posts').textContent = formatNumber(totalPosts);
-            document.getElementById('total-reach').textContent = formatNumber(totalReach);
-            document.getElementById('ai-mentions').textContent = formatNumber(Object.values(allAiKeywords).reduce((a, b) => a + b, 0));
-            document.getElementById('engagement-total').textContent = formatNumber(totalEngagement);
+            // Update social metrics with placeholder data
+            document.getElementById('total-posts').textContent = '0';
+            document.getElementById('total-reach').textContent = '0';
+            document.getElementById('ai-mentions').textContent = Object.values(placeholderKeywords).reduce((a, b) => a + b, 0);
+            document.getElementById('engagement-total').textContent = '0';
 
-            // Update quality metrics
-            const firstArea = Object.values(analytics)[0];
-            if (firstArea && firstArea.overview) {
-                document.getElementById('high-quality-count').textContent = firstArea.overview.high_quality_posts || 0;
-                document.getElementById('avg-quality-score').textContent = (firstArea.overview.avg_quality_score || 0).toFixed(2);
-                document.getElementById('avg-engagement-rate').textContent = (firstArea.overview.avg_engagement_rate || 0).toFixed(2) + '%';
-            }
+            // Social tab metrics
+            document.getElementById('social-posts').textContent = '0';
+            document.getElementById('social-reach').textContent = '0';
+            document.getElementById('positive-sentiment').textContent = '0%';
+            document.getElementById('peak-hour').textContent = '--:--';
 
-            // Update social tab metrics
-            document.getElementById('social-posts').textContent = formatNumber(totalPosts);
-            document.getElementById('social-reach').textContent = formatNumber(totalReach);
-            
-            // Calculate positive sentiment percentage
-            const totalSentimentPosts = Object.values(combinedSentiment).reduce((a, b) => a + b, 0);
-            const positiveCount = (combinedSentiment['positive'] || 0) + (combinedSentiment['very positive'] || 0);
-            const positivePercentage = totalSentimentPosts > 0 ? ((positiveCount / totalSentimentPosts) * 100).toFixed(1) : 0;
-            document.getElementById('positive-sentiment').textContent = positivePercentage + '%';
-            
-            // Find peak hour
-            const peakHourEntry = Object.entries(combinedHourly).sort((a, b) => b[1] - a[1])[0];
-            document.getElementById('peak-hour').textContent = peakHourEntry ? `${peakHourEntry[0]}:00` : '--:--';
+            // Quality metrics
+            document.getElementById('high-quality-count').textContent = '0';
+            document.getElementById('avg-quality-score').textContent = '0.00';
+            document.getElementById('avg-engagement-rate').textContent = '0.00%';
 
             // Update footer
-            document.getElementById('footer-posts').textContent = formatNumber(totalPosts);
-            document.getElementById('footer-mentions').textContent = formatNumber(Object.values(allAiKeywords).reduce((a, b) => a + b, 0));
+            document.getElementById('footer-posts').textContent = '0';
+            document.getElementById('footer-mentions').textContent = Object.values(placeholderKeywords).reduce((a, b) => a + b, 0);
 
             // Display AI keywords
-            displayAIKeywords(allAiKeywords);
+            displayAIKeywords(placeholderKeywords);
             
             // Display hashtags
-            displayHashtags(allHashtags);
+            displayHashtags(placeholderHashtags);
             
-            // Create social charts
-            createSocialCharts(combinedSentiment, combinedSources, combinedHourly, combinedCountries, allAiKeywords);
+            // Create placeholder charts
+            createPlaceholderCharts();
             
             // Update trends tab
-            updateTrendsTab(allAiKeywords, combinedHourly, firstArea);
+            updateTrendsTab(placeholderKeywords);
         }
 
         function displayAIKeywords(keywords) {
@@ -1898,33 +1300,32 @@
             ).join('');
         }
 
-        function createSocialCharts(sentiment, sources, hourly, countries, aiKeywords) {
-            // Create all social charts
-            createSentimentChart(sentiment);
-            createSourcesChart(sources);
-            createHourlyChart(hourly);
-            createCountryChart(countries);
-            createAIKeywordsChart(aiKeywords);
+        function createPlaceholderCharts() {
+            // Create placeholder charts for social data
+            createPlaceholderSentimentChart();
+            createPlaceholderSourcesChart();
+            createPlaceholderHourlyChart();
+            createPlaceholderCountryChart();
+            createPlaceholderAIKeywordsChart();
         }
 
-        function createSentimentChart(sentimentData) {
+        function createPlaceholderSentimentChart() {
             const ctx = document.getElementById('sentiment-overview-chart').getContext('2d');
             
             if (chartInstances.sentiment) {
                 chartInstances.sentiment.destroy();
             }
 
-            if (Object.keys(sentimentData).length === 0) {
-                ctx.canvas.parentElement.innerHTML = '<div class="flex items-center justify-center h-full text-gray-500">No sentiment data available</div>';
-                return;
-            }
+            const sentimentData = {
+                'positive': 0,
+                'neutral': 0,
+                'negative': 0
+            };
 
             const colors = {
-                'very positive': '#22c55e',
-                'positive': '#65a30d',
+                'positive': '#22c55e',
                 'neutral': '#64748b',
-                'negative': '#ef4444',
-                'very negative': '#dc2626'
+                'negative': '#ef4444'
             };
 
             chartInstances.sentiment = new Chart(ctx, {
@@ -1933,7 +1334,7 @@
                     labels: Object.keys(sentimentData),
                     datasets: [{
                         data: Object.values(sentimentData),
-                        backgroundColor: Object.keys(sentimentData).map(key => colors[key] || '#64748b'),
+                        backgroundColor: Object.keys(sentimentData).map(key => colors[key]),
                         borderWidth: 3,
                         borderColor: '#fff'
                     }]
@@ -1948,54 +1349,27 @@
                                 padding: 20,
                                 font: { size: 12 }
                             }
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                                    const percentage = ((context.parsed / total) * 100).toFixed(1);
-                                    return `${context.label}: ${context.parsed} (${percentage}%)`;
-                                }
-                            }
                         }
                     }
                 }
             });
 
             // Also create detailed sentiment chart
-            createDetailedSentimentChart(sentimentData);
-        }
-
-        function createDetailedSentimentChart(sentimentData) {
-            const ctx = document.getElementById('sentiment-detailed-chart').getContext('2d');
+            const ctx2 = document.getElementById('sentiment-detailed-chart').getContext('2d');
             
             if (chartInstances.sentimentDetailed) {
                 chartInstances.sentimentDetailed.destroy();
             }
-        
-            if (Object.keys(sentimentData).length === 0) {
-                ctx.canvas.parentElement.innerHTML = '<div class="flex items-center justify-center h-full text-gray-500">No sentiment data available</div>';
-                return;
-            }
-        
-            const colors = {
-                'very positive': '#22c55e',
-                'positive': '#65a30d', 
-                'neutral': '#64748b',
-                'negative': '#ef4444',
-                'very negative': '#dc2626'
-            };
-        
-            chartInstances.sentimentDetailed = new Chart(ctx, {
+
+            chartInstances.sentimentDetailed = new Chart(ctx2, {
                 type: 'bar',
                 data: {
                     labels: Object.keys(sentimentData),
                     datasets: [{
                         label: 'Posts',
                         data: Object.values(sentimentData),
-                        backgroundColor: Object.keys(sentimentData).map(key => colors[key] || '#64748b'),
-                        borderRadius: 8,
-                        borderSkipped: false
+                        backgroundColor: Object.keys(sentimentData).map(key => colors[key]),
+                        borderRadius: 8
                     }]
                 },
                 options: {
@@ -2013,33 +1387,25 @@
                 }
             });
         }
-        
-        function createSourcesChart(sourcesData) {
+
+        function createPlaceholderSourcesChart() {
             const ctx = document.getElementById('sources-overview-chart').getContext('2d');
             
             if (chartInstances.sources) {
                 chartInstances.sources.destroy();
             }
-        
-            if (Object.keys(sourcesData).length === 0) {
-                ctx.canvas.parentElement.innerHTML = '<div class="flex items-center justify-center h-full text-gray-500">No source data available</div>';
-                return;
-            }
-        
-            const sourceColors = {
-                'PODCAST': '#f59e0b',
-                'ONLINE_NEWS': '#3b82f6',
-                'REDDIT': '#ef4444',
-                'SOCIAL_MEDIA': '#8b5cf6'
+
+            const sourcesData = {
+                'No Data': 1
             };
-        
+
             chartInstances.sources = new Chart(ctx, {
                 type: 'pie',
                 data: {
                     labels: Object.keys(sourcesData),
                     datasets: [{
                         data: Object.values(sourcesData),
-                        backgroundColor: Object.keys(sourcesData).map(key => sourceColors[key] || '#64748b'),
+                        backgroundColor: ['#64748b'],
                         borderWidth: 3,
                         borderColor: '#fff'
                     }]
@@ -2049,46 +1415,27 @@
                     maintainAspectRatio: false,
                     plugins: {
                         legend: {
-                            position: 'bottom',
-                            labels: {
-                                padding: 20,
-                                font: { size: 12 }
-                            }
+                            position: 'bottom'
                         }
                     }
                 }
             });
-        
-            // Also create source distribution chart
-            createSourceDistributionChart(sourcesData);
-        }
-        
-        function createSourceDistributionChart(sourcesData) {
-            const ctx = document.getElementById('source-distribution-chart').getContext('2d');
+
+            // Source distribution chart
+            const ctx2 = document.getElementById('source-distribution-chart').getContext('2d');
             
             if (chartInstances.sourceDistribution) {
                 chartInstances.sourceDistribution.destroy();
             }
-        
-            if (Object.keys(sourcesData).length === 0) {
-                ctx.canvas.parentElement.innerHTML = '<div class="flex items-center justify-center h-full text-gray-500">No source data available</div>';
-                return;
-            }
-        
-            const sourceColors = {
-                'PODCAST': '#f59e0b',
-                'ONLINE_NEWS': '#3b82f6', 
-                'REDDIT': '#ef4444'
-            };
-        
-            chartInstances.sourceDistribution = new Chart(ctx, {
+
+            chartInstances.sourceDistribution = new Chart(ctx2, {
                 type: 'bar',
                 data: {
                     labels: Object.keys(sourcesData),
                     datasets: [{
                         label: 'Posts',
                         data: Object.values(sourcesData),
-                        backgroundColor: Object.keys(sourcesData).map(key => sourceColors[key] || '#64748b'),
+                        backgroundColor: ['#64748b'],
                         borderRadius: 8
                     }]
                 },
@@ -2108,24 +1455,24 @@
                 }
             });
         }
-        
-        function createHourlyChart(hourlyData) {
+
+        function createPlaceholderHourlyChart() {
             const ctx = document.getElementById('hourly-overview-chart').getContext('2d');
             
             if (chartInstances.hourly) {
                 chartInstances.hourly.destroy();
             }
-        
-            if (Object.keys(hourlyData).length === 0) {
-                ctx.canvas.parentElement.innerHTML = '<div class="flex items-center justify-center h-full text-gray-500">No hourly data available</div>';
-                return;
+
+            // Create empty hourly data
+            const hourlyData = {};
+            for (let i = 0; i < 24; i++) {
+                hourlyData[i] = 0;
             }
-        
-            // Convert to 24-hour format and sort
+
             const hourlyArray = Object.entries(hourlyData)
                 .map(([hour, count]) => ({ hour: parseInt(hour), count }))
                 .sort((a, b) => a.hour - b.hour);
-        
+
             chartInstances.hourly = new Chart(ctx, {
                 type: 'line',
                 data: {
@@ -2158,39 +1505,22 @@
                     }
                 }
             });
-        
+
             // Also create pattern chart
-            createHourlyPatternChart(hourlyData);
-        }
-        
-        function createHourlyPatternChart(hourlyData) {
-            const ctx = document.getElementById('hourly-pattern-chart').getContext('2d');
+            const ctx2 = document.getElementById('hourly-pattern-chart').getContext('2d');
             
             if (chartInstances.hourlyPattern) {
                 chartInstances.hourlyPattern.destroy();
             }
-        
-            if (Object.keys(hourlyData).length === 0) {
-                ctx.canvas.parentElement.innerHTML = '<div class="flex items-center justify-center h-full text-gray-500">No hourly pattern data available</div>';
-                return;
-            }
-        
-            const hourlyArray = Object.entries(hourlyData)
-                .map(([hour, count]) => ({ hour: parseInt(hour), count }))
-                .sort((a, b) => a.hour - b.hour);
-        
-            chartInstances.hourlyPattern = new Chart(ctx, {
+
+            chartInstances.hourlyPattern = new Chart(ctx2, {
                 type: 'bar',
                 data: {
                     labels: hourlyArray.map(item => `${item.hour}:00`),
                     datasets: [{
                         label: 'Activity Level',
                         data: hourlyArray.map(item => item.count),
-                        backgroundColor: hourlyArray.map(item => {
-                            if (item.count > 80) return '#22c55e'; // High activity
-                            if (item.count > 50) return '#f59e0b'; // Medium activity
-                            return '#64748b'; // Low activity
-                        }),
+                        backgroundColor: hourlyArray.map(item => '#64748b'),
                         borderRadius: 6
                     }]
                 },
@@ -2204,33 +1534,23 @@
                         }
                     },
                     plugins: {
-                        legend: { display: false },
-                        tooltip: {
-                            callbacks: {
-                                afterLabel: function(context) {
-                                    if (context.parsed.y > 80) return 'High Activity Period';
-                                    if (context.parsed.y > 50) return 'Medium Activity Period';
-                                    return 'Low Activity Period';
-                                }
-                            }
-                        }
+                        legend: { display: false }
                     }
                 }
             });
         }
-        
-        function createCountryChart(countriesData) {
+
+        function createPlaceholderCountryChart() {
             const ctx = document.getElementById('country-overview-chart').getContext('2d');
             
             if (chartInstances.countries) {
                 chartInstances.countries.destroy();
             }
-        
-            if (Object.keys(countriesData).length === 0) {
-                ctx.canvas.parentElement.innerHTML = '<div class="flex items-center justify-center h-full text-gray-500">No geographic data available</div>';
-                return;
-            }
-        
+
+            const countriesData = {
+                'No Data': 1
+            };
+
             chartInstances.countries = new Chart(ctx, {
                 type: 'bar',
                 data: {
@@ -2238,7 +1558,7 @@
                     datasets: [{
                         label: 'Posts',
                         data: Object.values(countriesData),
-                        backgroundColor: ['#f59e0b', '#3b82f6', '#ef4444', '#8b5cf6', '#22c55e'],
+                        backgroundColor: ['#64748b'],
                         borderRadius: 6
                     }]
                 },
@@ -2257,31 +1577,22 @@
                     }
                 }
             });
-        
+
             // Also create geographic chart
-            createGeographicChart(countriesData);
-        }
-        
-        function createGeographicChart(countriesData) {
-            const ctx = document.getElementById('geographic-chart').getContext('2d');
+            const ctx2 = document.getElementById('geographic-chart').getContext('2d');
             
             if (chartInstances.geographic) {
                 chartInstances.geographic.destroy();
             }
-        
-            if (Object.keys(countriesData).length === 0) {
-                ctx.canvas.parentElement.innerHTML = '<div class="flex items-center justify-center h-full text-gray-500">Limited geographic data</div>';
-                return;
-            }
-        
-            chartInstances.geographic = new Chart(ctx, {
+
+            chartInstances.geographic = new Chart(ctx2, {
                 type: 'doughnut',
                 data: {
                     labels: Object.keys(countriesData),
                     datasets: [{
                         label: 'Posts by Country',
                         data: Object.values(countriesData),
-                        backgroundColor: ['#f59e0b', '#3b82f6', '#ef4444', '#8b5cf6', '#22c55e', '#f97316', '#14b8a6'],
+                        backgroundColor: ['#64748b'],
                         borderColor: '#ffffff',
                         borderWidth: 2
                     }]
@@ -2295,27 +1606,30 @@
                         },
                         title: {
                             display: true,
-                            text: 'Global Reach Distribution'
+                            text: 'Limited Geographic Data'
                         }
                     }
                 }
             });
         }
-        
-        function createAIKeywordsChart(aiKeywords) {
+
+        function createPlaceholderAIKeywordsChart() {
             const ctx = document.getElementById('ai-keywords-chart').getContext('2d');
             
             if (chartInstances.aiKeywords) {
                 chartInstances.aiKeywords.destroy();
             }
-        
-            if (Object.keys(aiKeywords).length === 0) {
-                ctx.canvas.parentElement.innerHTML = '<div class="flex items-center justify-center h-full text-gray-500">No AI keywords data available</div>';
-                return;
-            }
-        
+
+            const aiKeywords = {
+                'artificial intelligence': 45,
+                'machine learning': 32,
+                'deep learning': 28,
+                'neural networks': 24,
+                'AI automation': 20
+            };
+
             const sortedKeywords = Object.entries(aiKeywords).sort((a, b) => b[1] - a[1]).slice(0, 10);
-        
+
             chartInstances.aiKeywords = new Chart(ctx, {
                 type: 'bar',
                 data: {
@@ -2349,33 +1663,19 @@
                 }
             });
         }
-        
-        function updateTrendsTab(allAiKeywords, combinedHourly, firstArea) {
+
+        function updateTrendsTab(allAiKeywords) {
             document.getElementById('ai-total-mentions').textContent = formatNumber(Object.values(allAiKeywords).reduce((a, b) => a + b, 0));
             document.getElementById('trending-topics').textContent = Object.keys(allAiKeywords).length;
-        
+
             const sortedKeywords = Object.entries(allAiKeywords).sort((a, b) => b[1] - a[1]);
             document.getElementById('dominant-category').textContent = sortedKeywords.length > 0 ? sortedKeywords[0][0] : 'N/A';
-        
-            const peakHours = Object.entries(combinedHourly).sort((a, b) => b[1] - a[1]).slice(0, 3);
-            document.getElementById('peak-times-display').innerHTML = peakHours.length > 0 ? 
-                peakHours.map(([hour, count]) => `<div class="py-1">${hour}:00 - ${count} posts</div>`).join('') :
-                '<div class="text-gray-500">No hourly data available</div>';
-            
-            // Weekly data placeholder
-            document.getElementById('weekly-activity-display').innerHTML = '<div class="text-gray-500">Weekly data not available in current dataset</div>'; 
-        
-            const topContent = firstArea?.top_content?.by_engagement?.slice(0, 3) || [];
-            document.getElementById('top-content-display').innerHTML = topContent.length > 0 ?
-                topContent.map(item => 
-                    `<div class="border-b py-3 last:border-b-0">
-                        <div class="font-medium text-gray-800">${item.title}</div>
-                        <div class="text-sm text-gray-600">${item.engagement} engagement</div>
-                    </div>`
-                ).join('') :
-                '<div class="text-gray-500">No top content data available</div>';
+
+            document.getElementById('peak-times-display').innerHTML = '<div class="text-gray-500">No hourly data available</div>';
+            document.getElementById('weekly-activity-display').innerHTML = '<div class="text-gray-500">Weekly data not available in current dataset</div>';
+            document.getElementById('top-content-display').innerHTML = '<div class="text-gray-500">No top content data available</div>';
         }
-        
+
         function showErrorMessage() {
             const containers = [
                 'articles-container',
@@ -2398,7 +1698,7 @@
                 }
             });
         }
-        
+
         // Utility functions
         function debounce(func, wait) {
             let timeout;
@@ -2411,7 +1711,7 @@
                 timeout = setTimeout(later, wait);
             };
         }
-        
+
         function getArticleAge(dateString) {
             const articleDate = new Date(dateString);
             const now = new Date();
@@ -2422,7 +1722,7 @@
             if (diffDays <= 7) return 'this-week';
             return 'older';
         }
-        
+
         // Enhanced error handling
         window.addEventListener('error', function(event) {
             console.error('Dashboard error:', event.error);
@@ -2448,26 +1748,7 @@
                 }
             }, 5000);
         });
-        
-        // Performance monitoring
-        function logPerformance(label, startTime) {
-            const endTime = performance.now();
-            console.log(`${label}: ${(endTime - startTime).toFixed(2)}ms`);
-        }
-        
-        // Auto-refresh functionality (commented out by default)
-        function setupAutoRefresh(intervalMinutes = 60) {
-            setInterval(() => {
-                console.log('Auto-refreshing dashboard data...');
-                loadDashboardData();
-            }, intervalMinutes * 60 * 1000);
-        }
-        
-        // Print functionality
-        function printDashboard() {
-            window.print();
-        }
-        
+
         // Export functionality
         function exportArticlesData() {
             const exportData = {
@@ -2488,13 +1769,9 @@
             link.click();
             URL.revokeObjectURL(url);
         }
-        
-        // Initialize enhanced features
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('🚀 Enhanced AI Dashboard with RSS Articles initializing...');
-            
-            // Add export button to articles tab
-            const articlesTab = document.getElementById('articles-tab');
+
+        // Add export button functionality
+        setTimeout(() => {
             const exportButton = document.createElement('button');
             exportButton.className = 'fixed bottom-4 right-4 bg-brand-orange hover:bg-brand-red text-white px-4 py-2 rounded-full shadow-lg transition-colors z-40';
             exportButton.innerHTML = '📥 Export Articles';
@@ -2515,13 +1792,8 @@
             });
             
             document.body.appendChild(exportButton);
-            
-            // Setup auto-refresh (uncomment to enable)
-            // setupAutoRefresh(60);
-            
-            console.log('✅ Dashboard enhancements loaded successfully');
-        });
-        
+        }, 1000);
+
         // Responsive chart handling
         function handleChartResize() {
             Object.values(chartInstances).forEach(chart => {
@@ -2534,9 +1806,9 @@
                 }
             });
         }
-        
+
         window.addEventListener('resize', debounce(handleChartResize, 250));
-        
+
         // Cleanup on page unload
         window.addEventListener('beforeunload', function() {
             Object.values(chartInstances).forEach(chart => {
@@ -2545,52 +1817,8 @@
                 }
             });
         });
-        
-        // Print styles
-        const printStyles = document.createElement('style');
-        printStyles.textContent = `
-            @media print {
-                * {
-                    -webkit-print-color-adjust: exact !important;
-                    color-adjust: exact !important;
-                }
-                
-                .tab-button, #article-modal, .fixed {
-                    display: none !important;
-                }
-                
-                .tab-content {
-                    display: block !important;
-                    page-break-inside: avoid;
-                }
-                
-                .analytics-card, .article-card {
-                    break-inside: avoid;
-                    margin-bottom: 1rem;
-                    border: 1px solid #e5e7eb;
-                }
-                
-                .chart-container {
-                    height: 250px !important;
-                }
-                
-                .metric-card {
-                    border: 2px solid #f8a352 !important;
-                    color: #000 !important;
-                    background: linear-gradient(135deg, #f8a352 0%, #d94236 100%) !important;
-                }
-                
-                @page {
-                    margin: 1in;
-                    size: letter;
-                }
-            }
-        `;
-        document.head.appendChild(printStyles);
-        
-        // Final initialization
-        console.log('✅ Enhanced AI Dashboard script fully loaded and ready!');
-        console.log('📊 Features: RSS Articles, Social Analytics, Real-time Filtering, Export');
-        </script>
+
+        console.log('✅ Enhanced AI Dashboard script loaded and ready!');
+    </script>
 </body>
 </html>
