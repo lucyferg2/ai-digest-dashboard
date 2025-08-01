@@ -108,26 +108,72 @@
             margin: 0.25rem;
         }
         
-        .source-badge {
+        .article-card {
+            border: 1px solid #e5e7eb;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            background: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        
+        .article-card:hover {
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        .therapy-area-badge {
+            background: linear-gradient(135deg, #ffc680, #f8a352);
+            color: #b5332e;
             padding: 0.25rem 0.75rem;
-            border-radius: 0.5rem;
+            border-radius: 1rem;
             font-size: 0.75rem;
             font-weight: 600;
+            margin: 0.125rem;
+            display: inline-block;
         }
         
-        .source-podcast {
-            background: #fef3c7;
-            color: #92400e;
+        .source-badge {
+            background: linear-gradient(135deg, #e0f2fe, #b3e5fc);
+            color: #0277bd;
+            padding: 0.25rem 0.75rem;
+            border-radius: 1rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin: 0.125rem;
+            display: inline-block;
         }
         
-        .source-news {
-            background: #dbeafe;
-            color: #1e40af;
+        .journal-badge {
+            background: linear-gradient(135deg, #f3e5f5, #e1bee7);
+            color: #7b1fa2;
+            padding: 0.25rem 0.75rem;
+            border-radius: 1rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin: 0.125rem;
+            display: inline-block;
         }
         
-        .source-reddit {
-            background: #fecaca;
-            color: #991b1b;
+        .new-badge {
+            background: linear-gradient(135deg, #4caf50, #2e7d32);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 1rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin: 0.125rem;
+            display: inline-block;
+            animation: pulse 2s infinite;
+        }
+        
+        .filter-section {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
         }
         
         .pulse-animation {
@@ -144,6 +190,20 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+        }
+        
+        .line-clamp-2 {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        
+        .line-clamp-3 {
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
         }
     </style>
 </head>
@@ -166,7 +226,7 @@
                         📊 Analytics Overview
                     </button>
                     <button class="tab-button" data-tab="articles">
-                        📰 Articles & News
+                        📰 AI Articles & Research
                     </button>
                     <button class="tab-button" data-tab="social">
                         🌐 Social Intelligence
@@ -179,6 +239,7 @@
         </div>
 
         <div id="overview-tab" class="tab-content active">
+            <!-- Social Media Analytics -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                 <div class="metric-card pulse-animation">
                     <div class="text-3xl font-bold" id="total-posts">0</div>
@@ -198,10 +259,53 @@
                 </div>
             </div>
 
+            <!-- RSS Articles Analytics -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div class="analytics-card text-center">
+                    <div class="text-3xl font-bold text-brand-orange" id="total-articles">0</div>
+                    <div class="text-sm text-gray-600">Research Articles</div>
+                </div>
+                <div class="analytics-card text-center">
+                    <div class="text-3xl font-bold text-blue-600" id="unique-sources">0</div>
+                    <div class="text-sm text-gray-600">Unique Sources</div>
+                </div>
+                <div class="analytics-card text-center">
+                    <div class="text-3xl font-bold text-green-600" id="therapy-areas">0</div>
+                    <div class="text-sm text-gray-600">Therapy Areas</div>
+                </div>
+                <div class="analytics-card text-center">
+                    <div class="text-3xl font-bold text-purple-600" id="new-articles">0</div>
+                    <div class="text-sm text-gray-600">New This Week</div>
+                </div>
+            </div>
+
             <div class="analytics-card mb-8">
                 <h3 class="text-2xl font-bold gradient-text mb-6">🤖 Top AI Keywords & Mentions</h3>
                 <div id="ai-keywords-display" class="text-center">
                     <div class="text-gray-500">Loading AI keywords...</div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+                <div class="analytics-card">
+                    <h3 class="text-xl font-bold text-brand-red mb-4">📚 Articles by Source</h3>
+                    <div class="chart-container">
+                        <canvas id="articles-by-source-chart"></canvas>
+                    </div>
+                </div>
+                
+                <div class="analytics-card">
+                    <h3 class="text-xl font-bold text-brand-red mb-4">🏥 Articles by Therapy Area</h3>
+                    <div class="chart-container">
+                        <canvas id="articles-by-therapy-chart"></canvas>
+                    </div>
+                </div>
+                
+                <div class="analytics-card">
+                    <h3 class="text-xl font-bold text-brand-red mb-4">📅 Publication Timeline</h3>
+                    <div class="chart-container">
+                        <canvas id="articles-timeline-chart"></canvas>
+                    </div>
                 </div>
             </div>
 
@@ -266,32 +370,31 @@
                     </div>
                     
                     <div class="mb-4">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Source Type</label>
-                        <select id="source-filter" class="w-full p-2 border border-gray-300 rounded-md focus:ring-brand-orange focus:border-brand-orange">
-                            <option value="all">All Sources</option>
-                            <option value="PODCAST">Podcasts</option>
-                            <option value="ONLINE_NEWS">Online News</option>
-                            <option value="REDDIT">Reddit</option>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Therapy Area</label>
+                        <select id="therapy-area-select" class="w-full p-2 border border-gray-300 rounded-md focus:ring-brand-orange focus:border-brand-orange">
+                            <option value="All">All Therapy Areas</option>
                         </select>
                     </div>
                     
                     <div class="mb-4">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Sentiment</label>
-                        <select id="sentiment-filter" class="w-full p-2 border border-gray-300 rounded-md focus:ring-brand-orange focus:border-brand-orange">
-                            <option value="all">All Sentiments</option>
-                            <option value="very positive">Very Positive</option>
-                            <option value="positive">Positive</option>
-                            <option value="neutral">Neutral</option>
-                            <option value="negative">Negative</option>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Source</label>
+                        <select id="term-select" class="w-full p-2 border border-gray-300 rounded-md focus:ring-brand-orange focus:border-brand-orange">
+                            <option value="All">All Sources</option>
                         </select>
                     </div>
                     
                     <div class="mb-4">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Quality</label>
-                        <select id="quality-filter" class="w-full p-2 border border-gray-300 rounded-md focus:ring-brand-orange focus:border-brand-orange">
-                            <option value="all">All Quality</option>
-                            <option value="high">High Quality Only</option>
-                            <option value="medium">Medium+ Quality</option>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Sort By</label>
+                        <select id="sort-select" class="w-full p-2 border border-gray-300 rounded-md focus:ring-brand-orange focus:border-brand-orange">
+                            <option value="newest">Newest First</option>
+                            <option value="oldest">Oldest First</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Journal</label>
+                        <select id="journal-select" class="w-full p-2 border border-gray-300 rounded-md focus:ring-brand-orange focus:border-brand-orange">
+                            <option value="All">All Journals</option>
                         </select>
                     </div>
                 </div>
@@ -299,12 +402,12 @@
                 <div class="flex-1">
                     <div class="bg-white rounded-lg shadow p-6 border-t-4 border-brand-orange">
                         <div class="flex justify-between items-center mb-6">
-                            <h2 class="text-2xl font-bold text-brand-red">📰 AI Articles & News</h2>
-                            <div class="text-sm text-gray-500" id="articles-showing">Showing 0 articles</div>
+                            <h2 class="text-2xl font-bold text-brand-red">📚 AI Research Articles <span id="article-count">(0)</span></h2>
+                            <div class="text-sm text-gray-500" id="showing-count">Showing 0 of 0 articles</div>
                         </div>
                         
-                        <div id="articles-container" class="space-y-4">
-                            <div class="text-center py-8 text-gray-500">Loading articles...</div>
+                        <div id="articles-container" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="text-center py-8 text-gray-500 col-span-full">Loading articles...</div>
                         </div>
                     </div>
                 </div>
@@ -416,19 +519,21 @@
         </div>
     </div>
 
+    <!-- Article Modal -->
     <div id="article-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-lg max-w-4xl max-h-90vh overflow-y-auto p-6">
-            <div class="flex justify-between items-start mb-4">
+        <div class="bg-white rounded-lg max-w-4xl max-h-90vh overflow-y-auto">
+            <div class="sticky top-0 bg-white border-b p-6 flex justify-between items-center">
                 <h2 class="text-2xl font-bold text-brand-red">Article Details</h2>
-                <button id="close-modal" class="text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
+                <button id="close-modal" class="text-gray-500 hover:text-gray-700 text-2xl font-bold">&times;</button>
             </div>
-            <div id="modal-content">Loading...</div>
+            <div id="modal-content" class="p-6">Loading...</div>
         </div>
     </div>
 
     <footer class="text-center text-gray-600 text-sm mt-12 mb-8 p-6 bg-white rounded-lg shadow border-t-4 border-brand-orange">
         <p>🤖 Enhanced AI Intelligence Dashboard with Social Listening Analytics</p>
-        <p class="mt-2">Analyzing <span id="footer-posts">0</span> social posts with <span id="footer-mentions">0</span> AI mentions | Contact: <a href="mailto:lucy.ferguson@syneoshealth.com" class="text-brand-red hover:underline">lucy.ferguson@syneoshealth.com</a></p>
+        <p class="mt-2">Analyzing <span id="footer-posts">0</span> social posts with <span id="footer-mentions">0</span> AI mentions | <span id="footer-articles">0</span> research articles from <span id="footer-sources">0</span> sources</p>
+        <p class="mt-1">Contact: <a href="mailto:lucy.ferguson@syneoshealth.com" class="text-brand-red hover:underline">lucy.ferguson@syneoshealth.com</a></p>
     </footer>
 
     <script>
@@ -452,6 +557,20 @@
             // Modal functionality
             document.getElementById('close-modal').addEventListener('click', function() {
                 document.getElementById('article-modal').classList.add('hidden');
+            });
+
+            // Close modal on escape key
+            document.addEventListener('keydown', function(event) {
+                if (event.key === 'Escape') {
+                    document.getElementById('article-modal').classList.add('hidden');
+                }
+            });
+
+            // Close modal on backdrop click
+            document.getElementById('article-modal').addEventListener('click', function(event) {
+                if (event.target === this) {
+                    this.classList.add('hidden');
+                }
             });
 
             // Load data
@@ -488,18 +607,26 @@
                     // Update basic info
                     updateBasicInfo(data);
                     
-                    // Load analytics if available
+                    // Load RSS articles analytics
+                    loadArticlesAnalytics();
+                    
+                    // Load social analytics if available
                     if (pulsarAnalytics && Object.keys(pulsarAnalytics).length > 0) {
                         loadEnhancedAnalytics(pulsarAnalytics);
                     }
                     
-                    // Load articles
-                    loadArticles();
+                    // Initialize article filters and display
+                    initializeArticleFilters();
+                    applyArticleFilters();
                     
-                    console.log('Dashboard loaded with enhanced analytics:', pulsarAnalytics);
+                    console.log('Dashboard loaded:', {
+                        articles: allArticles.length,
+                        pulsarData: Object.keys(pulsarAnalytics).length > 0
+                    });
                 })
                 .catch(error => {
                     console.error('Error loading dashboard data:', error);
+                    showErrorMessage();
                 });
         }
 
@@ -510,211 +637,100 @@
                     year: 'numeric', month: 'long', day: 'numeric' 
                 })}`;
             
-            const totalArticles = data.metadata.articleCount;
-            const newArticles = data.metadata.newArticlesThisWeek || 0;
+            const totalArticles = data.metadata.articleCount || allArticles.length;
+            const newArticles = calculateNewArticles();
             document.getElementById('article-summary').textContent = 
-                `${totalArticles} articles analyzed (${newArticles} new this week)`;
+                `${totalArticles} research articles analyzed (${newArticles} new this week) + Social listening data`;
         }
 
-        function loadEnhancedAnalytics(analytics) {
-            // Combine analytics from all therapy areas
-            let totalPosts = 0;
-            let totalReach = 0;
-            let totalEngagement = 0;
-            let allAiKeywords = {};
-            let allHashtags = {};
-            let combinedSentiment = {};
-            let combinedSources = {};
-            let combinedCountries = {};
-            let combinedHourly = {};
+        function calculateNewArticles() {
+            const oneWeekAgo = new Date();
+            oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+            
+            return allArticles.filter(article => {
+                const articleDate = new Date(article.date);
+                return articleDate >= oneWeekAgo;
+            }).length;
+        }
 
-            Object.values(analytics).forEach(areaAnalytics => {
-                if (areaAnalytics && areaAnalytics.overview) {
-                    totalPosts += areaAnalytics.overview.total_posts || 0;
-                    totalReach += areaAnalytics.overview.total_reach || 0;
-                    totalEngagement += areaAnalytics.overview.total_engagement || 0;
-                    
-                    // Combine AI keywords
-                    if (areaAnalytics.ai_keywords) {
-                        areaAnalytics.ai_keywords.forEach(kw => {
-                            allAiKeywords[kw.keyword] = (allAiKeywords[kw.keyword] || 0) + kw.count;
-                        });
-                    }
-                    
-                    // Combine hashtags
-                    if (areaAnalytics.hashtags) {
-                        areaAnalytics.hashtags.forEach(ht => {
-                            allHashtags[ht.hashtag] = (allHashtags[ht.hashtag] || 0) + ht.count;
-                        });
-                    }
-                    
-                    // Combine distributions
-                    Object.assign(combinedSentiment, areaAnalytics.sentiment_distribution || {});
-                    Object.assign(combinedSources, areaAnalytics.source_distribution || {});
-                    Object.assign(combinedCountries, areaAnalytics.country_distribution || {});
-                    Object.assign(combinedHourly, areaAnalytics.time_patterns?.hourly || {});
+        function loadArticlesAnalytics() {
+            // Calculate article metrics
+            const totalArticles = allArticles.length;
+            const uniqueSources = new Set();
+            const uniqueTherapyAreas = new Set();
+            const newArticles = calculateNewArticles();
+            
+            // Process articles to get unique values
+            allArticles.forEach(article => {
+                // Handle single and multiple therapy areas
+                if (Array.isArray(article.therapyAreas)) {
+                    article.therapyAreas.forEach(area => uniqueTherapyAreas.add(area));
+                } else if (article.therapyArea) {
+                    uniqueTherapyAreas.add(article.therapyArea);
+                }
+                
+                // Handle single and multiple terms/sources
+                if (Array.isArray(article.terms)) {
+                    article.terms.forEach(term => uniqueSources.add(term));
+                } else if (article.term) {
+                    uniqueSources.add(article.term);
                 }
             });
-
-            // Update overview metrics
-            document.getElementById('total-posts').textContent = formatNumber(totalPosts);
-            document.getElementById('total-reach').textContent = formatNumber(totalReach);
-            document.getElementById('ai-mentions').textContent = formatNumber(Object.values(allAiKeywords).reduce((a, b) => a + b, 0));
-            document.getElementById('engagement-total').textContent = formatNumber(totalEngagement);
-
-            // Update quality metrics
-            const firstArea = Object.values(analytics)[0];
-            if (firstArea && firstArea.overview) {
-                document.getElementById('high-quality-count').textContent = firstArea.overview.high_quality_posts || 0;
-                document.getElementById('avg-quality-score').textContent = (firstArea.overview.avg_quality_score || 0).toFixed(2);
-                document.getElementById('avg-engagement-rate').textContent = (firstArea.overview.avg_engagement_rate || 0).toFixed(2) + '%';
-            }
-
-            // Update social tab metrics
-            document.getElementById('social-posts').textContent = formatNumber(totalPosts);
-            document.getElementById('social-reach').textContent = formatNumber(totalReach);
             
-            // Calculate positive sentiment percentage
-            const totalSentimentPosts = Object.values(combinedSentiment).reduce((a, b) => a + b, 0);
-            const positiveCount = (combinedSentiment['positive'] || 0) + (combinedSentiment['very positive'] || 0);
-            const positivePercentage = totalSentimentPosts > 0 ? ((positiveCount / totalSentimentPosts) * 100).toFixed(1) : 0;
-            document.getElementById('positive-sentiment').textContent = positivePercentage + '%';
+            // Update article metrics
+            document.getElementById('total-articles').textContent = totalArticles;
+            document.getElementById('unique-sources').textContent = uniqueSources.size;
+            document.getElementById('therapy-areas').textContent = uniqueTherapyAreas.size;
+            document.getElementById('new-articles').textContent = newArticles;
             
-            // Find peak hour
-            const peakHourEntry = Object.entries(combinedHourly).sort((a, b) => b[1] - a[1])[0];
-            document.getElementById('peak-hour').textContent = peakHourEntry ? `${peakHourEntry[0]}:00` : '--:--';
-
             // Update footer
-            document.getElementById('footer-posts').textContent = formatNumber(totalPosts);
-            document.getElementById('footer-mentions').textContent = formatNumber(Object.values(allAiKeywords).reduce((a, b) => a + b, 0));
-
-            // Display AI keywords
-            displayAIKeywords(allAiKeywords);
+            document.getElementById('footer-articles').textContent = formatNumber(totalArticles);
+            document.getElementById('footer-sources').textContent = uniqueSources.size;
             
-            // Display hashtags
-            displayHashtags(allHashtags);
-            
-            // Create charts
-            createEnhancedCharts(combinedSentiment, combinedSources, combinedHourly, combinedCountries, allAiKeywords);
-            
-            // Update trends tab
-            updateTrendsTab(allAiKeywords, combinedHourly, firstArea);
+            // Create article charts
+            createArticleCharts();
         }
 
-        function displayAIKeywords(keywords) {
-            const container = document.getElementById('ai-keywords-display');
-            const sortedKeywords = Object.entries(keywords).sort((a, b) => b[1] - a[1]).slice(0, 10);
-            
-            container.innerHTML = sortedKeywords.map(([keyword, count]) => {
-                const fontSize = Math.min(2, Math.max(1, Math.log(count) / 3));
-                return `<span class="keyword-tag" style="font-size: ${fontSize}rem; margin: 0.5rem;">
-                    ${keyword}: ${formatNumber(count)}
-                </span>`;
-            }).join('');
+        function createArticleCharts() {
+            createArticlesBySourceChart();
+            createArticlesByTherapyChart();
+            createArticlesTimelineChart();
         }
 
-        function displayHashtags(hashtags) {
-            const container = document.getElementById('hashtags-display');
-            const sortedHashtags = Object.entries(hashtags).sort((a, b) => b[1] - a[1]).slice(0, 15);
+        function createArticlesBySourceChart() {
+            const ctx = document.getElementById('articles-by-source-chart').getContext('2d');
             
-            if (sortedHashtags.length === 0) {
-                container.innerHTML = '<div class="text-gray-500">No hashtags found in content</div>';
-                return;
-            }
-            
-            container.innerHTML = sortedHashtags.map(([hashtag, count]) => 
-                `<span class="hashtag-tag">#${hashtag} (${count})</span>`
-            ).join('');
-        }
-
-        function createEnhancedCharts(sentiment, sources, hourly, countries, aiKeywords) {
-            // Create all charts
-            createSentimentChart(sentiment);
-            createSourcesChart(sources);
-            createHourlyChart(hourly);
-            createCountryChart(countries);
-            createAIKeywordsChart(aiKeywords);
-        }
-
-        function createSentimentChart(sentimentData) {
-            const ctx = document.getElementById('sentiment-overview-chart').getContext('2d');
-            
-            if (chartInstances.sentiment) {
-                chartInstances.sentiment.destroy();
+            if (chartInstances.articlesBySource) {
+                chartInstances.articlesBySource.destroy();
             }
 
-            const colors = {
-                'very positive': '#22c55e',
-                'positive': '#65a30d',
-                'neutral': '#64748b',
-                'negative': '#ef4444',
-                'very negative': '#dc2626'
-            };
-
-            chartInstances.sentiment = new Chart(ctx, {
-                type: 'doughnut',
-                data: {
-                    labels: Object.keys(sentimentData),
-                    datasets: [{
-                        data: Object.values(sentimentData),
-                        backgroundColor: Object.keys(sentimentData).map(key => colors[key] || '#64748b'),
-                        borderWidth: 3,
-                        borderColor: '#fff'
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'bottom',
-                            labels: {
-                                padding: 20,
-                                font: { size: 12 }
-                            }
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                                    const percentage = ((context.parsed / total) * 100).toFixed(1);
-                                    return `${context.label}: ${context.parsed} (${percentage}%)`;
-                                }
-                            }
-                        }
-                    }
+            // Count articles by source/term
+            const sourceCounts = {};
+            allArticles.forEach(article => {
+                if (Array.isArray(article.terms)) {
+                    article.terms.forEach(term => {
+                        sourceCounts[term] = (sourceCounts[term] || 0) + 1;
+                    });
+                } else if (article.term) {
+                    sourceCounts[article.term] = (sourceCounts[article.term] || 0) + 1;
                 }
             });
 
-            // Also create detailed sentiment chart
-            createDetailedSentimentChart(sentimentData);
-        }
+            const sortedSources = Object.entries(sourceCounts)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 10);
 
-        function createDetailedSentimentChart(sentimentData) {
-            const ctx = document.getElementById('sentiment-detailed-chart').getContext('2d');
-            
-            if (chartInstances.sentimentDetailed) {
-                chartInstances.sentimentDetailed.destroy();
-            }
-
-            const colors = {
-                'very positive': '#22c55e',
-                'positive': '#65a30d', 
-                'neutral': '#64748b',
-                'negative': '#ef4444',
-                'very negative': '#dc2626'
-            };
-
-            chartInstances.sentimentDetailed = new Chart(ctx, {
+            chartInstances.articlesBySource = new Chart(ctx, {
                 type: 'bar',
                 data: {
-                    labels: Object.keys(sentimentData),
+                    labels: sortedSources.map(([source]) => source.length > 20 ? source.substring(0, 20) + '...' : source),
                     datasets: [{
-                        label: 'Posts',
-                        data: Object.values(sentimentData),
-                        backgroundColor: Object.keys(sentimentData).map(key => colors[key] || '#64748b'),
-                        borderRadius: 8,
-                        borderSkipped: false
+                        label: 'Articles',
+                        data: sortedSources.map(([, count]) => count),
+                        backgroundColor: '#3b82f6',
+                        borderColor: '#1d4ed8',
+                        borderWidth: 1,
+                        borderRadius: 4
                     }]
                 },
                 options: {
@@ -738,6 +754,11 @@
             
             if (chartInstances.sources) {
                 chartInstances.sources.destroy();
+            }
+
+            if (Object.keys(sourcesData).length === 0) {
+                ctx.canvas.parentElement.innerHTML = '<div class="flex items-center justify-center h-full text-gray-500">No source data available</div>';
+                return;
             }
 
             const sourceColors = {
@@ -784,6 +805,11 @@
                 chartInstances.sourceDistribution.destroy();
             }
 
+            if (Object.keys(sourcesData).length === 0) {
+                ctx.canvas.parentElement.innerHTML = '<div class="flex items-center justify-center h-full text-gray-500">No source data available</div>';
+                return;
+            }
+
             const sourceColors = {
                 'PODCAST': '#f59e0b',
                 'ONLINE_NEWS': '#3b82f6', 
@@ -823,6 +849,11 @@
             
             if (chartInstances.hourly) {
                 chartInstances.hourly.destroy();
+            }
+
+            if (Object.keys(hourlyData).length === 0) {
+                ctx.canvas.parentElement.innerHTML = '<div class="flex items-center justify-center h-full text-gray-500">No hourly data available</div>';
+                return;
             }
 
             // Convert to 24-hour format and sort
@@ -872,6 +903,11 @@
             
             if (chartInstances.hourlyPattern) {
                 chartInstances.hourlyPattern.destroy();
+            }
+
+            if (Object.keys(hourlyData).length === 0) {
+                ctx.canvas.parentElement.innerHTML = '<div class="flex items-center justify-center h-full text-gray-500">No hourly pattern data available</div>';
+                return;
             }
 
             const hourlyArray = Object.entries(hourlyData)
@@ -1003,11 +1039,17 @@
         
         function createAIKeywordsChart(aiKeywords) {
             const ctx = document.getElementById('ai-keywords-chart').getContext('2d');
-            const sortedKeywords = Object.entries(aiKeywords).sort((a, b) => b[1] - a[1]).slice(0, 10);
             
             if (chartInstances.aiKeywords) {
                 chartInstances.aiKeywords.destroy();
             }
+
+            if (Object.keys(aiKeywords).length === 0) {
+                ctx.canvas.parentElement.innerHTML = '<div class="flex items-center justify-center h-full text-gray-500">No AI keywords data available</div>';
+                return;
+            }
+
+            const sortedKeywords = Object.entries(aiKeywords).sort((a, b) => b[1] - a[1]).slice(0, 10);
 
             chartInstances.aiKeywords = new Chart(ctx, {
                 type: 'bar',
@@ -1051,100 +1093,48 @@
             document.getElementById('dominant-category').textContent = sortedKeywords.length > 0 ? sortedKeywords[0][0] : 'N/A';
 
             const peakHours = Object.entries(combinedHourly).sort((a, b) => b[1] - a[1]).slice(0, 3);
-            document.getElementById('peak-times-display').innerHTML = peakHours.map(([hour, count]) => `<div>${hour}:00 - ${count} posts</div>`).join('');
+            document.getElementById('peak-times-display').innerHTML = peakHours.length > 0 ? 
+                peakHours.map(([hour, count]) => `<div class="py-1">${hour}:00 - ${count} posts</div>`).join('') :
+                '<div class="text-gray-500">No hourly data available</div>';
             
-            // This part is a placeholder as weekly data isn't in the provided JSON
-            document.getElementById('weekly-activity-display').innerHTML = 'Weekly data not available.'; 
+            // Weekly data placeholder
+            document.getElementById('weekly-activity-display').innerHTML = '<div class="text-gray-500">Weekly data not available in current dataset</div>'; 
 
             const topContent = firstArea?.top_content?.by_engagement?.slice(0, 3) || [];
-            document.getElementById('top-content-display').innerHTML = topContent.map(item => 
-                `<div class="border-b py-2">${item.title} (${item.engagement} engagement)</div>`
-            ).join('');
+            document.getElementById('top-content-display').innerHTML = topContent.length > 0 ?
+                topContent.map(item => 
+                    `<div class="border-b py-3 last:border-b-0">
+                        <div class="font-medium text-gray-800">${item.title}</div>
+                        <div class="text-sm text-gray-600">${item.engagement} engagement</div>
+                    </div>`
+                ).join('') :
+                '<div class="text-gray-500">No top content data available</div>';
         }
-        
-        function loadArticles() {
-            document.getElementById('search-input').addEventListener('input', debounce(applyArticleFilters, 300));
-            document.getElementById('source-filter').addEventListener('change', applyArticleFilters);
-            document.getElementById('sentiment-filter').addEventListener('change', applyArticleFilters);
-            document.getElementById('quality-filter').addEventListener('change', applyArticleFilters);
+
+        function showErrorMessage() {
+            const containers = [
+                'articles-container',
+                'ai-keywords-display',
+                'hashtags-display'
+            ];
             
-            applyArticleFilters();
-        }
-
-        function applyArticleFilters() {
-            const searchTerm = document.getElementById('search-input').value.toLowerCase();
-            const sourceFilter = document.getElementById('source-filter').value;
-            const sentimentFilter = document.getElementById('sentiment-filter').value;
-            const qualityFilter = document.getElementById('quality-filter').value;
-
-            filteredArticles = allArticles.filter(article => {
-                const titleMatch = article.title.toLowerCase().includes(searchTerm);
-                const summaryMatch = article.summary.toLowerCase().includes(searchTerm);
-                const sourceMatch = sourceFilter === 'all' || article.journal === sourceFilter;
-                
-                // This is a placeholder for sentiment and quality as they are not in the article objects
-                const sentimentMatch = sentimentFilter === 'all'; 
-                const qualityMatch = qualityFilter === 'all';
-                
-                return (titleMatch || summaryMatch) && sourceMatch && sentimentMatch && qualityMatch;
-            });
-
-            renderArticles();
-        }
-
-        function renderArticles() {
-            const container = document.getElementById('articles-container');
-            container.innerHTML = '';
-            document.getElementById('articles-showing').textContent = `Showing ${filteredArticles.length} articles`;
-
-            if (filteredArticles.length === 0) {
-                container.innerHTML = '<div class="text-center py-8 text-gray-500">No articles match your filters.</div>';
-                return;
-            }
-
-            filteredArticles.forEach(article => {
-                const articleEl = document.createElement('div');
-                articleEl.className = 'border rounded-lg p-4 hover:shadow-lg transition-shadow cursor-pointer';
-                articleEl.innerHTML = `
-                    <h4 class="font-bold text-lg text-brand-red">${article.title}</h4>
-                    <p class="text-sm text-gray-500">${article.date} - ${article.journal}</p>
-                    <p class="mt-2 text-gray-700">${article.summary}</p>
-                `;
-                articleEl.addEventListener('click', () => showArticleModal(article));
-                container.appendChild(articleEl);
-            });
-        }
-        
-        function showArticleModal(article) {
-            const modal = document.getElementById('article-modal');
-            const modalContent = document.getElementById('modal-content');
-            
-            modalContent.innerHTML = `
-                <h3 class="font-bold text-2xl mb-2">${article.title}</h3>
-                <p class="text-sm text-gray-600 mb-4">${article.date} | ${article.journal}</p>
-                <p class="mb-4">${article.summary}</p>
-                <h4 class="font-bold text-xl mb-2">Key Takeaways</h4>
-                <ul class="list-disc pl-5 mb-4">
-                    ${article.takeaways.map(t => `<li>${t}</li>`).join('')}
-                </ul>
-                <a href="${article.link}" target="_blank" class="text-brand-red hover:underline">Read Full Article</a>
-            `;
-            
-            modal.classList.remove('hidden');
-        }
-
-        // Chart.js horizontalBar compatibility fix
-        Chart.register({
-            id: 'horizontalBarFix',
-            beforeInit: function(chart) {
-                if (chart.config.type === 'horizontalBar') {
-                    chart.config.type = 'bar';
-                    chart.config.options.indexAxis = 'y';
+            containers.forEach(containerId => {
+                const container = document.getElementById(containerId);
+                if (container) {
+                    container.innerHTML = `
+                        <div class="text-center py-8 text-red-500">
+                            <div class="text-lg mb-2">⚠️ Error Loading Data</div>
+                            <div class="text-sm">Please check if the data file exists and try refreshing the page.</div>
+                            <button onclick="location.reload()" class="mt-4 bg-brand-orange hover:bg-brand-red text-white px-4 py-2 rounded">
+                                Refresh Page
+                            </button>
+                        </div>
+                    `;
                 }
-            }
-        });
+            });
+        }
 
-        // Additional utility functions
+        // Utility functions
         function debounce(func, wait) {
             let timeout;
             return function executedFunction(...args) {
@@ -1157,79 +1147,36 @@
             };
         }
 
-        // Enhanced search with debouncing
-        document.addEventListener('DOMContentLoaded', function() {
-            const searchInput = document.getElementById('search-input');
-            if (searchInput) {
-                searchInput.addEventListener('input', debounce(applyArticleFilters, 300));
-            }
-        });
-
-        // Keyboard navigation for modal
-        document.addEventListener('keydown', function(event) {
-            if (event.key === 'Escape') {
-                document.getElementById('article-modal').classList.add('hidden');
-            }
-        });
-
-        // Click outside modal to close
-        document.getElementById('article-modal').addEventListener('click', function(event) {
-            if (event.target === this) {
-                this.classList.add('hidden');
-            }
-        });
-
-        // Smooth scrolling for internal links
-        function scrollToSection(sectionId) {
-            document.getElementById(sectionId).scrollIntoView({ 
-                behavior: 'smooth' 
-            });
-        }
-
-        // Export functionality
-        function exportAnalytics() {
-            if (pulsarAnalytics) {
-                const dataStr = JSON.stringify(pulsarAnalytics, null, 2);
-                const dataBlob = new Blob([dataStr], {type: 'application/json'});
-                const url = URL.createObjectURL(dataBlob);
-                const link = document.createElement('a');
-                link.href = url;
-                link.download = `ai-analytics-export-${new Date().toISOString().split('T')[0]}.json`;
-                link.click();
-                URL.revokeObjectURL(url);
-            }
-        }
-
-        // Auto-refresh functionality
-        function setupAutoRefresh(intervalMinutes = 60) {
-            setInterval(() => {
-                console.log('Auto-refreshing dashboard data...');
-                loadDashboardData();
-            }, intervalMinutes * 60 * 1000);
-        }
-
-        // Performance monitoring
-        function logPerformance(label, startTime) {
-            const endTime = performance.now();
-            console.log(`${label}: ${(endTime - startTime).toFixed(2)}ms`);
+        function getArticleAge(dateString) {
+            const articleDate = new Date(dateString);
+            const now = new Date();
+            const diffTime = Math.abs(now - articleDate);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            
+            if (diffDays <= 3) return 'new';
+            if (diffDays <= 7) return 'this-week';
+            return 'older';
         }
 
         // Enhanced error handling
         window.addEventListener('error', function(event) {
             console.error('Dashboard error:', event.error);
-            // Show user-friendly error message
+            
             const errorContainer = document.createElement('div');
-            errorContainer.className = 'fixed top-4 right-4 bg-red-500 text-white p-4 rounded-lg shadow-lg z-50';
+            errorContainer.className = 'fixed top-4 right-4 bg-red-500 text-white p-4 rounded-lg shadow-lg z-50 max-w-md';
             errorContainer.innerHTML = `
                 <div class="flex items-center gap-2">
                     <span>⚠️</span>
-                    <span>Dashboard error occurred. Please refresh the page.</span>
-                    <button onclick="this.parentElement.parentElement.remove()" class="ml-2 text-white hover:text-gray-200">×</button>
+                    <div class="flex-1">
+                        <div class="font-semibold">Dashboard Error</div>
+                        <div class="text-sm">Please refresh the page or contact support</div>
+                    </div>
+                    <button onclick="this.parentElement.parentElement.remove()" class="text-white hover:text-gray-200">×</button>
                 </div>
             `;
             document.body.appendChild(errorContainer);
             
-            // Auto-remove error after 5 seconds
+            // Auto-remove after 5 seconds
             setTimeout(() => {
                 if (errorContainer.parentElement) {
                     errorContainer.remove();
@@ -1237,58 +1184,78 @@
             }, 5000);
         });
 
-        // Initialize dashboard enhancements
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('🚀 Enhanced AI Dashboard initializing...');
+        // Performance monitoring
+        function logPerformance(label, startTime) {
+            const endTime = performance.now();
+            console.log(`${label}: ${(endTime - startTime).toFixed(2)}ms`);
+        }
+
+        // Auto-refresh functionality (commented out by default)
+        function setupAutoRefresh(intervalMinutes = 60) {
+            setInterval(() => {
+                console.log('Auto-refreshing dashboard data...');
+                loadDashboardData();
+            }, intervalMinutes * 60 * 1000);
+        }
+
+        // Print functionality
+        function printDashboard() {
+            window.print();
+        }
+
+        // Export functionality
+        function exportArticlesData() {
+            const exportData = {
+                metadata: {
+                    exportDate: new Date().toISOString(),
+                    totalArticles: allArticles.length,
+                    filteredArticles: filteredArticles.length
+                },
+                articles: filteredArticles
+            };
             
-            // Add loading states to charts
-            const loadingElements = document.querySelectorAll('[id$="-chart"]');
-            loadingElements.forEach(el => {
-                if (el.tagName === 'CANVAS') {
-                    const ctx = el.getContext('2d');
-                    ctx.fillStyle = '#f3f4f6';
-                    ctx.fillRect(0, 0, el.width, el.height);
-                    ctx.fillStyle = '#6b7280';
-                    ctx.font = '16px Arial';
-                    ctx.textAlign = 'center';
-                    ctx.fillText('Loading Analytics...', el.width / 2, el.height / 2);
+            const dataStr = JSON.stringify(exportData, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `ai-articles-export-${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // Initialize enhanced features
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 Enhanced AI Dashboard with RSS Articles initializing...');
+            
+            // Add export button to articles tab
+            const articlesTab = document.getElementById('articles-tab');
+            const exportButton = document.createElement('button');
+            exportButton.className = 'fixed bottom-4 right-4 bg-brand-orange hover:bg-brand-red text-white px-4 py-2 rounded-full shadow-lg transition-colors z-40';
+            exportButton.innerHTML = '📥 Export Articles';
+            exportButton.onclick = exportArticlesData;
+            exportButton.style.display = 'none';
+            
+            // Show export button only on articles tab
+            document.querySelector('[data-tab="articles"]').addEventListener('click', () => {
+                exportButton.style.display = 'block';
+            });
+            
+            document.querySelectorAll('.tab-button').forEach(btn => {
+                if (btn.getAttribute('data-tab') !== 'articles') {
+                    btn.addEventListener('click', () => {
+                        exportButton.style.display = 'none';
+                    });
                 }
             });
-
-            // Add loading animation to metric cards
-            document.querySelectorAll('.metric-card').forEach(card => {
-                card.style.opacity = '0.7';
-                card.style.transform = 'scale(0.95)';
-            });
-
-            // Setup auto-refresh (commented out by default)
-            // setupAutoRefresh(60); // Refresh every 60 minutes
             
-            // Add version info to console
-            console.log('📊 Dashboard Version: Enhanced Analytics v2.0');
-            console.log('🔧 Features: Social Listening, AI Trends, Real-time Filtering');
+            document.body.appendChild(exportButton);
+            
+            // Setup auto-refresh (uncomment to enable)
+            // setupAutoRefresh(60);
+            
+            console.log('✅ Dashboard enhancements loaded successfully');
         });
-
-        // Theme customization
-        function setTheme(theme) {
-            document.documentElement.setAttribute('data-theme', theme);
-            localStorage.setItem('dashboard-theme', theme);
-            
-            // Update chart colors based on theme
-            if (theme === 'dark') {
-                Chart.defaults.color = '#ffffff';
-                Chart.defaults.backgroundColor = '#374151';
-            } else {
-                Chart.defaults.color = '#374151';
-                Chart.defaults.backgroundColor = '#ffffff';
-            }
-        }
-
-        // Load saved theme
-        const savedTheme = localStorage.getItem('dashboard-theme');
-        if (savedTheme) {
-            setTheme(savedTheme);
-        }
 
         // Responsive chart handling
         function handleChartResize() {
@@ -1305,87 +1272,16 @@
 
         window.addEventListener('resize', debounce(handleChartResize, 250));
 
-        // Analytics interaction tracking
-        function trackInteraction(action, label) {
-            console.log(`User Interaction: ${action} - ${label}`);
-            // Integration point for analytics services like Google Analytics
-            if (typeof gtag !== 'undefined') {
-                gtag('event', action, {
-                    'event_category': 'Dashboard',
-                    'event_label': label
-                });
-            }
-        }
-
-        // Enhanced accessibility features
-        document.addEventListener('DOMContentLoaded', function() {
-            // Add keyboard navigation for charts
-            document.querySelectorAll('.chart-container').forEach(container => {
-                container.setAttribute('tabindex', '0');
-                container.setAttribute('role', 'img');
-                container.setAttribute('aria-label', 'Interactive data visualization chart');
-                
-                // Add keyboard interaction
-                container.addEventListener('keydown', function(e) {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                        trackInteraction('chart_keyboard_access', container.id);
-                    }
-                });
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', function() {
+            Object.values(chartInstances).forEach(chart => {
+                if (chart && typeof chart.destroy === 'function') {
+                    chart.destroy();
+                }
             });
-
-            // Add ARIA labels to interactive elements
-            document.querySelectorAll('.tab-button').forEach(button => {
-                button.setAttribute('role', 'tab');
-                button.setAttribute('aria-selected', button.classList.contains('active'));
-            });
-
-            // Add focus management
-            const style = document.createElement('style');
-            style.textContent = `
-                .chart-container:focus {
-                    outline: 3px solid #f8a352;
-                    outline-offset: 2px;
-                    border-radius: 8px;
-                }
-                
-                .tab-button:focus {
-                    outline: 3px solid #f8a352;
-                    outline-offset: 2px;
-                }
-                
-                .metric-card:focus {
-                    outline: 3px solid #ffffff;
-                    outline-offset: 2px;
-                    transform: translateY(-5px) scale(1.02);
-                }
-                
-                .analytics-card:focus-within {
-                    box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.1);
-                    transform: translateY(-2px);
-                }
-            `;
-            document.head.appendChild(style);
         });
 
-        // Print functionality with chart preservation
-        function printDashboard() {
-            // Ensure all charts are rendered before printing
-            const startTime = performance.now();
-            
-            Promise.all(Object.values(chartInstances).map(chart => {
-                return new Promise(resolve => {
-                    if (chart && chart.update) {
-                        chart.update('none');
-                    }
-                    resolve();
-                });
-            })).then(() => {
-                logPerformance('Chart preparation for print', startTime);
-                window.print();
-            });
-        }
-
-        // Add comprehensive print styles
+        // Print styles
         const printStyles = document.createElement('style');
         printStyles.textContent = `
             @media print {
@@ -1394,7 +1290,7 @@
                     color-adjust: exact !important;
                 }
                 
-                .tab-button, .no-print, #article-modal {
+                .tab-button, #article-modal, .fixed {
                     display: none !important;
                 }
                 
@@ -1403,7 +1299,7 @@
                     page-break-inside: avoid;
                 }
                 
-                .analytics-card {
+                .analytics-card, .article-card {
                     break-inside: avoid;
                     margin-bottom: 1rem;
                     border: 1px solid #e5e7eb;
@@ -1419,12 +1315,1269 @@
                     background: linear-gradient(135deg, #f8a352 0%, #d94236 100%) !important;
                 }
                 
-                .keyword-tag, .hashtag-tag {
-                    border: 1px solid #d94236 !important;
+                @page {
+                    margin: 1in;
+                    size: letter;
+                }
+            }
+        `;
+        document.head.appendChild(printStyles);
+
+        // Final initialization
+        console.log('✅ Enhanced AI Dashboard script fully loaded and ready!');
+        console.log('📊 Features: RSS Articles, Social Analytics, Real-time Filtering, Export');
+
+    </script>
+</body>
+</html>spectRatio: false,
+                    indexAxis: 'y',
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            ticks: { precision: 0 }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                title: function(context) {
+                                    return sortedSources[context[0].dataIndex][0]; // Full source name
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function createArticlesByTherapyChart() {
+            const ctx = document.getElementById('articles-by-therapy-chart').getContext('2d');
+            
+            if (chartInstances.articlesByTherapy) {
+                chartInstances.articlesByTherapy.destroy();
+            }
+
+            // Count articles by therapy area
+            const therapyCounts = {};
+            allArticles.forEach(article => {
+                if (Array.isArray(article.therapyAreas)) {
+                    article.therapyAreas.forEach(area => {
+                        therapyCounts[area] = (therapyCounts[area] || 0) + 1;
+                    });
+                } else if (article.therapyArea) {
+                    therapyCounts[article.therapyArea] = (therapyCounts[article.therapyArea] || 0) + 1;
+                }
+            });
+
+            const colors = [
+                '#f59e0b', '#3b82f6', '#ef4444', '#8b5cf6', '#22c55e',
+                '#f97316', '#14b8a6', '#6366f1', '#ec4899', '#84cc16'
+            ];
+
+            chartInstances.articlesByTherapy = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: Object.keys(therapyCounts),
+                    datasets: [{
+                        data: Object.values(therapyCounts),
+                        backgroundColor: colors.slice(0, Object.keys(therapyCounts).length),
+                        borderWidth: 2,
+                        borderColor: '#fff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 15,
+                                font: { size: 11 },
+                                generateLabels: function(chart) {
+                                    const data = chart.data;
+                                    return data.labels.map((label, index) => ({
+                                        text: label.length > 15 ? label.substring(0, 15) + '...' : label,
+                                        fillStyle: data.datasets[0].backgroundColor[index],
+                                        index: index
+                                    }));
+                                }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = ((context.parsed / total) * 100).toFixed(1);
+                                    return `${context.label}: ${context.parsed} articles (${percentage}%)`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function createArticlesTimelineChart() {
+            const ctx = document.getElementById('articles-timeline-chart').getContext('2d');
+            
+            if (chartInstances.articlesTimeline) {
+                chartInstances.articlesTimeline.destroy();
+            }
+
+            // Count articles by date
+            const dateCounts = {};
+            allArticles.forEach(article => {
+                const date = article.date;
+                dateCounts[date] = (dateCounts[date] || 0) + 1;
+            });
+
+            // Sort dates and prepare data
+            const sortedDates = Object.entries(dateCounts)
+                .sort((a, b) => new Date(a[0]) - new Date(b[0]));
+
+            chartInstances.articlesTimeline = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: sortedDates.map(([date]) => {
+                        const d = new Date(date);
+                        return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                    }),
+                    datasets: [{
+                        label: 'Articles Published',
+                        data: sortedDates.map(([, count]) => count),
+                        backgroundColor: 'rgba(248, 163, 82, 0.2)',
+                        borderColor: '#d94236',
+                        borderWidth: 3,
+                        tension: 0.3,
+                        fill: true,
+                        pointBackgroundColor: '#d94236',
+                        pointBorderColor: '#fff',
+                        pointRadius: 5,
+                        pointHoverRadius: 7
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { precision: 0 }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                title: function(context) {
+                                    return sortedDates[context[0].dataIndex][0]; // Full date
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function initializeArticleFilters() {
+            // Get unique values for dropdowns
+            const therapyAreas = new Set(['All']);
+            const terms = new Set(['All']);
+            const journals = new Set(['All']);
+            
+            allArticles.forEach(article => {
+                // Therapy areas
+                if (Array.isArray(article.therapyAreas)) {
+                    article.therapyAreas.forEach(area => therapyAreas.add(area));
+                } else if (article.therapyArea) {
+                    therapyAreas.add(article.therapyArea);
                 }
                 
-                h1, h2, h3 {
-                    color: #d94236 !important;
+                // Terms/sources
+                if (Array.isArray(article.terms)) {
+                    article.terms.forEach(term => terms.add(term));
+                } else if (article.term) {
+                    terms.add(article.term);
+                }
+                
+                // Journals
+                if (article.journal) {
+                    journals.add(article.journal);
+                }
+            });
+            
+            // Populate dropdowns
+            populateDropdown('therapy-area-select', Array.from(therapyAreas));
+            populateDropdown('term-select', Array.from(terms));
+            populateDropdown('journal-select', Array.from(journals));
+            
+            // Add event listeners
+            document.getElementById('search-input').addEventListener('input', debounce(applyArticleFilters, 300));
+            document.getElementById('therapy-area-select').addEventListener('change', applyArticleFilters);
+            document.getElementById('term-select').addEventListener('change', applyArticleFilters);
+            document.getElementById('sort-select').addEventListener('change', applyArticleFilters);
+            document.getElementById('journal-select').addEventListener('change', applyArticleFilters);
+        }
+
+        function populateDropdown(selectId, options) {
+            const select = document.getElementById(selectId);
+            select.innerHTML = '';
+            
+            options.forEach(option => {
+                const optionElement = document.createElement('option');
+                optionElement.value = option;
+                optionElement.textContent = option;
+                select.appendChild(optionElement);
+            });
+        }
+
+        function applyArticleFilters() {
+            const searchTerm = document.getElementById('search-input').value.toLowerCase();
+            const selectedTherapyArea = document.getElementById('therapy-area-select').value;
+            const selectedTerm = document.getElementById('term-select').value;
+            const selectedJournal = document.getElementById('journal-select').value;
+            const sortOrder = document.getElementById('sort-select').value;
+
+            filteredArticles = allArticles.filter(article => {
+                // Search filter
+                if (searchTerm) {
+                    const searchableText = [
+                        article.title,
+                        article.description,
+                        article.summary,
+                        article.takeaways.join(' '),
+                        article.authors || ''
+                    ].join(' ').toLowerCase();
+                    
+                    if (!searchableText.includes(searchTerm)) {
+                        return false;
+                    }
+                }
+                
+                // Therapy area filter
+                if (selectedTherapyArea !== 'All') {
+                    let hasTherapyArea = false;
+                    if (Array.isArray(article.therapyAreas)) {
+                        hasTherapyArea = article.therapyAreas.includes(selectedTherapyArea);
+                    } else {
+                        hasTherapyArea = article.therapyArea === selectedTherapyArea;
+                    }
+                    if (!hasTherapyArea) return false;
+                }
+                
+                // Term/source filter
+                if (selectedTerm !== 'All') {
+                    let hasTerm = false;
+                    if (Array.isArray(article.terms)) {
+                        hasTerm = article.terms.includes(selectedTerm);
+                    } else {
+                        hasTerm = article.term === selectedTerm;
+                    }
+                    if (!hasTerm) return false;
+                }
+                
+                // Journal filter
+                if (selectedJournal !== 'All' && article.journal !== selectedJournal) {
+                    return false;
+                }
+                
+                return true;
+            });
+
+            // Sort articles
+            filteredArticles.sort((a, b) => {
+                const dateA = new Date(a.date);
+                const dateB = new Date(b.date);
+                return sortOrder === 'newest' ? dateB - dateA : dateA - dateB;
+            });
+
+            // Update counts and render
+            updateArticleCounts();
+            renderArticles();
+        }
+
+        function updateArticleCounts() {
+            document.getElementById('article-count').textContent = `(${filteredArticles.length})`;
+            document.getElementById('showing-count').textContent = `Showing ${filteredArticles.length} of ${allArticles.length} articles`;
+        }
+
+        function renderArticles() {
+            const container = document.getElementById('articles-container');
+            
+            if (filteredArticles.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-8 text-gray-500 col-span-full">
+                        <div class="text-lg mb-2">No articles found</div>
+                        <div class="text-sm">Try adjusting your search criteria or filters</div>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = '';
+            
+            filteredArticles.forEach(article => {
+                const articleElement = document.createElement('div');
+                articleElement.className = 'article-card';
+                
+                // Create badges
+                const badges = createArticleBadges(article);
+                
+                // Determine if article is new (within last 3 days)
+                const articleDate = new Date(article.date);
+                const threeDaysAgo = new Date();
+                threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
+                const isNew = articleDate >= threeDaysAgo;
+                
+                articleElement.innerHTML = `
+                    <div class="flex justify-between items-start mb-3">
+                        <h3 class="text-lg font-semibold text-brand-red line-clamp-2 flex-1 pr-2">
+                            ${article.title}
+                        </h3>
+                        ${isNew ? '<span class="new-badge">NEW</span>' : ''}
+                    </div>
+                    
+                    <div class="flex flex-wrap gap-1 mb-3">
+                        ${badges}
+                    </div>
+                    
+                    <div class="text-sm text-gray-500 mb-3">
+                        ${article.date} • ${article.journal}
+                        ${article.authors ? ` • ${article.authors}` : ''}
+                    </div>
+                    
+                    <p class="text-gray-700 text-sm line-clamp-3 mb-4">
+                        ${article.summary}
+                    </p>
+                    
+                    <div class="flex justify-between items-center mt-auto">
+                        <button class="bg-brand-orange hover:bg-brand-red text-white py-2 px-4 rounded-md text-sm transition-colors view-details">
+                            View Details
+                        </button>
+                        <a href="${article.link}" target="_blank" rel="noopener noreferrer" 
+                           class="text-brand-red hover:underline text-sm font-medium">
+                            Read Original →
+                        </a>
+                    </div>
+                `;
+                
+                // Add click event for viewing details
+                articleElement.querySelector('.view-details').addEventListener('click', () => {
+                    showArticleModal(article);
+                });
+                
+                // Make title clickable too
+                articleElement.querySelector('h3').addEventListener('click', () => {
+                    showArticleModal(article);
+                });
+                articleElement.querySelector('h3').style.cursor = 'pointer';
+                
+                container.appendChild(articleElement);
+            });
+        }
+
+        function createArticleBadges(article) {
+            let badges = '';
+            
+            // Therapy area badges
+            const therapyAreas = Array.isArray(article.therapyAreas) ? article.therapyAreas : [article.therapyArea];
+            therapyAreas.forEach(area => {
+                if (area) {
+                    badges += `<span class="therapy-area-badge">${area}</span>`;
+                }
+            });
+            
+            // Source badges
+            const terms = Array.isArray(article.terms) ? article.terms : [article.term];
+            terms.forEach(term => {
+                if (term) {
+                    badges += `<span class="source-badge">${term}</span>`;
+                }
+            });
+            
+            // Journal badge
+            if (article.journal) {
+                badges += `<span class="journal-badge">${article.journal}</span>`;
+            }
+            
+            return badges;
+        }
+
+        function showArticleModal(article) {
+            const modal = document.getElementById('article-modal');
+            const modalContent = document.getElementById('modal-content');
+            
+            // Determine if article is new
+            const articleDate = new Date(article.date);
+            const threeDaysAgo = new Date();
+            threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
+            const isNew = articleDate >= threeDaysAgo;
+            
+            // Create detailed badges for modal
+            const badges = createArticleBadges(article);
+            
+            modalContent.innerHTML = `
+                <div class="mb-6">
+                    <h2 class="text-2xl font-bold text-brand-red mb-4 leading-tight">
+                        ${article.title}
+                        ${isNew ? '<span class="new-badge ml-2">NEW</span>' : ''}
+                    </h2>
+                    
+                    <div class="flex flex-wrap gap-2 mb-4">
+                        ${badges}
+                    </div>
+                    
+                    <div class="bg-gray-50 p-4 rounded-lg mb-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                            <div><strong>Publication Date:</strong> ${article.date}</div>
+                            <div><strong>Journal:</strong> ${article.journal}</div>
+                            ${article.authors ? `<div class="md:col-span-2"><strong>Authors:</strong> ${article.authors}</div>` : ''}
+                            <div><strong>Article ID:</strong> ${article.id}</div>
+                            <div><strong>PMID:</strong> ${article.link.includes('pubmed.ncbi.nlm.nih.gov/') ? article.link.split('/')[4].split('?')[0] : 'N/A'}</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mb-6">
+                    <h3 class="text-xl font-semibold text-brand-red mb-3">📄 Summary</h3>
+                    <div class="bg-blue-50 p-4 rounded-lg">
+                        <p class="text-gray-700 leading-relaxed">${article.summary}</p>
+                    </div>
+                </div>
+                
+                <div class="mb-6">
+                    <h3 class="text-xl font-semibold text-brand-red mb-3">🎯 Key Takeaways</h3>
+                    <div class="bg-green-50 p-4 rounded-lg">
+                        <ul class="space-y-2">
+                            ${article.takeaways.map(takeaway => {
+                                const cleanTakeaway = takeaway.startsWith('-') ? takeaway.substring(1).trim() : takeaway;
+                                return `<li class="flex items-start">
+                                    <span class="text-green-600 mr-2 mt-1">•</span>
+                                    <span class="text-gray-700">${cleanTakeaway}</span>
+                                </li>`;
+                            }).join('')}
+                        </ul>
+                    </div>
+                </div>
+                
+                ${article.description ? `
+                <div class="mb-6">
+                    <h3 class="text-xl font-semibold text-brand-red mb-3">📋 Abstract</h3>
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <p class="text-gray-700 text-sm leading-relaxed">${article.description}</p>
+                    </div>
+                </div>
+                ` : ''}
+                
+                <div class="text-center pt-4 border-t">
+                    <a href="${article.link}" target="_blank" rel="noopener noreferrer" 
+                       class="inline-block px-8 py-3 bg-brand-orange hover:bg-brand-red text-white rounded-lg font-semibold transition-colors">
+                        📖 Read Full Article on PubMed
+                    </a>
+                </div>
+            `;
+            
+            modal.classList.remove('hidden');
+        }
+
+        function loadEnhancedAnalytics(analytics) {
+            // Combine analytics from all therapy areas
+            let totalPosts = 0;
+            let totalReach = 0;
+            let totalEngagement = 0;
+            let allAiKeywords = {};
+            let allHashtags = {};
+            let combinedSentiment = {};
+            let combinedSources = {};
+            let combinedCountries = {};
+            let combinedHourly = {};
+
+            Object.values(analytics).forEach(areaAnalytics => {
+                if (areaAnalytics && areaAnalytics.overview) {
+                    totalPosts += areaAnalytics.overview.total_posts || 0;
+                    totalReach += areaAnalytics.overview.total_reach || 0;
+                    totalEngagement += areaAnalytics.overview.total_engagement || 0;
+                    
+                    // Combine AI keywords
+                    if (areaAnalytics.ai_keywords) {
+                        areaAnalytics.ai_keywords.forEach(kw => {
+                            allAiKeywords[kw.keyword] = (allAiKeywords[kw.keyword] || 0) + kw.count;
+                        });
+                    }
+                    
+                    // Combine hashtags
+                    if (areaAnalytics.hashtags) {
+                        areaAnalytics.hashtags.forEach(ht => {
+                            allHashtags[ht.hashtag] = (allHashtags[ht.hashtag] || 0) + ht.count;
+                        });
+                    }
+                    
+                    // Combine distributions
+                    Object.assign(combinedSentiment, areaAnalytics.sentiment_distribution || {});
+                    Object.assign(combinedSources, areaAnalytics.source_distribution || {});
+                    Object.assign(combinedCountries, areaAnalytics.country_distribution || {});
+                    Object.assign(combinedHourly, areaAnalytics.time_patterns?.hourly || {});
+                }
+            });
+
+            // Update social overview metrics
+            document.getElementById('total-posts').textContent = formatNumber(totalPosts);
+            document.getElementById('total-reach').textContent = formatNumber(totalReach);
+            document.getElementById('ai-mentions').textContent = formatNumber(Object.values(allAiKeywords).reduce((a, b) => a + b, 0));
+            document.getElementById('engagement-total').textContent = formatNumber(totalEngagement);
+
+            // Update quality metrics
+            const firstArea = Object.values(analytics)[0];
+            if (firstArea && firstArea.overview) {
+                document.getElementById('high-quality-count').textContent = firstArea.overview.high_quality_posts || 0;
+                document.getElementById('avg-quality-score').textContent = (firstArea.overview.avg_quality_score || 0).toFixed(2);
+                document.getElementById('avg-engagement-rate').textContent = (firstArea.overview.avg_engagement_rate || 0).toFixed(2) + '%';
+            }
+
+            // Update social tab metrics
+            document.getElementById('social-posts').textContent = formatNumber(totalPosts);
+            document.getElementById('social-reach').textContent = formatNumber(totalReach);
+            
+            // Calculate positive sentiment percentage
+            const totalSentimentPosts = Object.values(combinedSentiment).reduce((a, b) => a + b, 0);
+            const positiveCount = (combinedSentiment['positive'] || 0) + (combinedSentiment['very positive'] || 0);
+            const positivePercentage = totalSentimentPosts > 0 ? ((positiveCount / totalSentimentPosts) * 100).toFixed(1) : 0;
+            document.getElementById('positive-sentiment').textContent = positivePercentage + '%';
+            
+            // Find peak hour
+            const peakHourEntry = Object.entries(combinedHourly).sort((a, b) => b[1] - a[1])[0];
+            document.getElementById('peak-hour').textContent = peakHourEntry ? `${peakHourEntry[0]}:00` : '--:--';
+
+            // Update footer
+            document.getElementById('footer-posts').textContent = formatNumber(totalPosts);
+            document.getElementById('footer-mentions').textContent = formatNumber(Object.values(allAiKeywords).reduce((a, b) => a + b, 0));
+
+            // Display AI keywords
+            displayAIKeywords(allAiKeywords);
+            
+            // Display hashtags
+            displayHashtags(allHashtags);
+            
+            // Create social charts
+            createSocialCharts(combinedSentiment, combinedSources, combinedHourly, combinedCountries, allAiKeywords);
+            
+            // Update trends tab
+            updateTrendsTab(allAiKeywords, combinedHourly, firstArea);
+        }
+
+        function displayAIKeywords(keywords) {
+            const container = document.getElementById('ai-keywords-display');
+            const sortedKeywords = Object.entries(keywords).sort((a, b) => b[1] - a[1]).slice(0, 10);
+            
+            if (sortedKeywords.length === 0) {
+                container.innerHTML = '<div class="text-gray-500">No AI keywords found in social data</div>';
+                return;
+            }
+            
+            container.innerHTML = sortedKeywords.map(([keyword, count]) => {
+                const fontSize = Math.min(2, Math.max(1, Math.log(count) / 3));
+                return `<span class="keyword-tag" style="font-size: ${fontSize}rem; margin: 0.5rem;">
+                    ${keyword}: ${formatNumber(count)}
+                </span>`;
+            }).join('');
+        }
+
+        function displayHashtags(hashtags) {
+            const container = document.getElementById('hashtags-display');
+            const sortedHashtags = Object.entries(hashtags).sort((a, b) => b[1] - a[1]).slice(0, 15);
+            
+            if (sortedHashtags.length === 0) {
+                container.innerHTML = '<div class="text-gray-500">No hashtags found in social content</div>';
+                return;
+            }
+            
+            container.innerHTML = sortedHashtags.map(([hashtag, count]) => 
+                `<span class="hashtag-tag">#${hashtag} (${count})</span>`
+            ).join('');
+        }
+
+        function createSocialCharts(sentiment, sources, hourly, countries, aiKeywords) {
+            // Create all social charts
+            createSentimentChart(sentiment);
+            createSourcesChart(sources);
+            createHourlyChart(hourly);
+            createCountryChart(countries);
+            createAIKeywordsChart(aiKeywords);
+        }
+
+        function createSentimentChart(sentimentData) {
+            const ctx = document.getElementById('sentiment-overview-chart').getContext('2d');
+            
+            if (chartInstances.sentiment) {
+                chartInstances.sentiment.destroy();
+            }
+
+            if (Object.keys(sentimentData).length === 0) {
+                ctx.canvas.parentElement.innerHTML = '<div class="flex items-center justify-center h-full text-gray-500">No sentiment data available</div>';
+                return;
+            }
+
+            const colors = {
+                'very positive': '#22c55e',
+                'positive': '#65a30d',
+                'neutral': '#64748b',
+                'negative': '#ef4444',
+                'very negative': '#dc2626'
+            };
+
+            chartInstances.sentiment = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(sentimentData),
+                    datasets: [{
+                        data: Object.values(sentimentData),
+                        backgroundColor: Object.keys(sentimentData).map(key => colors[key] || '#64748b'),
+                        borderWidth: 3,
+                        borderColor: '#fff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 20,
+                                font: { size: 12 }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = ((context.parsed / total) * 100).toFixed(1);
+                                    return `${context.label}: ${context.parsed} (${percentage}%)`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Also create detailed sentiment chart
+            createDetailedSentimentChart(sentimentData);
+        }
+
+        function createDetailedSentimentChart(sentimentData) {
+            const ctx = document.getElementById('sentiment-detailed-chart').getContext('2d');
+            
+            if (chartInstances.sentimentDetailed) {
+                chartInstances.sentimentDetailed.destroy();
+            }
+        
+            if (Object.keys(sentimentData).length === 0) {
+                ctx.canvas.parentElement.innerHTML = '<div class="flex items-center justify-center h-full text-gray-500">No sentiment data available</div>';
+                return;
+            }
+        
+            const colors = {
+                'very positive': '#22c55e',
+                'positive': '#65a30d', 
+                'neutral': '#64748b',
+                'negative': '#ef4444',
+                'very negative': '#dc2626'
+            };
+        
+            chartInstances.sentimentDetailed = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(sentimentData),
+                    datasets: [{
+                        label: 'Posts',
+                        data: Object.values(sentimentData),
+                        backgroundColor: Object.keys(sentimentData).map(key => colors[key] || '#64748b'),
+                        borderRadius: 8,
+                        borderSkipped: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { precision: 0 }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false }
+                    }
+                }
+            });
+        }
+        
+        function createSourcesChart(sourcesData) {
+            const ctx = document.getElementById('sources-overview-chart').getContext('2d');
+            
+            if (chartInstances.sources) {
+                chartInstances.sources.destroy();
+            }
+        
+            if (Object.keys(sourcesData).length === 0) {
+                ctx.canvas.parentElement.innerHTML = '<div class="flex items-center justify-center h-full text-gray-500">No source data available</div>';
+                return;
+            }
+        
+            const sourceColors = {
+                'PODCAST': '#f59e0b',
+                'ONLINE_NEWS': '#3b82f6',
+                'REDDIT': '#ef4444',
+                'SOCIAL_MEDIA': '#8b5cf6'
+            };
+        
+            chartInstances.sources = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: Object.keys(sourcesData),
+                    datasets: [{
+                        data: Object.values(sourcesData),
+                        backgroundColor: Object.keys(sourcesData).map(key => sourceColors[key] || '#64748b'),
+                        borderWidth: 3,
+                        borderColor: '#fff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 20,
+                                font: { size: 12 }
+                            }
+                        }
+                    }
+                }
+            });
+        
+            // Also create source distribution chart
+            createSourceDistributionChart(sourcesData);
+        }
+        
+        function createSourceDistributionChart(sourcesData) {
+            const ctx = document.getElementById('source-distribution-chart').getContext('2d');
+            
+            if (chartInstances.sourceDistribution) {
+                chartInstances.sourceDistribution.destroy();
+            }
+        
+            if (Object.keys(sourcesData).length === 0) {
+                ctx.canvas.parentElement.innerHTML = '<div class="flex items-center justify-center h-full text-gray-500">No source data available</div>';
+                return;
+            }
+        
+            const sourceColors = {
+                'PODCAST': '#f59e0b',
+                'ONLINE_NEWS': '#3b82f6', 
+                'REDDIT': '#ef4444'
+            };
+        
+            chartInstances.sourceDistribution = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(sourcesData),
+                    datasets: [{
+                        label: 'Posts',
+                        data: Object.values(sourcesData),
+                        backgroundColor: Object.keys(sourcesData).map(key => sourceColors[key] || '#64748b'),
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            ticks: { precision: 0 }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false }
+                    }
+                }
+            });
+        }
+        
+        function createHourlyChart(hourlyData) {
+            const ctx = document.getElementById('hourly-overview-chart').getContext('2d');
+            
+            if (chartInstances.hourly) {
+                chartInstances.hourly.destroy();
+            }
+        
+            if (Object.keys(hourlyData).length === 0) {
+                ctx.canvas.parentElement.innerHTML = '<div class="flex items-center justify-center h-full text-gray-500">No hourly data available</div>';
+                return;
+            }
+        
+            // Convert to 24-hour format and sort
+            const hourlyArray = Object.entries(hourlyData)
+                .map(([hour, count]) => ({ hour: parseInt(hour), count }))
+                .sort((a, b) => a.hour - b.hour);
+        
+            chartInstances.hourly = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: hourlyArray.map(item => `${item.hour}:00`),
+                    datasets: [{
+                        label: 'Posts per Hour',
+                        data: hourlyArray.map(item => item.count),
+                        backgroundColor: 'rgba(248, 163, 82, 0.3)',
+                        borderColor: '#d94236',
+                        borderWidth: 3,
+                        tension: 0.4,
+                        fill: true,
+                        pointBackgroundColor: '#d94236',
+                        pointBorderColor: '#fff',
+                        pointRadius: 6,
+                        pointHoverRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { precision: 0 }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false }
+                    }
+                }
+            });
+        
+            // Also create pattern chart
+            createHourlyPatternChart(hourlyData);
+        }
+        
+        function createHourlyPatternChart(hourlyData) {
+            const ctx = document.getElementById('hourly-pattern-chart').getContext('2d');
+            
+            if (chartInstances.hourlyPattern) {
+                chartInstances.hourlyPattern.destroy();
+            }
+        
+            if (Object.keys(hourlyData).length === 0) {
+                ctx.canvas.parentElement.innerHTML = '<div class="flex items-center justify-center h-full text-gray-500">No hourly pattern data available</div>';
+                return;
+            }
+        
+            const hourlyArray = Object.entries(hourlyData)
+                .map(([hour, count]) => ({ hour: parseInt(hour), count }))
+                .sort((a, b) => a.hour - b.hour);
+        
+            chartInstances.hourlyPattern = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: hourlyArray.map(item => `${item.hour}:00`),
+                    datasets: [{
+                        label: 'Activity Level',
+                        data: hourlyArray.map(item => item.count),
+                        backgroundColor: hourlyArray.map(item => {
+                            if (item.count > 80) return '#22c55e'; // High activity
+                            if (item.count > 50) return '#f59e0b'; // Medium activity
+                            return '#64748b'; // Low activity
+                        }),
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { precision: 0 }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                afterLabel: function(context) {
+                                    if (context.parsed.y > 80) return 'High Activity Period';
+                                    if (context.parsed.y > 50) return 'Medium Activity Period';
+                                    return 'Low Activity Period';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        function createCountryChart(countriesData) {
+            const ctx = document.getElementById('country-overview-chart').getContext('2d');
+            
+            if (chartInstances.countries) {
+                chartInstances.countries.destroy();
+            }
+        
+            if (Object.keys(countriesData).length === 0) {
+                ctx.canvas.parentElement.innerHTML = '<div class="flex items-center justify-center h-full text-gray-500">No geographic data available</div>';
+                return;
+            }
+        
+            chartInstances.countries = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(countriesData),
+                    datasets: [{
+                        label: 'Posts',
+                        data: Object.values(countriesData),
+                        backgroundColor: ['#f59e0b', '#3b82f6', '#ef4444', '#8b5cf6', '#22c55e'],
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            ticks: { precision: 0 }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false }
+                    }
+                }
+            });
+        
+            // Also create geographic chart
+            createGeographicChart(countriesData);
+        }
+        
+        function createGeographicChart(countriesData) {
+            const ctx = document.getElementById('geographic-chart').getContext('2d');
+            
+            if (chartInstances.geographic) {
+                chartInstances.geographic.destroy();
+            }
+        
+            if (Object.keys(countriesData).length === 0) {
+                ctx.canvas.parentElement.innerHTML = '<div class="flex items-center justify-center h-full text-gray-500">Limited geographic data</div>';
+                return;
+            }
+        
+            chartInstances.geographic = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(countriesData),
+                    datasets: [{
+                        label: 'Posts by Country',
+                        data: Object.values(countriesData),
+                        backgroundColor: ['#f59e0b', '#3b82f6', '#ef4444', '#8b5cf6', '#22c55e', '#f97316', '#14b8a6'],
+                        borderColor: '#ffffff',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                        },
+                        title: {
+                            display: true,
+                            text: 'Global Reach Distribution'
+                        }
+                    }
+                }
+            });
+        }
+        
+        function createAIKeywordsChart(aiKeywords) {
+            const ctx = document.getElementById('ai-keywords-chart').getContext('2d');
+            
+            if (chartInstances.aiKeywords) {
+                chartInstances.aiKeywords.destroy();
+            }
+        
+            if (Object.keys(aiKeywords).length === 0) {
+                ctx.canvas.parentElement.innerHTML = '<div class="flex items-center justify-center h-full text-gray-500">No AI keywords data available</div>';
+                return;
+            }
+        
+            const sortedKeywords = Object.entries(aiKeywords).sort((a, b) => b[1] - a[1]).slice(0, 10);
+        
+            chartInstances.aiKeywords = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: sortedKeywords.map(kw => kw[0]),
+                    datasets: [{
+                        label: 'Keyword Mentions',
+                        data: sortedKeywords.map(kw => kw[1]),
+                        backgroundColor: '#f8a352',
+                        borderColor: '#d94236',
+                        borderWidth: 2,
+                        borderRadius: 5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y',
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            ticks: {
+                                precision: 0
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+        }
+        
+        function updateTrendsTab(allAiKeywords, combinedHourly, firstArea) {
+            document.getElementById('ai-total-mentions').textContent = formatNumber(Object.values(allAiKeywords).reduce((a, b) => a + b, 0));
+            document.getElementById('trending-topics').textContent = Object.keys(allAiKeywords).length;
+        
+            const sortedKeywords = Object.entries(allAiKeywords).sort((a, b) => b[1] - a[1]);
+            document.getElementById('dominant-category').textContent = sortedKeywords.length > 0 ? sortedKeywords[0][0] : 'N/A';
+        
+            const peakHours = Object.entries(combinedHourly).sort((a, b) => b[1] - a[1]).slice(0, 3);
+            document.getElementById('peak-times-display').innerHTML = peakHours.length > 0 ? 
+                peakHours.map(([hour, count]) => `<div class="py-1">${hour}:00 - ${count} posts</div>`).join('') :
+                '<div class="text-gray-500">No hourly data available</div>';
+            
+            // Weekly data placeholder
+            document.getElementById('weekly-activity-display').innerHTML = '<div class="text-gray-500">Weekly data not available in current dataset</div>'; 
+        
+            const topContent = firstArea?.top_content?.by_engagement?.slice(0, 3) || [];
+            document.getElementById('top-content-display').innerHTML = topContent.length > 0 ?
+                topContent.map(item => 
+                    `<div class="border-b py-3 last:border-b-0">
+                        <div class="font-medium text-gray-800">${item.title}</div>
+                        <div class="text-sm text-gray-600">${item.engagement} engagement</div>
+                    </div>`
+                ).join('') :
+                '<div class="text-gray-500">No top content data available</div>';
+        }
+        
+        function showErrorMessage() {
+            const containers = [
+                'articles-container',
+                'ai-keywords-display',
+                'hashtags-display'
+            ];
+            
+            containers.forEach(containerId => {
+                const container = document.getElementById(containerId);
+                if (container) {
+                    container.innerHTML = `
+                        <div class="text-center py-8 text-red-500">
+                            <div class="text-lg mb-2">⚠️ Error Loading Data</div>
+                            <div class="text-sm">Please check if the data file exists and try refreshing the page.</div>
+                            <button onclick="location.reload()" class="mt-4 bg-brand-orange hover:bg-brand-red text-white px-4 py-2 rounded">
+                                Refresh Page
+                            </button>
+                        </div>
+                    `;
+                }
+            });
+        }
+        
+        // Utility functions
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+        
+        function getArticleAge(dateString) {
+            const articleDate = new Date(dateString);
+            const now = new Date();
+            const diffTime = Math.abs(now - articleDate);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            
+            if (diffDays <= 3) return 'new';
+            if (diffDays <= 7) return 'this-week';
+            return 'older';
+        }
+        
+        // Enhanced error handling
+        window.addEventListener('error', function(event) {
+            console.error('Dashboard error:', event.error);
+            
+            const errorContainer = document.createElement('div');
+            errorContainer.className = 'fixed top-4 right-4 bg-red-500 text-white p-4 rounded-lg shadow-lg z-50 max-w-md';
+            errorContainer.innerHTML = `
+                <div class="flex items-center gap-2">
+                    <span>⚠️</span>
+                    <div class="flex-1">
+                        <div class="font-semibold">Dashboard Error</div>
+                        <div class="text-sm">Please refresh the page or contact support</div>
+                    </div>
+                    <button onclick="this.parentElement.parentElement.remove()" class="text-white hover:text-gray-200">×</button>
+                </div>
+            `;
+            document.body.appendChild(errorContainer);
+            
+            // Auto-remove after 5 seconds
+            setTimeout(() => {
+                if (errorContainer.parentElement) {
+                    errorContainer.remove();
+                }
+            }, 5000);
+        });
+        
+        // Performance monitoring
+        function logPerformance(label, startTime) {
+            const endTime = performance.now();
+            console.log(`${label}: ${(endTime - startTime).toFixed(2)}ms`);
+        }
+        
+        // Auto-refresh functionality (commented out by default)
+        function setupAutoRefresh(intervalMinutes = 60) {
+            setInterval(() => {
+                console.log('Auto-refreshing dashboard data...');
+                loadDashboardData();
+            }, intervalMinutes * 60 * 1000);
+        }
+        
+        // Print functionality
+        function printDashboard() {
+            window.print();
+        }
+        
+        // Export functionality
+        function exportArticlesData() {
+            const exportData = {
+                metadata: {
+                    exportDate: new Date().toISOString(),
+                    totalArticles: allArticles.length,
+                    filteredArticles: filteredArticles.length
+                },
+                articles: filteredArticles
+            };
+            
+            const dataStr = JSON.stringify(exportData, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `ai-articles-export-${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+            URL.revokeObjectURL(url);
+        }
+        
+        // Initialize enhanced features
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 Enhanced AI Dashboard with RSS Articles initializing...');
+            
+            // Add export button to articles tab
+            const articlesTab = document.getElementById('articles-tab');
+            const exportButton = document.createElement('button');
+            exportButton.className = 'fixed bottom-4 right-4 bg-brand-orange hover:bg-brand-red text-white px-4 py-2 rounded-full shadow-lg transition-colors z-40';
+            exportButton.innerHTML = '📥 Export Articles';
+            exportButton.onclick = exportArticlesData;
+            exportButton.style.display = 'none';
+            
+            // Show export button only on articles tab
+            document.querySelector('[data-tab="articles"]').addEventListener('click', () => {
+                exportButton.style.display = 'block';
+            });
+            
+            document.querySelectorAll('.tab-button').forEach(btn => {
+                if (btn.getAttribute('data-tab') !== 'articles') {
+                    btn.addEventListener('click', () => {
+                        exportButton.style.display = 'none';
+                    });
+                }
+            });
+            
+            document.body.appendChild(exportButton);
+            
+            // Setup auto-refresh (uncomment to enable)
+            // setupAutoRefresh(60);
+            
+            console.log('✅ Dashboard enhancements loaded successfully');
+        });
+        
+        // Responsive chart handling
+        function handleChartResize() {
+            Object.values(chartInstances).forEach(chart => {
+                if (chart && typeof chart.resize === 'function') {
+                    try {
+                        chart.resize();
+                    } catch (e) {
+                        console.warn('Chart resize error:', e);
+                    }
+                }
+            });
+        }
+        
+        window.addEventListener('resize', debounce(handleChartResize, 250));
+        
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', function() {
+            Object.values(chartInstances).forEach(chart => {
+                if (chart && typeof chart.destroy === 'function') {
+                    chart.destroy();
+                }
+            });
+        });
+        
+        // Print styles
+        const printStyles = document.createElement('style');
+        printStyles.textContent = `
+            @media print {
+                * {
+                    -webkit-print-color-adjust: exact !important;
+                    color-adjust: exact !important;
+                }
+                
+                .tab-button, #article-modal, .fixed {
+                    display: none !important;
+                }
+                
+                .tab-content {
+                    display: block !important;
+                    page-break-inside: avoid;
+                }
+                
+                .analytics-card, .article-card {
+                    break-inside: avoid;
+                    margin-bottom: 1rem;
+                    border: 1px solid #e5e7eb;
+                }
+                
+                .chart-container {
+                    height: 250px !important;
+                }
+                
+                .metric-card {
+                    border: 2px solid #f8a352 !important;
+                    color: #000 !important;
+                    background: linear-gradient(135deg, #f8a352 0%, #d94236 100%) !important;
                 }
                 
                 @page {
@@ -1434,197 +2587,10 @@
             }
         `;
         document.head.appendChild(printStyles);
-
-        // Data refresh notification
-        function showRefreshNotification(message) {
-            const notification = document.createElement('div');
-            notification.className = 'fixed top-4 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 transition-all duration-300';
-            notification.innerHTML = `
-                <div class="flex items-center gap-2">
-                    <span>✅</span>
-                    <span>${message}</span>
-                </div>
-            `;
-            document.body.appendChild(notification);
-            
-            // Animate in
-            setTimeout(() => {
-                notification.style.transform = 'translateX(-50%) translateY(0)';
-            }, 100);
-            
-            // Auto-remove after 3 seconds
-            setTimeout(() => {
-                notification.style.transform = 'translateX(-50%) translateY(-100px)';
-                setTimeout(() => notification.remove(), 300);
-            }, 3000);
-        }
-
-        // Enhanced data loading with progress indication
-        function loadDashboardData() {
-            const startTime = performance.now();
-            
-            // Show loading indicators
-            document.querySelectorAll('.metric-card').forEach(card => {
-                card.style.opacity = '0.7';
-                const valueElement = card.querySelector('div:first-child');
-                if (valueElement) {
-                    valueElement.innerHTML = '<div class="animate-pulse">Loading...</div>';
-                }
-            });
-            
-            fetch('data/latest_dashboard_data.json')
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    dashboardData = data;
-                    allArticles = data.articles || [];
-                    pulsarAnalytics = data.pulsarAnalytics || {};
-                    
-                    // Restore metric card animations
-                    document.querySelectorAll('.metric-card').forEach(card => {
-                        card.style.opacity = '1';
-                        card.style.transform = 'scale(1)';
-                    });
-                    
-                    // Update basic info
-                    updateBasicInfo(data);
-                    
-                    // Load analytics if available
-                    if (pulsarAnalytics && Object.keys(pulsarAnalytics).length > 0) {
-                        loadEnhancedAnalytics(pulsarAnalytics);
-                        showRefreshNotification('Analytics data loaded successfully!');
-                    } else {
-                        console.warn('No Pulsar analytics data found');
-                    }
-                    
-                    // Load articles
-                    loadArticles();
-                    
-                    logPerformance('Dashboard data loading', startTime);
-                    console.log('✅ Dashboard loaded with enhanced analytics:', Object.keys(pulsarAnalytics));
-                })
-                .catch(error => {
-                    console.error('Error loading dashboard data:', error);
-                    
-                    // Show error state
-                    document.querySelectorAll('.metric-card').forEach(card => {
-                        card.style.opacity = '0.5';
-                        const valueElement = card.querySelector('div:first-child');
-                        if (valueElement) {
-                            valueElement.textContent = 'Error';
-                        }
-                    });
-                    
-                    // Show error notification
-                    const errorNotification = document.createElement('div');
-                    errorNotification.className = 'fixed top-4 right-4 bg-red-500 text-white p-4 rounded-lg shadow-lg z-50 max-w-md';
-                    errorNotification.innerHTML = `
-                        <div class="flex items-start gap-3">
-                            <span class="text-xl">⚠️</span>
-                            <div class="flex-1">
-                                <div class="font-semibold">Failed to Load Data</div>
-                                <div class="text-sm mt-1">Please check if the data file exists and try refreshing the page.</div>
-                                <button onclick="location.reload()" class="mt-2 bg-red-600 hover:bg-red-700 px-3 py-1 rounded text-sm">
-                                    Refresh Page
-                                </button>
-                            </div>
-                            <button onclick="this.closest('div.fixed').remove()" class="text-white hover:text-gray-200 ml-2">×</button>
-                        </div>
-                    `;
-                    document.body.appendChild(errorNotification);
-                });
-        }
-
-        // Data validation
-        function validateAnalyticsData(analytics) {
-            const required = ['overview', 'sentiment_distribution', 'source_distribution'];
-            const missing = required.filter(key => !analytics[key]);
-            
-            if (missing.length > 0) {
-                console.warn('Missing required analytics data:', missing);
-                return false;
-            }
-            
-            return true;
-        }
-
-        // Enhanced loading with retry mechanism
-        let retryCount = 0;
-        const maxRetries = 3;
-
-        function loadDashboardDataWithRetry() {
-            if (retryCount >= maxRetries) {
-                console.error('Max retries reached. Please check your data source.');
-                return;
-            }
-            
-            retryCount++;
-            console.log(`Loading attempt ${retryCount}/${maxRetries}`);
-            
-            loadDashboardData().catch(() => {
-                setTimeout(() => {
-                    loadDashboardDataWithRetry();
-                }, 2000 * retryCount); // Exponential backoff
-            });
-        }
-
-        // Initialize dashboard with retry mechanism
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('🚀 Enhanced AI Dashboard initializing...');
-            loadDashboardDataWithRetry();
-        });
-
-        // Performance optimizations
-        const observerOptions = {
-            root: null,
-            rootMargin: '0px',
-            threshold: 0.1
-        };
-
-        // Lazy load charts when they come into view
-        const chartObserver = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    const chartId = entry.target.querySelector('canvas')?.id;
-                    if (chartId && !chartInstances[chartId]) {
-                        console.log('Lazy loading chart:', chartId);
-                        // Chart will be created when data loads
-                    }
-                }
-            });
-        }, observerOptions);
-
-        // Observe chart containers
-        document.addEventListener('DOMContentLoaded', function() {
-            document.querySelectorAll('.chart-container').forEach(container => {
-                chartObserver.observe(container);
-            });
-        });
-
-        // Cleanup function for page unload
-        window.addEventListener('beforeunload', function() {
-            // Cleanup chart instances
-            Object.values(chartInstances).forEach(chart => {
-                if (chart && typeof chart.destroy === 'function') {
-                    chart.destroy();
-                }
-            });
-            
-            // Cleanup observers
-            if (chartObserver) {
-                chartObserver.disconnect();
-            }
-        });
-
-        // Final initialization message
+        
+        // Final initialization
         console.log('✅ Enhanced AI Dashboard script fully loaded and ready!');
-        console.log('🔧 Features loaded: Auto-refresh, Export, Print, Accessibility, Error Handling');
-        console.log('📊 Ready to display: 681 posts, 2,422 AI mentions, comprehensive analytics');
-
-    </script>
+        console.log('📊 Features: RSS Articles, Social Analytics, Real-time Filtering, Export');
+        </script>
 </body>
 </html>
