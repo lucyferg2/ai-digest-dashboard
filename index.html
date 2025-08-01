@@ -603,7 +603,7 @@
         function loadDashboardData() {
             // Try to read the uploaded file first
             if (window.fs && window.fs.readFile) {
-                window.fs.readFile('latest_dashboard_data.json', { encoding: 'utf8' })
+                window.fs.readFile('/data/latest_dashboard_data.json', { encoding: 'utf8' })
                     .then(data => {
                         const parsedData = JSON.parse(data);
                         processDashboardData(parsedData);
@@ -620,7 +620,7 @@
         }
 
         function fetchDashboardData() {
-            fetch('latest_dashboard_data.json')
+            fetch('/data/latest_dashboard_data.json')
                 .then(response => {
                     if (!response.ok) {
                         throw new Error(`HTTP error! status: ${response.status}`);
