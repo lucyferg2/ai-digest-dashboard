@@ -603,7 +603,7 @@
         function loadDashboardData() {
             // Try to read the uploaded file first
             if (window.fs && window.fs.readFile) {
-                window.fs.readFile('detailed_dashboard_data.json.rtf', { encoding: 'utf8' })
+                window.fs.readFile('/data/latest_dashboard_data.json', { encoding: 'utf8' })
                     .then(data => {
                         // Clean RTF formatting
                         const cleanData = data.replace(/\\\\/g, '\\').replace(/\\"/g, '"').replace(/\\\[/g, '[').replace(/\\\]/g, ']');
@@ -623,7 +623,7 @@
 
         function tryReadSampleFile() {
             if (window.fs && window.fs.readFile) {
-                window.fs.readFile('sample_latest_dashboard_data.json', { encoding: 'utf8' })
+                window.fs.readFile('/data/latest_dashboard_data.json', { encoding: 'utf8' })
                     .then(data => {
                         const parsedData = JSON.parse(data);
                         processDashboardData(parsedData);
@@ -640,8 +640,8 @@
         function fetchDashboardData() {
             // Try multiple file paths
             const filesToTry = [
-                'detailed_dashboard_data.json.rtf',
-                'sample_latest_dashboard_data.json',
+                '/data/latest_dashboard_data.json'
+                '/data/latest_dashboard_data.json'
                 'data/latest_dashboard_data.json'
             ];
             
